@@ -1,0 +1,25 @@
+{
+  "name": "nodeServer",
+  "description": "",
+  "main": "",
+  "authors": [
+    "Rodey"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/RodeyManager/SYST",
+  "moduleType": [
+    "amd"
+  ],
+  "private": false,
+  "ignore": [
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "example",
+    "src"
+  ],
+  "devDependencies": {
+    "highlight": "~9.4.0"
+  }
+}

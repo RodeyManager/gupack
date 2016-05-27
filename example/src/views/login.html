@@ -1,0 +1,31 @@
+<!--build header-->
+<include src="../assets/layout/header.html"
+         title="万能险">
+</include>
+    <header class="header">
+        万能险后台管理系统
+    </header>
+    <div class="wrapper">
+        <section class="center login-main">
+            <div class="form-group">
+
+            </div>
+            <div class="form-group">
+                <label class="name"><input type="text" id="username" placeholder="用户名"/></label>
+            </div>
+            <div class="form-group">
+                <label class="pwd"><input type="password" id="password" placeholder="密码"/></label>
+            </div>
+            <div class="form-group">
+                <include src="../assets/components/legalSelector/index.html"></include>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="登 录" id="login-btn"/>
+            </div>
+        </section>
+    </div>
+
+<!--build footer-->
+<include src="../assets/layout/footer.html"
+         view="module/passport/loginView.js">
+</include>

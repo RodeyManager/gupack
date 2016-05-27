@@ -1,0 +1,10 @@
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+#node js
+#=======================================
+
+node_modules
+npm-debug.log
+

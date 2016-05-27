@@ -1,0 +1,191 @@
+* {
+    font-family: "Microsoft YaHei", Arial;
+    font-size: 14px;
+    margin:0;
+    padding:0;
+    outline: none;
+    box-sizing: border-box;
+    -webkit-box-sizing:border-box;
+    -webkit-font-smoothing: antialiased;
+}
+html,body{ width: 100%;height: 100%;margin:0;padding:0; }
+body {
+    line-height: 1.8;
+    position: relative;
+}
+.header{
+    display: block;
+    width: 100%;
+    height: 80px;
+    line-height: 80px;
+    background: #007dbc;
+    position: relative;
+    font-size: 20px;
+    font-weight: normal;
+    color: #fff;
+    text-align: center;
+    border-bottom: solid 3px #DCEFFF;
+}
+.header:before{
+    content: url(../images/cignacmb_logo.png);
+    display: block;
+    position: absolute;
+    left: 20px;
+    top: 11px;
+}
+
+.wrapper{
+    width: 100%;
+    padding: 10px;
+}
+
+/*login page*/
+.login-main{
+    padding-top: 100px;
+}
+.login-main .form-group{
+    width: 100%;
+    margin: 10px auto;
+    width: 350px;
+}
+.login-main .form-group label{
+    display: block;
+    position: relative;
+    margin: 0 auto;
+}
+.login-main .form-group input{
+    display: block;
+    margin: 10px auto;
+    padding: 0 35px;
+    width: 350px;
+    height: 40px;
+    line-height: 40px;
+    border: solid rgba(216, 216, 216, 0.62) 1px;
+    box-shadow: 0 0 0 2px rgba(208, 208, 208, 0.12);
+}
+.login-main .form-group input[type="submit"]{
+    width: 150px;
+    margin: 0;
+    color: white;
+    font-size: 1.2rem;
+    background-image:-webkit-linear-gradient(to bottom,rgb(0, 153, 230) 0,#007dbc 100%);
+    background-image:linear-gradient(to bottom,rgb(0, 153, 230) 0,#007dbc 100%)
+}
+.login-main .form-group input:focus{
+    border: solid #6FBCF9 1px;
+    box-shadow: 0 0 1px 2px rgba(3, 169, 244, 0.25);
+}
+.login-main .form-group input[type="submit"]:focus{
+    background-image:-webkit-linear-gradient(to bottom,rgb(0, 153, 230) 0,#03699C 100%);
+    background-image:linear-gradient(to bottom,rgb(0, 153, 230) 0,#03699C 100%)
+}
+.login-main .form-group label:before{
+    display: block;
+    width: 32px;
+    height: 32px;
+    font-family: icomoon;
+    position: absolute;
+    left: 3px;
+    font-size: 1.6rem;
+    color: #757575;
+    text-align: center;
+}
+.login-main .form-group label.name:before{
+    content: "\e901";
+}
+.login-main .form-group label.pwd:before{
+    content: "\e903";
+}
+
+/*new page*/
+.left.center,
+.right.center{
+    width: 48%;
+    margin: 0 1%;
+}
+.wrapper .cpanel{
+    margin: 5px auto;
+}
+.wrapper .cpanel .content-body{
+    padding: 10px;
+}
+.cpanel.full{
+    width: 98%;
+    margin: 0 auto;
+}
+
+.cpanel p{ margin: 3px auto; }
+.cpanel span{
+    display: inline-block;
+    width: 25%;
+    text-align: left;
+}
+.cpanel.question .topic{
+    position: relative;
+    padding: 10px 0;
+    border-bottom: solid 1px #ECECEC;
+}
+.cpanel.question .topic p{
+    width: 92%;
+}
+.cpanel.question .topic label{
+    position: absolute;
+    right: 0;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    -moz-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+.cpanel input{
+    display: inline-block;
+    width: 55%;
+    border: solid #D1D1D1 1px;
+    padding: 0 5px;
+}
+.cpanel input:focus{
+    border: solid #B3D1FF 1px;
+    box-shadow: 0 0 1px 1px rgba(107, 181, 241, 0.18)
+}
+.cpanel input[type="radio"],
+.cpanel input[type="checkbox"]{
+    display: inline;
+    width: auto;
+}
+.cpanel select{
+    display: inline-block;
+    width: 17.85%;
+}
+.cpanel.p3{
+    padding: 30px 0 50px 0;
+}
+.cpanel.p3 p{
+    margin: 10px auto;
+}
+.cpanel.p3 button{
+    display: inline-block;
+    width: 150px;
+    padding: 10px 0;
+    color: white;
+}
+.cpanel.p3.p4 button{
+    width: 100px;
+    padding: 5px 0;
+    color: black;
+}
+.cpanel.p3 a{
+    display: inline-block;
+    padding: 10px 0;
+    margin: 0 10px;
+    text-decoration: underline;
+    color: blue;
+}
+.cpanel.p3 .premium,
+.cpanel.p3 .premium *{
+    font-size: 16px;
+}
+.cpanel.p3 em{
+    font-style: normal;
+    font-weight: bold;
+}

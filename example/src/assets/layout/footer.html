@@ -1,0 +1,16 @@
+
+    <!--server loading-->
+    <div class="server-loading loading" id="request-tip" style="display: none;"></div>
+
+    <!--载入js-->
+    <script src="{{ @path }}module/main.js?_toHash"></script>
+    <script src="{{ @path }}{{ @view }}?_toHash"></script>
+    <!--<script type="text/javascript"
+            data-main="{{ @path }}module/main.js"
+            data-module="{{ @path }}{{ @module }}"
+            data-view="{{ @path }}{{ @view }}"
+            src="{{ @path }}assets/js/require/require.min.js" ignore>
+    </script>-->
+
+</body>
+</html>

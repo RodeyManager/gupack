@@ -1,0 +1,36 @@
+html,body,h1,h2,h3,h4,h5,h6,hr,p,iframe,dl,dt,dd,ul,ol,li,pre,form,fieldset,button,input,textarea,th,td,blockquote,legend{margin:0;padding:0}
+body, button, input, select, textarea {	font:12px/1.5 arial, 'Hiragino Sans GB', \5FAE\8F6F\96C5\9ED1, \5b8b\4f53, sans-serif;}
+body{ color:#333;background-color: white;}
+h1, h2, h3, h4, h5, h6 {font-size:100%;}
+address, cite, dfn, em, var {font-style:normal;}
+code, kbd, pre, samp {font-family:courier new, courier, monospace;}
+hr{border:0;height:1px}
+button{ border:0;}
+small {	font-size:12px;}
+ol, ul {list-style:none;}
+a {	text-decoration:none; color:#555;}
+a:hover {text-decoration:none;}
+sub, sup {font-size:75%;line-height:0;position:relative;vertical-align:baseline;}
+sup {top:-.05em}
+sub {bottom:-.25em}
+legend {color:#000;}
+fieldset, img {	border:0; max-width: 100%; }
+img{vertical-align:middle;}/*html5 doctype have 3px padding*/
+button, input, select, textarea {font-size:100%;}
+table {	border-collapse:collapse;border-spacing:0;}
+s,b{ text-decoration:none;}
+img{ display: block; outline: none; }
+
+textarea {overflow: auto; vertical-align: top;}
+button,html input[type="button"],input[type="reset"],input[type="submit"] {
+    -webkit-appearance: button; cursor: pointer; *overflow: visible;}
+button::-moz-focus-inner,input::-moz-focus-inner {border: 0;padding: 0;}
+input[type="text"]::-webkit-input-placeholder,
+input[type="password"]::-webkit-input-placeholder
+{ color: #b3b3b3; }
+
+/* HTML5 */
+article,aside,details,figcaption,figure,footer,header,hgroup,main,nav,section,summary { display: block;}
+audio,canvas,video { display: inline-block; *display: inline; *zoom: 1;}
+audio:not([controls]) { display: none; height: 0;}
+[hidden] { display: none;}

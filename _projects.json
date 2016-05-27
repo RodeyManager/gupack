@@ -1,0 +1,12 @@
+{
+  "projectList": {
+    "test": {
+      "project": "../example/test",
+      "path": "src/gulp-config.js"
+    },
+    "pack": {
+      "config": "src/gulp-config.js",
+      "path": "D:\\Sites\\test\\pack"
+    }
+  }
+}
