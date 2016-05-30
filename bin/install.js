@@ -7,6 +7,7 @@ var shell = 'npm install';
 var isG = T.argv['g'] != null;
 var isSave = T.argv['save'] != null;
 var isSaveDev = T.argv['save-dev'] != null;
+var isForce = T.argv['force'] != null;
 
 //install as npm install
 function install(){
@@ -31,8 +32,9 @@ function execute(){
         shell += ' -g';
     if(isSaveDev)
         shell += ' --save-dev';
-    if(isSave)
-        shell += ' --save';
+    if(isForce)
+        shell += ' --force';
+    //console.log('shell ==== ' + shell);
     T.exec(shell, {cwd: from}, function(error, stdout, stderr){
         if(error)   T.log.red(error);
         if(stdout)  T.log.green(stdout);

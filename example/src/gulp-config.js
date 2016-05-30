@@ -6,24 +6,13 @@ var env = 'std';
 var vQueryKey = '_cmbx_';
 
 var config = {
-    //执行任务前，需要进行清理的,如果不配置，则将以编译目录下的所有文件
-    //clean: ['**/*.html', 'assets/**', 'module/**'],
-    //需要执行的任务列表
-    task: [
-        //'build.css',
-        //'build.modules',
-        //'build.main',
-        //'build.libs',
-        ////'build.html',
-        //'build.assets'
-    ],
     //当前编译环境: stg: 测试环境(默认); int: 开发环境; prd: 生成环境
     env: env,
     //源文件路径, 默认为 src
     source: 'src',
     //编译产出路径, 默认为 build
     build: 'build',
-    //对应task中的任务
+    //task任务列表
     builds: {
         //---说明：单个任务配置
         'build.css': {
@@ -68,19 +57,47 @@ var config = {
             loader: {},
             watch: [ 'modules/**/*']
         },
-        //'build.html': {
-        //    src: ['{{source}}views/**/*.html'],
-        //    filters: [],
-        //    out: {dir: '{{build}}'},
-        //    //是否压缩html文件
-        //    htmlminify: false,
-        //    //是否将link样式改成style标签映入
-        //    cssInline: true,
-        //    //是否将script引入外部脚本插入页面中
-        //    jsInline: true,
-        //    //是否开发页面之间引入
-        //    htmlInclude: true
-        //},
+
+        'build.html': {
+            src: ['views/**/*.html'],
+            filters: [],
+            dest: '',
+            loader: {
+                'gulp-tag-include': null,
+                'gulp-html-inline': null,
+                'gulp-recache': {
+                    queryKey: vQueryKey,
+                    //hash值长度
+                    hashSize: 8,
+                    //超找类名，将此tag上的image转为base64
+                    toBase64: ['to-base64'],
+                    //相对当前文件的toPredir路径进行查找
+                    //如 当前文件路径是 project/src/views/index.html
+                    //而 index.html中的 img地址都是 assets/images...的
+                    // views 与 assets 是同级的
+                    /**
+                     * 目录结构是这样的:
+                     * src
+                     *    assets
+                     *         css
+                     *         images
+                     *    views
+                     *         index.html
+                     *    module
+                     */
+                    toPredir: {
+                        css: '../../build/',
+                        image: '../'
+                    }
+                },
+                'gulp-minify-html': {
+                    _if: env === 'prd',
+                    empty: true,       //去除空属性
+                    comments: false,    //去除html注释
+                    Spare: false        //属性值保留引号
+                }
+            }
+        },
 
         'build.main': {
             src: [
@@ -115,6 +132,12 @@ var config = {
         'build.images': {
             src: 'assets/images/**/*',
             dest: 'assets/images'
+        },
+
+        //模拟数据
+        'build.mockData': {
+            src: 'assets/mockData/**/*',
+            dest: 'assets/mockData'
         },
 
         'build.js': {

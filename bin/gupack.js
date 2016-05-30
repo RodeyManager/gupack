@@ -19,6 +19,7 @@ program
     .option('create', '\u521b\u5efa\u4e00\u4e2a\u9879\u76ee; EXP: gupack create mall')
     .option('add', '\u6dfb\u52a0\u9879\u76ee; EXP: gupack add mall D:\\Sites\\mall')
     .option('remove', '\u79fb\u9664\u9879\u76ee; EXP: gupack remove mall')
+    .option('delete', '\u79fb\u9664\u9879\u76ee\uff0c\u5e76\u5220\u9664\u672c\u5730\u78c1\u76d8\u76ee\u5f55; EXP: gupack delete mall')
     .option('list', '\u67e5\u770b\u6240\u6709\u9879\u76ee; EXP: gupack list')
     .option('install', '\u5b89\u88c5gulp\u63d2\u4ef6; EXP: gupack install gulp-rename')
     .option('uninstall', '\u5378\u8f7dgulp\u63d2\u4ef6; EXP: gupack uninstall gulp-rename')
@@ -64,7 +65,14 @@ else if(argv._.indexOf('add') !== -1){
 //remove project in projects file
 else if(argv._.indexOf('remove') !== -1){
 
-    require('./add').remove();
+    require('./add').removeProject();
+
+}
+
+//remove project in projects file
+else if(argv._.indexOf('delete') !== -1){
+
+    require('./add').deleteProject();
 
 }
 

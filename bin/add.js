@@ -62,28 +62,12 @@ function add(){
 }
 
 //gupack remove
-function remove(){
-    var name = T.argv._[1];
+function removeProject(){
+    _delete();
+}
 
-    if(!name || '' === name){
-        T.log.red('\u672a\u6307\u5b9a\u9879\u76ee');
-    }else{
-        _delete();
-    }
-
-    function _delete(){
-        projectList['projectList'][name] = null;
-        delete projectList['projectList'][name];
-
-        var content = JSON.stringify(projectList, null, 2);
-        T.fs.writeFileSync(T.Path.resolve(__dirname, '..', '_projects.json'), content);
-
-        T.log.green('\n\r  \u5220\u9664\u6210\u529f\uff01');
-        T.log.cyan('\u5df2\u5b58\u5728\u7684\u9879\u76ee\u5217\u8868:  ');
-        Object.keys(projectList['projectList']).forEach(function(project){
-            T.log.green('\t' + project);
-        });
-    }
+function deleteProject(){
+    _delete(true);
 }
 
 // gupack create
@@ -105,6 +89,40 @@ function _add(name, project){
     T.fs.writeFileSync(T.Path.resolve(__dirname, '..', '_projects.json'), projectList);
 }
 
+function _delete(flag){
+    var name = T.argv._[1];
+
+    if(!name || '' === name){
+        T.log.red('\u672a\u6307\u5b9a\u9879\u76ee');
+        return false;
+    }
+
+    var path = projectList['projectList'][name]['path'];
+    projectList['projectList'][name] = null;
+    delete projectList['projectList'][name];
+
+    var content = JSON.stringify(projectList, null, 2);
+    T.fs.writeFileSync(T.Path.resolve(__dirname, '..', '_projects.json'), content);
+
+    T.log.green('\n\r  \u5220\u9664\u6210\u529f\uff01');
+    T.log.cyan('\u5df2\u5b58\u5728\u7684\u9879\u76ee\u5217\u8868:  ');
+    Object.keys(projectList['projectList']).forEach(function(project){
+        T.log.green('\t' + project);
+    });
+
+    if(flag){
+        //delete directory
+        if(T.fs.existsSync(path)){
+            T.fsa.remove(path, function(err){
+                if(err) T.log.red(err);
+            });
+        }else{
+            T.log.green('\n\r  \u9879\u76ee\u76ee\u5f55\u4e0d\u5b58\u5728');
+        }
+    }
+
+}
+
 function _isInProject(name){
     return null != projectList['projectList'][name];
 }
@@ -112,6 +130,7 @@ function _isInProject(name){
 module.exports = {
     add: add,
     addCreate: addCreate,
-    remove: remove,
+    removeProject: removeProject,
+    deleteProject: deleteProject,
     isInProject: _isInProject
 };

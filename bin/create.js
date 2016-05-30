@@ -20,22 +20,25 @@ function createProject(name, from, to){
         }], function(err, result){
             if(/^y|yes|ok|\u662f$/i.test(result.ok)){
                 _createProject(name, from, to);
+                prompt.stop();
+            }else{
+                prompt.stop();
             }
         });
 
     }else{
         _createProject(name, from, to);
+        prompt.stop();
     }
 
-    prompt.stop();
 }
 
 function _createProject(name, from, to){
 
     var directory,
         dirs = [null, 'src', 'build'],
-        assetsDirs = [null, 'css', 'js', 'js/SYST', 'fonts', 'components', 'layout', 'images'],
-        modulesDirs = [null, 'index', 'login'],
+        assetsDirs = [null, 'css', 'js', 'js/SYST', 'fonts', 'components', 'components/legalSelector', 'layout', 'images', "mockData"],
+        modulesDirs = [null, 'index', 'passport'],
         viewsDirs = [null];
 
     //判断当前文件夹是否存在
@@ -85,7 +88,7 @@ function _createProject(name, from, to){
     function _loadFiles(){
 
         var loadTemplates = require('../_templates.js');
-        var otherRegx = /\.(jpg|jpeg|png|gif|webpg|svg|eot|ttf|woff)+?/i;
+        var otherRegx = /\.(jpg|jpeg|png|gif|webpg|svg|eot|ttf|woff|mp3|wma)+?/i;
 
         Object.keys(loadTemplates).forEach(file => {
 
@@ -103,10 +106,14 @@ function _createProject(name, from, to){
 }
 
 function load$(from, to){
-    if(T.argv['$'] || T.argv['terminal']){
-        var $ns = (T.argv['$'] || T.argv['terminal']).split('@'),
-            $name = $ns[0],
-            $version = $ns[1];
+
+    var $name = 'jquery', $version, $ns;
+    var $terminal = T.argv['$'] || T.argv['terminal'];
+
+    if($terminal && '' !== $terminal){
+        $ns = $terminal.split('@');
+        $name = $ns[0] || 'jquery';
+        $version = $ns[1];
 
         //如果指定了版本号
         if(/^jquery$/i.test($name)){
@@ -118,18 +125,19 @@ function load$(from, to){
             $name = 'jquery';
         }
 
-        //创建对应的目录
-        var tot = T.Path.resolve(to, 'src/assets/js', $name);
-        mkdir(tot);
-
-        var $content = loadTemplateFile('assets/js/' + $name + '/' + $name + '.js');
-        writeTemplateFile(T.Path.resolve(tot, $name + '.js'), $content);
-
-        var gulpConfig = loadTemplateFile('gulp-config.js');
-        gulpConfig = gulpConfig.replace(/\{\{@_\$\$_\}\}/gi, $name);
-        writeTemplateFile(T.Path.resolve(to, 'src/gulp-config.js'), gulpConfig);
-
     }
+
+    //创建对应的目录
+    var tot = T.Path.resolve(to, 'src/assets/js', $name);
+    mkdir(tot);
+
+    var $content = loadTemplateFile('assets/js/' + $name + '/' + $name + '.js');
+    writeTemplateFile(T.Path.resolve(tot, $name + '.js'), $content);
+
+    var gulpConfig = loadTemplateFile('gulp-config.js');
+    gulpConfig = gulpConfig.replace(/\{\{@_\$_\}\}/gi, $name);
+    writeTemplateFile(T.Path.resolve(to, 'src/gulp-config.js'), gulpConfig);
+
 }
 
 function loadSYST(from, to){

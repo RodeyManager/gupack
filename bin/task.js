@@ -17,7 +17,7 @@ function task(){
 //gulp default
 function start(){
 
-    var projectName = T.argv['p'] || T.argv['project'] || T.Path.parse(process.cwd())['name'];
+    var projectName = T.argv._[1] || T.argv['p'] || T.argv['project'] || T.Path.parse(process.cwd())['name'];
     shell += ' -p ' + projectName;
     //console.log(shell);
 
@@ -26,10 +26,15 @@ function start(){
 
 function execute(){
 
-    T.exec(shell, {cwd: from}, function(error, stdout, stderr){
-        if(error)   T.log.red(error);
-        if(stdout)  T.log.green(stdout);
+    var gulpExec = T.exec(shell, {cwd: from});
+    gulpExec.stdout.on('data', function(data){
+        process.stdout.write('\x1b[32m' + data + '\x1b[39m');
     });
+
+    gulpExec.on('exit', function(code){
+        process.exit(1);
+    });
+
 }
 
 

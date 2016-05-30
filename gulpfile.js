@@ -6,10 +6,6 @@ var gulp            = require('gulp'),
     watch           = require('gulp-watch'),
     plumber         = require('gulp-plumber'),
     sourcemaps      = require('gulp-sourcemaps'),
-    htmlInclude     = require('gulp-tag-include'),
-    htmlMinify      = require('gulp-minify-html'),
-    htmlInline      = require('gulp-html-inline'),
-    reCache         = require('gulp-recache'),
     del             = require('del'),
     util            = require('util'),
     fse             = require('fs-extra'),
@@ -139,7 +135,6 @@ if(util.isObject(builds)){
 
 }
 
-
 //加载文件
 function loadSource(source, pathPrefix, nos){
     nos = nos || '';
@@ -163,7 +158,7 @@ watches && gulp.task('watch', function(){
 
 //合并当前项目指定的task数组
 function isTask(taskname){
-    return proConfig.task && proConfig.task.indexOf(taskname) !== -1;
+    return tasks.indexOf(taskname) !== -1;
 }
 
 //添加监听任务

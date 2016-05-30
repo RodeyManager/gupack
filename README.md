@@ -1,15 +1,15 @@
 
 ## Features
 
-+ åŸºäºgulpçš„å‰ç«¯æ„å»ºå·¥å…·
++ »ùÓÚgulpµÄÇ°¶Ë¹¹½¨¹¤¾ß
 
 ## Usage
 
 ```javascript
 
     npm install -g gupack
-    
+
 ```
 
 #License
-[ISC License](http://en.wikipedia.org/wiki/ISC_License)
+[MIT License](https://en.wikipedia.org/wiki/MIT_License)
