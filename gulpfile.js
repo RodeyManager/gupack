@@ -8,13 +8,11 @@ var gulp            = require('gulp'),
     sourcemaps      = require('gulp-sourcemaps'),
     del             = require('del'),
     util            = require('util'),
-    fse             = require('fs-extra'),
     tool            = require('./lib/tools');
 
 
 //获取配置
 var projects = require('./projects.js');
-var args = process.argv.slice(2);
 var resolve = tool.Path.resolve;
 
 //指定项目列表文件
@@ -27,7 +25,7 @@ var resolve = tool.Path.resolve;
 
 
 //变量
-var proName, proOpt, company, projectPath, basePath, sourcePath, buildPath,
+var proName, proOpt, projectPath, basePath, sourcePath, buildPath,
     proConfig, tasks, builds, watches = {}, env, cleans;
 
 //指定构建的项目名称, 在gulp后面传递参数

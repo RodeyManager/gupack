@@ -1,11 +1,11 @@
 {
   "name": "gupack",
-  "version": "1.0.31",
-  "description": "(»ùÓÚgulpµÄÇ°¶Ë¹¹½¨¹¤¾ß)Based on the front-end build tools of gulp",
+  "version": "1.0.32",
+  "description": "(åŸºäºgulpçš„å‰ç«¯æ„å»ºå·¥å…·)Based on the front-end build tools of gulp",
   "keyword": "gulp, webpack",
   "author": "Rodey",
   "license": {
-    "name": "ISC",
+    "name": "MIT",
     "url": "https://en.wikipedia.org/wiki/MIT_License"
   },
   "bin": {
