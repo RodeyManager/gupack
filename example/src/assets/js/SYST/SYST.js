@@ -21,7 +21,7 @@
     var SYST = {}; //function(){};
 
     //框架属性
-    SYST.VERSION = '2.0.3';
+    SYST.VERSION = '2.0.4';
     SYST.AUTHOR = 'Rodey Luo';
 
     //判断是否有jquery，zepto插件
@@ -156,7 +156,7 @@
         isNumber    : function(value){      return typeof value === 'number'; },
         isArray     : function(value){      return toString.call(value) === '[object Array]'; },
         isDate      : function(value){      return toString.call(value) === '[object Date]'; },
-        isObject    : function(value){      return value != null && typeof value === 'object'; },
+        isObject    : function(value){      return toString.call(value) === '[object Object]'; },
         isFunction  : function(value){      return typeof value === 'function'; },
         isFile      : function(value){      return toString.call(value) === '[object File]'; },
         isBlob      : function(value){      return toString.call(value) === '[object Blob]'; },
@@ -473,7 +473,10 @@
             //var search = (url ? url.split('?')[1] : location.search || location.href.split('?')[1]).replace(/^\?/, '');
             var search = '';
             if(!SYST.V.isEmpty(url)){
-                search = url.split(grap)[1] || '';
+                if(/\?+/i.test(url))
+                    search = url.split(grap)[1] || '';
+                else
+                    search = url;
             }else{
                 search = location.href.split(grap)[1];
             }
@@ -523,6 +526,8 @@
             s = s.substr(1);
             return (flag === true) ? '?'+ s : s;
         },
+        serialize: function(object, flag){ return this.paramData(object, flag); },
+        unserialize: function(str){ return this.params(null, str); },
         /**
          * 跳转
          * @param url       地址
@@ -536,6 +541,7 @@
                 url = url + SYST.T.paramData(params, true);
             location.href = url;
         },
+        redirect: function(url, params){ this.jumpTo(url, params); },
 
         /**
          * 组装字符串
@@ -590,8 +596,33 @@
             }
             return null;
         },
-        getCookie: function(key){ return this.Cookie(key); },
-        setCookie: function(key, value, options){ this.Cookie(key, value, options) },
+        _Cookies: function(keys, options){
+            var self = this;
+            if(!keys) return;
+            if(SYST.V.isObject(keys)){
+                Object.keys(keys).forEach(function(key){
+                    self.Cookie(key, keys[key], options);
+                });
+            }
+            else if(SYST.V.isArray(keys)){
+                var rs = {}, name;
+                for(var i = 0, len = keys.length; i < len; ++i){
+                    name = keys[i];
+                    rs[name] = self.getCookie(name);
+                }
+                return rs;
+            }
+        },
+        getCookie: function(key){
+            return SYST.V.isString(key)
+                ? this.Cookie(key)
+                : this._Cookies(key);
+        },
+        setCookie: function(key, value, options){
+            return SYST.V.isString(key)
+                ? this.Cookie(key, value, options)
+                : this._Cookies(key, options);
+        },
 
         /**
          * 遍历对象
@@ -668,8 +699,8 @@
         then: function(fulfil, reject){
             //this.STATE = 'pending';
             if(this.STATE === PENDING){
-                fulfil && SYST.V.isFunction(fulfil) && this._fulfils.push(fulfil);
-                reject && SYST.V.isFunction(reject) && this._rejecteds.push(reject);
+                SYST.V.isFunction(fulfil) && this._fulfils.push(fulfil);
+                SYST.V.isFunction(reject) && this._rejecteds.push(reject);
             }
             else if(this.STATE === FULFILLED){
                 this.resolve();
@@ -918,6 +949,58 @@
          */
         doAjax: function(url, postData, su, fail, options){
             this.doRequest(url, postData, su, fail, options);
+        },
+
+        /**
+         * HTML5 fetch api
+         */
+        fetch: (function(){
+            //throw new ReferenceError('fetch api is not support!');
+            return function(url, init, type){
+                init = init || {};
+                var headers = init['headers'] || {},
+                    method = (init['method'] || 'post').toUpperCase(),
+                    body = init['body'];
+                if(!'fetch' in window){
+                    var p = new SYST.Promise();
+                    var setting = $.extend(init, {
+                        url: url,
+                        data: body,
+                        type: method,
+                        dataType: type,
+                        success: function(res){ p.resolve(res); },
+                        error: function(err){   p.reject(err);  }
+                    });
+                    _$.ajax(setting);
+                    return p;
+                }else{
+                    if(method == 'GET' || method == 'HEAD'){
+                        if(SYST.V.isObject(body))
+                            url += SYST.T.paramData(body, true);
+                        else if(SYST.V.isString(body))
+                            url += '?' + body;
+                        init['body'] = null;
+                        delete init['body'];
+                    }else{
+                        SYST.V.isObject(body) && (init['body'] = JSON.stringify(body));
+                    }
+                    return window['fetch'](url, init).then(function(res){
+                        return (SYST.V.isFunction(res[type]) && res[type]());
+                    });
+                }
+            };
+        })(),
+
+        /**
+         * HTML5 WebSockets Object
+         * @param uri
+         * @param options
+         * @returns {WebSocket}
+         */
+        socket: function(uri, options){
+            if(!'WebSocket' in window)
+                throw new ReferenceError('WebSocket api is not support!');
+            return new WebSocket(uri, options);
         }
 
     }
@@ -1175,7 +1258,13 @@
 
     'use strict';
 
-    var evts = "abort reset click dblclick tap touchstart touchmove touchend change mouseover mouseout mouseup mousedown mousemove mousewheel drag dragend dragenter dragleave dragover dragstart drop resize scroll submit select keydown keyup keypress touchstart touchend load unload blur focus contextmenu formchange forminput input invalid afterprint beforeprint beforeonload haschange message offline online pagehide pageshow popstate redo storage undo canplay canplaythrough durationchange emptied ended loadeddata loadedmetadata loadstart pause play playing progress ratechange readystatechange seeked seeking stalled suspend timeupdate volumechange waiting cut copy paste".split(/\s+/gi);
+    var evts = (function(){
+        var events = [],
+            div = document.createElement('div');
+        for(var key in div)
+            (/^on/i.test(key)) && events.push(key.substr(2));
+        return events;
+    })();
 
     var _hoadEvent = SYST.T.hoadEvent;
 
@@ -1186,11 +1275,11 @@
         //对象事件侦听
         for(var i = 0; i < evts.length; i++){
             if(evts[i] === evt){
-                if(obj.selector == window || obj.selector == 'window'){
+                if(_isWindow(obj.selector)){
                     (type == 'on')
                         ? $(window).off().on(evt, _hoadEvent(pobj, func))
                         : $(window).off(evt, _hoadEvent(pobj, func));
-                }else if(obj.selector == document || obj.selector == 'document' || obj.selector == 'html' || obj.selector == 'body'){
+                }else if(_isBuilt(obj.selector)){
                     (type == 'on')
                         ? $(obj.selector).off().on(evt, _hoadEvent(pobj, func))
                         : $(obj.selector).off(evt, _hoadEvent(pobj, func));
@@ -1202,7 +1291,14 @@
                 }
             }
         }
+    }
 
+    function _isBuilt(selector){
+        return selector == document || selector == 'document' || selector == 'html' || selector == 'body';
+    }
+
+    function _isWindow(selector){
+        return selector == window || selector == 'window';
     }
 
     /**
@@ -1221,9 +1317,9 @@
         _listener(obj, pobj, evt, func, type, trigger);
     };
     Events.uninitEvent = function(selector, event, func, trigger){
-        if (selector == window || selector == 'window') {
+        if (_isWindow(selector)) {
             $(window).off(event, func);
-        } else if (selector == document || selector == 'document' || selector == 'html' || selector == 'body') {
+        } else if (_isBuilt(selector)) {
             $(selector).off(event, func);
         } else {
             $(trigger).undelegate(selector, event, func);
@@ -2471,7 +2567,7 @@
         defaultHost: location.host,
         shareModel: SYST.shareModel,
         _initialize: function(){
-            this.init && this.init.apply(this, arguments);
+            SYST.V.isFunction(this.init) && this.init.apply(this, arguments);
         },
         getModel: function(key){
             if(key)     return this.shareModel.get(key);

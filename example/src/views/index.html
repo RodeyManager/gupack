@@ -1,16 +1,16 @@
 <!--build header-->
 <include src="../assets/layout/header.html"
-         title="万能险">
+         title="GuPack">
 </include>
 
-    <header class="header">信息录入新增</header>
-    <div class="wrapper" st-model="indexModel">
-        <section class="items">
-
+    <header class="header">首页</header>
+    <div class="wrapper">
+        <section class="items" st-model="loginModel">
+            <h1>欢迎，{{ name }} </h1>
         </section>
     </div>
 
 <!--build footer-->
 <include src="../assets/layout/footer.html"
-         view="">
+         view="modules/passport/loginView.js">
 </include>

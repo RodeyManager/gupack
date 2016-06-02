@@ -8,7 +8,12 @@
     -webkit-box-sizing:border-box;
     -webkit-font-smoothing: antialiased;
 }
-html,body{ width: 100%;height: 100%;margin:0;padding:0; }
+html,body{
+    width: 100%;
+    height: 100%;
+    margin:0;
+    padding:0;
+}
 body {
     line-height: 1.8;
     position: relative;
@@ -18,16 +23,16 @@ body {
     width: 100%;
     height: 80px;
     line-height: 80px;
-    background: #007dbc;
+    background: #00BCB5;
     position: relative;
     font-size: 20px;
     font-weight: normal;
     color: #fff;
     text-align: center;
-    border-bottom: solid 3px #DCEFFF;
+    border-bottom: solid 3px rgb(228, 255, 254);
 }
 .header:before{
-    content: url(../images/cignacmb_logo.png);
+    content: 'Gupack'; /*url(../images/cignacmb_logo.png);*/
     display: block;
     position: absolute;
     left: 20px;
@@ -62,22 +67,23 @@ body {
     line-height: 40px;
     border: solid rgba(216, 216, 216, 0.62) 1px;
     box-shadow: 0 0 0 2px rgba(208, 208, 208, 0.12);
+    transition: all 0.1s ease-in-out;
 }
 .login-main .form-group input[type="submit"]{
     width: 150px;
     margin: 0;
     color: white;
     font-size: 1.2rem;
-    background-image:-webkit-linear-gradient(to bottom,rgb(0, 153, 230) 0,#007dbc 100%);
-    background-image:linear-gradient(to bottom,rgb(0, 153, 230) 0,#007dbc 100%)
+    background-image:-webkit-linear-gradient(to bottom, #00E6E6 0, #00B3BC 100%);
+    background-image: linear-gradient(to bottom, #00E6E6 0, #00B3BC 100%);
 }
 .login-main .form-group input:focus{
-    border: solid #6FBCF9 1px;
-    box-shadow: 0 0 1px 2px rgba(3, 169, 244, 0.25);
+    border: solid #00BCB5 1px;
+    box-shadow: 0 0 1px 2px rgb(213, 255, 253);
 }
 .login-main .form-group input[type="submit"]:focus{
-    background-image:-webkit-linear-gradient(to bottom,rgb(0, 153, 230) 0,#03699C 100%);
-    background-image:linear-gradient(to bottom,rgb(0, 153, 230) 0,#03699C 100%)
+    background-image:-webkit-linear-gradient(to bottom, #00E6E6 0, #00A1A9 100%);
+    background-image:linear-gradient(to bottom, #00E6E6 0, #00A1A9 100%);
 }
 .login-main .form-group label:before{
     display: block;

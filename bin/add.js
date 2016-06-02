@@ -97,6 +97,11 @@ function _delete(flag){
         return false;
     }
 
+    if(!projectList['projectList'][name]){
+        T.log.red('\u5f53\u524d\u9879\u76ee\u4e0d\u5b58\u5728');
+        return false;
+    }
+
     var path = projectList['projectList'][name]['path'];
     projectList['projectList'][name] = null;
     delete projectList['projectList'][name];

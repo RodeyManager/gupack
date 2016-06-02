@@ -2,6 +2,7 @@
 var T = require('../lib/tools');
 var Add = require('./add');
 var prompt = require('prompt');
+var loadTemplates = require('../_templates.js');
 
 /**
  * 创建新项目
@@ -41,16 +42,7 @@ function _createProject(name, from, to){
         modulesDirs = [null, 'index', 'passport'],
         viewsDirs = [null];
 
-    //判断当前文件夹是否存在
-    if(T.fs.existsSync(to)){
-        //console.log('  \x1b[31m\u5f53\u524d\u6587\u4ef6\u5939\u5df2\u5b58\u5728\x1b[39m \n\r');
-        //T.exit(1);
-
-        //T.del.sync(to, { force: true });
-        _create();
-    }else{
-        _create();
-    }
+    _create();
 
     //创建文件夹
     function _create(){
@@ -75,29 +67,11 @@ function _createProject(name, from, to){
         });
 
         //复制模板
-        _loadFiles();
-        load$(from, to);
-        loadSYST(from, to);
+        _loadFiles(from, to);
+        _load$(from, to);
 
         //将新增加的项目添加到 项目列表文件中 _projects.json
         Add.addCreate(name);
-
-    }
-
-    //创建模板文件
-    function _loadFiles(){
-
-        var loadTemplates = require('../_templates.js');
-        var otherRegx = /\.(jpg|jpeg|png|gif|webpg|svg|eot|ttf|woff|mp3|wma)+?/i;
-
-        Object.keys(loadTemplates).forEach(file => {
-
-            var template = loadTemplates[file];
-            var content = otherRegx.test(T.Path.basename(template.source)) ? loadFile(template.source) : loadTemplateFile(template.source);
-            //console.log(content);
-            writeTemplateFile(T.Path.resolve(to, 'src', template.dest), content);
-
-        });
 
     }
 
@@ -105,7 +79,23 @@ function _createProject(name, from, to){
 
 }
 
-function load$(from, to){
+//创建模板文件
+function _loadFiles(from, to){
+
+    var otherRegx = /\.(jpg|jpeg|png|gif|webpg|svg|eot|ttf|woff|mp3|wma)+?/i;
+
+    Object.keys(loadTemplates).forEach(file => {
+
+        var template = loadTemplates[file];
+        var content = otherRegx.test(T.Path.basename(template.source)) ? loadFile(template.source) : loadTemplateFile(template.source);
+        //console.log(content);
+        writeTemplateFile(T.Path.resolve(to, 'src', template.dest), content);
+
+    });
+
+}
+
+function _load$(from, to){
 
     var $name = 'jquery', $version, $ns;
     var $terminal = T.argv['$'] || T.argv['terminal'];
@@ -138,15 +128,6 @@ function load$(from, to){
     gulpConfig = gulpConfig.replace(/\{\{@_\$_\}\}/gi, $name);
     writeTemplateFile(T.Path.resolve(to, 'src/gulp-config.js'), gulpConfig);
 
-}
-
-function loadSYST(from, to){
-    //创建对应的目录
-    var tot = T.Path.resolve(to, 'src/assets/js', 'SYST');
-    mkdir(tot);
-
-    var stContent = loadTemplateFile('assets/js/SYST/SYST.js');
-    writeTemplateFile(T.Path.resolve(to, 'src/assets/js/SYST/SYST.js'), stContent);
 }
 
 function mkdir(directory){

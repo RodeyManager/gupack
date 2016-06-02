@@ -1,6 +1,6 @@
 {
   "name": "gupack",
-  "version": "1.0.32",
+  "version": "1.0.33",
   "description": "(基于gulp的前端构建工具)Based on the front-end build tools of gulp",
   "keyword": "gulp, webpack",
   "author": "Rodey",
@@ -46,9 +46,11 @@
     "mkdirp": "^0.5.1",
     "prompt": "^1.0.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "gulp-watch": "^4.3.6"
+  },
   "_npmVersion": "2.15.1",
-  "_npmUser":{
+  "_npmUser": {
     "name": "rodey",
     "email": "rodeyluo@gmail.com"
   }

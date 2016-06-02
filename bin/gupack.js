@@ -13,7 +13,7 @@ program
     .option('-p, --project', '\u6307\u5b9a\u5f53\u524d\u7f16\u8bd1\u7684\u9879\u76ee')
     .option('-l, --list', '\u5217\u51fa\u6240\u6709\u9879\u76ee')
     .option('-d, --buildpath', '\u6307\u5b9a\u7f16\u8bd1\u540e\u7684\u8f93\u51fa\u8def\u5f84')
-    .option('-f, --projectFile', '\u6307\u5b9a\u9879\u76ee\u6587\u4ef6\u5730\u5740')
+    .option('-e, --env', '\u8bbe\u7f6e\u73af\u5883')
     .option('-$, --terminal', '\u6307\u5b9a\u9879\u76ee\u8fd0\u884c\u7684\u7ec8\u7aef\u5e73\u53f0\uff0c\n\r\t\t       ' +
                                 'pc\u5c06\u4f7f\u7528jQuery\uff1bmobile\u5c06\u4f7f\u7528Zepto')
     .option('create', '\u521b\u5efa\u4e00\u4e2a\u9879\u76ee; EXP: gupack create mall')

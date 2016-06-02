@@ -100,6 +100,16 @@ var templates = {
     loginJS: {
         source: 'modules/passport/loginView.js',
         dest: 'modules/passport/loginView.js'
+    },
+
+    //SYST.js
+    systJS: {
+        source: 'assets/js/SYST/SYST.js',
+        dest: 'assets/js/SYST/SYST.js'
+    },
+    systMiniJS: {
+        source: 'assets/js/SYST/SYST.min.js',
+        dest: 'assets/js/SYST/SYST.min.js'
     }
 
 };

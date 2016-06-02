@@ -1,30 +1,27 @@
 
-var path = require('path');
-
-var env = 'std';
+//当前编译环境: stg: 测试环境(默认); int: 开发环境; prd: 生成环境
+var env = 'stg';
 //静态资源版本控制号
 var vQueryKey = '_cmbx_';
 
 var config = {
-    //当前编译环境: stg: 测试环境(默认); int: 开发环境; prd: 生成环境
     env: env,
     //源文件路径, 默认为 src
     source: 'src',
-    //编译产出路径, 默认为 build
+    //编译产出路径，可以是绝对或者相对路径，默认为 build
     build: 'build',
     //task任务列表
     builds: {
         //---说明：单个任务配置
         'build.css': {
-            pathPrefix: 'assets/css',
             src: [
-                'reset.css',
-                'app.css',
-                'public.css',
-                'animate.css',
-                'fonts.css',
-                'media.css',
-                'index.scss'
+                'assets/css/reset.css',
+                'assets/css/app.css',
+                'assets/css/public.css',
+                'assets/css/animate.css',
+                'assets/css/fonts.css',
+                'assets/css/media.css',
+                'assets/css/index.scss'
             ],
             //额外的插件样式，如果不是每个页面都用到，不建议合并到主样式文件中
             //可以单独在使用到的页面中引用
@@ -54,7 +51,9 @@ var config = {
                 'main.js'
             ],
             dest: 'modules',
-            loader: {},
+            loader: {
+                'gulp-uglify': { _if: env === 'prd', preserveComments: '!' }
+            },
             watch: [ 'modules/**/*']
         },
 
@@ -64,7 +63,7 @@ var config = {
             dest: '',
             loader: {
                 'gulp-tag-include': null,
-                'gulp-html-inline': null,
+                'gulp-html-inline': { queryKey: vQueryKey },
                 'gulp-recache': {
                     queryKey: vQueryKey,
                     //hash值长度
@@ -108,7 +107,7 @@ var config = {
             dest: 'modules',
             loader: {
                 'gulp-concat': 'main.js',
-                'gulp-uglify': { _if: (true || env === 'prd'), preserveComments: '!' }
+                'gulp-uglify': { _if: env === 'prd', preserveComments: '!' }
             }
         },
         'build.libs': {
@@ -120,7 +119,7 @@ var config = {
             dest: 'assets/js',
             loader: {
                 'gulp-concat': 'libs.js',
-                'gulp-uglify': { _if: (true || env === 'prd'), preserveComments: '!' }
+                'gulp-uglify': { _if : env === 'prd', preserveComments: '!' }
             }
         },
 

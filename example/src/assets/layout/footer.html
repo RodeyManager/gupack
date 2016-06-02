@@ -3,8 +3,9 @@
     <div class="server-loading loading" id="request-tip" style="display: none;"></div>
 
     <!--载入js-->
-    <script src="{{ @path }}module/main.js?_toHash"></script>
+    <script src="{{ @path }}modules/main.js?_toHash"></script>
     <script src="{{ @path }}{{ @view }}?_toHash"></script>
+    <!--主要用于 requireJS AMD 模块-->
     <!--<script type="text/javascript"
             data-main="{{ @path }}module/main.js"
             data-module="{{ @path }}{{ @module }}"

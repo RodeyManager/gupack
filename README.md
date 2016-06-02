@@ -9,6 +9,8 @@
 
     npm install -g gupack
 
+    gupack --help
+
 ```
 
 #License

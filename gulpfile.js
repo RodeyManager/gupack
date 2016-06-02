@@ -6,60 +6,59 @@ var gulp            = require('gulp'),
     watch           = require('gulp-watch'),
     plumber         = require('gulp-plumber'),
     sourcemaps      = require('gulp-sourcemaps'),
+    watch           = require('gulp-watch'),
     del             = require('del'),
     util            = require('util'),
+    fse             = require('fs-extra'),
     tool            = require('./lib/tools');
 
 
 //获取配置
 var projects = require('./projects.js');
+var cwd = tool.argv['cwdir'] || '';
 var resolve = tool.Path.resolve;
-
-//指定项目列表文件
-(function loadProjects(){
-    var projectFile = tool.getParams('-f', '--projectFile');
-    if(projectFile){
-        projects = require(projectFile);
-    }
-})();
 
 
 //变量
-var proName, proOpt, projectPath, basePath, sourcePath, buildPath,
-    proConfig, tasks, builds, watches = {}, env, cleans;
+var proName, proOpt, company, projectPath, basePath, sourcePath, buildPath,
+    proConfig, tasks, builds, watchers, env, cleans;
 
 //指定构建的项目名称, 在gulp后面传递参数
 proName = tool.argv['p'] || tool.argv['project'];
 //指定构建后的目录
 buildPath = tool.argv['d'] || tool.argv['buildpath'];
+if(buildPath && /^\./i.test(buildPath)){
+    //相对路径
+    buildPath = resolve(cwd, buildPath);
+}
 
 //执行初始化
 (function __init__(){
 
     //项目选项
-        proOpt = projects.projectList[proName];
+    proOpt = projects.projectList[proName];
     if(!proOpt) throw new Error('该项目不存在！');
     //项目根目录
-        basePath = projectPath = proOpt.path;
+    basePath = projectPath = proOpt.path;
     if(proOpt['config']){
         proConfig = require(resolve(basePath, proOpt['config']));
     }else{
         proConfig = proOpt;
     }
     //源文件路径
-        sourcePath = resolve(basePath, (proConfig['source'] || 'src'));
+    sourcePath = resolve(basePath, (proConfig['source'] || 'src'));
     //编译产出路径
-        buildPath = buildPath || resolve(basePath, (proConfig['build'] || 'build'));
+    buildPath = buildPath || tool.getBuildPath(basePath, (proConfig['build'] || 'build'));
     //执行任务前需要清理的
-        cleans = proConfig['clean'] || [buildPath];
+    cleans = proConfig['clean'] || [buildPath];
     //任务列表
-        tasks = proConfig['task'] || [];
+    tasks = proConfig['task'] || [];
     //需要监听
-        watches = proConfig['watch'] || {};
+    watchers = proConfig['watchers'] || {};
     //编译选项
-        builds = proConfig['builds'] || {};
+    builds = proConfig['builds'] || {};
     //指定构建环境 stg: 测试；prd: 生成
-        env = proConfig['env'] || 'stg';
+    env = tool.argv['e'] || tool.argv['env'] || proConfig['env'] || 'stg';
 
 })();
 
@@ -68,7 +67,6 @@ buildPath = tool.argv['d'] || tool.argv['buildpath'];
 
 //缓存插件
 var gulplugins = {};
-
 
 if(util.isObject(builds)){
 
@@ -81,7 +79,7 @@ if(util.isObject(builds)){
         tasks.push(taskName);
 
         //watcher
-        watches[taskName] = loadSource(build['watch'] || build['src'], pathPrefix);
+        watchers[taskName] = loadWatch(build['watch'] || build['src'], pathPrefix);
 
         gulp.task(taskName, () => {
 
@@ -115,7 +113,9 @@ if(util.isObject(builds)){
                 var options = loaders[loader];
                 if(util.isObject(options)){
                     if('_if' in options){
-                        options['_if'] && (stream = stream.pipe(gulplugin(options)));
+                        //如果为生产环境，执行压缩
+                        (options['_if'] || env === 'prd' || env === 'production' )
+                        && (stream = stream.pipe(gulplugin(options)));
                     }else{
                         stream = stream.pipe(gulplugin(options));
                     }
@@ -126,6 +126,7 @@ if(util.isObject(builds)){
 
             //输出
             stream.pipe(gulp.dest(dist));
+            return stream;
 
         });
 
@@ -136,6 +137,7 @@ if(util.isObject(builds)){
 //加载文件
 function loadSource(source, pathPrefix, nos){
     nos = nos || '';
+    pathPrefix = pathPrefix || '';
     if(util.isString(source)){
         source = [nos + resolve(sourcePath, pathPrefix, source)];
     }else{
@@ -146,11 +148,29 @@ function loadSource(source, pathPrefix, nos){
     return source;
 }
 
+function loadWatch(source, pathPrefix){
+    pathPrefix = pathPrefix || '';
+    if(util.isString(source)){
+        source = resolve(sourcePath, pathPrefix, source);
+    }else{
+        source = source.map(function(src){
+            return  resolve(sourcePath, pathPrefix, src);
+        });
+    }
+    return source;
+}
 
 //监听文件变化
-watches && gulp.task('watch', function(){
-    for(var k in watches){
-        isTask(k) && gulp.watch(watches[k], [k]);
+gulp.task('watch', function(){
+    if(watchers){
+        var source, watch;
+        for(var k in watchers){
+            source = watchers[k];
+            watch = gulp.watch(source, [k]);
+        }
+        /*watch.on('change', function(event) {
+            console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
+        });*/
     }
 });
 
