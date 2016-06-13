@@ -19,16 +19,14 @@
     'use strict';
 
     var SYST = {}; //function(){};
-
     //框架属性
-    SYST.VERSION = '2.0.4';
+    SYST.VERSION = '2.0.42';
     SYST.AUTHOR = 'Rodey Luo';
-
     //判断是否有jquery，zepto插件
     try{
         SYST.$ = root.jQuery || root.Zepto || undefined;
     }catch(e){
-        throw new Error('$不存在，请先引入jQuery|Zepto插件，依赖其中一个。' + e);
+        throw new Error('$不存在，请先引入jQuery|Zepto插件，依赖其中一个' + e);
     }
 
     var _clone = function(targetObject){
@@ -71,13 +69,13 @@
             if('__instance_SYST__' in firstArgument){
                 args.shift();
                 for(len = args.length; i < len; ++i){
-                    mg = SYST.extend(mg, args[i]);
+                    mg = _extend(mg, args[i]);
                 }
                 mg.__proto__ = firstArgument;
                 return mg;
             }else{
                 for(len = args.length; i < len; ++i){
-                    mg = SYST.extend(mg, args[i]);
+                    mg = _extend(mg, args[i]);
                 }
                 mg.__proto__ = new className();
                 return mg;
@@ -92,7 +90,7 @@
     SYST.clone = _clone;
 
     //Object.keys
-    !('keys' in Object) && (Object.keys = function(o){
+    (!'keys' in Object) && (Object.keys = function(o){
         if(o !== Object(o))
             throw new TypeError('Object.keys called on a non-object');
         var k = [], p;
@@ -130,7 +128,7 @@
     };
     SYST.V = Validate.prototype = {
         //为空时
-        isEmpty     : function(val){        return (!val || val.length === 0 || val === '' || val == null || Object.keys(val).length === 0) ? true : false; },
+        isEmpty     : function(val){        return (!val || val.length === 0 || val == null) ? true : false; },
         //是否含有中文 （flag存在则完全匹配中文，默认不完全匹配）
         isCN        : function(str, flag){
             if(flag)                        return (/^[\u4e00-\u9fa5]+$/.test(str));
@@ -304,6 +302,7 @@
                 array.splice(index, 1);
             return array;
         },
+        //首字符大写
         toFirstUpperCase: function(str){
             return str.replace(/^(\w)?/i, function(match, $1){ return $1.toUpperCase(); });
         },
@@ -409,29 +408,26 @@
         },
 
         /**
-         * Function 比较两个时间差 格式：YYYY-mm-dd
-         * @param DateOne
-         * @param DateTwo
-         * @return {Number}
+         * 计算时间差，包括 天、时分秒
+         * @param d1    开始时间  yyyy-mm-dd h:i:s | Date
+         * @param d2    结束时间
+         * @returns {{days: (*|Number)}}
          */
-        daysBetween: function(dateOne, dateTwo, callback){
-            //获取第一个时间
-            var OneMonth    = dateOne.substring(5, dateOne.lastIndexOf('-'));
-            var OneDay      = dateOne.substring(dateOne.length, dateOne.lastIndexOf('-') + 1);
-            var OneYear     = dateOne.substring(0, dateOne.indexOf('-'));
-            //获取第二个时间
-            var TwoMonth    = dateTwo.substring(5,dateTwo.lastIndexOf('-'));
-            var TwoDay      = dateTwo.substring(dateTwo.length, DateTwo.lastIndexOf('-') + 1);
-            var TwoYear     = dateTwo.substring(0, dateTwo.indexOf('-'));
-
-            var CDays = ((Date.parse(OneMonth +'/'+ OneDay +'/'+ OneYear) - Date.parse(TwoMonth +'/'+ TwoDay +'/'+ TwoYear)) / 86400000);
-
-            if(callback && typeof callback === 'function'){
-                callback(CDays);
-            }else{
-                //return Math.abs(CDays);
-                return CDays;
-            }
+        getDateDiff: function(d1, d2){
+            var diff = Date.parse(d2) - Date.parse(d1),
+                days = Math.floor(diff / (24 * 3600 * 1000)),
+                le1 = diff % (24 * 3600 * 1000),
+                hours = Math.floor(le1 / (3600 * 1000)),
+                le2 = le1 % (3600 * 1000),
+                minutes = Math.floor(le2 / (60 * 1000)),
+                le3 = le2 % (60 * 1000),
+                seconds = Math.round(le3 / 1000);
+            return {
+                days: days,
+                hours: hours,
+                minutes: minutes,
+                seconds: seconds
+            };
         },
 
         /**
@@ -600,7 +596,7 @@
             var self = this;
             if(!keys) return;
             if(SYST.V.isObject(keys)){
-                Object.keys(keys).forEach(function(key){
+                SYST.T.each(Object.keys(keys), function(key){
                     self.Cookie(key, keys[key], options);
                 });
             }
@@ -629,19 +625,19 @@
          * @param object
          * @param callback
          */
-        each: function(object, callback){
+        each: function(object, callback, target){
             if(SYST.V.isObject(object)){
                 var index = 0;
                 for(var k in object){
                     if(object.hasOwnProperty(k)){
-                        callback.call(object, object[k], index++, k);
+                        callback.call(target || object, object[k], index++, k);
                     }
                 }
             }
             else if(SYST.V.isArray(object)){
                 var i = 0, len = object.length;
                 for(; i < len; ++i){
-                    callback(object[i], i);
+                    callback.call(target || object, object[i], i);
                 }
             }
             else{
@@ -1082,19 +1078,12 @@
      */
     var _template = function(tplContent, data, helper, target){
 
-        var Render,
-            $source = [],
+        var $source = [],
             $text = [],
             $tplString = 'var _s=""; with($d || {}){ ',
             helperStr = '',
             index = 0,
             data = data;
-
-        if(_tplCache[_content]){
-            Render =  _tplCache[_content];
-            //执行渲染方法
-            return Render.call(target || this, data);
-        }
 
         //判断helper是否存在
         if(helper){
@@ -1155,6 +1144,7 @@
         //生成 Function 主体字符串
         var source, text;
         for(var i = 0, len = $source.length; i < len; ++i){
+            //SYST.T.each($source, function(source, i){
             source = $source[i];
             text = $text[i + 1];
             //转移处理
@@ -1183,6 +1173,7 @@
                 source = '';
             }
             $tplString += (source || '') + (text || '');
+            //});
         }
 
         //遍历数据
@@ -1192,8 +1183,7 @@
         Render = new Function('$d', $tplString);
         _tplCache[_content] = Render;
         //执行渲染方法
-        $tplString = Render.call(target || this, data);
-        return $tplString;
+        return Render.call(target || this, data);
     };
 
     /**
@@ -1209,12 +1199,16 @@
     var Render = function(content, data, helper, options, target){
 
         if(!content){
-            console.warn('\u6ca1\u6709\u627e\u5230\u5bf9\u5e94\u7684\u6a21\u677f\u6587\u4ef6\u6216\u8005\u6a21\u677f\u5b57\u7b26\u4e32');
-            return '';
+            throw new SyntaxError('no found template content');
         }
 
-        var element, tplContent = '', id;
+        var element, tplContent = '', id, render;
         _content = content;
+        if(_tplCache[_content]){
+            render =  _tplCache[_content];
+            //执行渲染方法
+            return render.call(target || this, data);
+        }
         //重置配置
         _reset(options);
 
@@ -1236,9 +1230,6 @@
             if(element){
                 var tplStr = /^(TEXTEREA|INPUT)$/i.test(element.nodeName) ? element.value : element.innerHTML;
                 tplContent = SYST.T.trim(tplStr);
-            }else{
-                console.warn('\u5143\u7d20\u4e0d\u5b58\u5728');
-                return '';
             }
         }
 
@@ -1258,13 +1249,15 @@
 
     'use strict';
 
-    var evts = (function(){
+    /*var evts = (function(){
         var events = [],
             div = document.createElement('div');
         for(var key in div)
             (/^on/i.test(key)) && events.push(key.substr(2));
         return events;
-    })();
+    })();*/
+
+    var evts = "abort reset click dblclick tap touchstart touchmove touchend change mouseover mouseout mouseup mousedown mousemove mousewheel drag dragend dragenter dragleave dragover dragstart drop resize scroll submit select keydown keyup keypress touchstart touchend load unload blur focus contextmenu formchange forminput input invalid afterprint beforeprint beforeonload haschange message offline online pagehide pageshow popstate redo storage undo canplay canplaythrough durationchange emptied ended loadeddata loadedmetadata loadstart pause play playing progress ratechange readystatechange seeked seeking stalled suspend timeupdate volumechange waiting cut copy paste".split(/\s+/gi);
 
     var _hoadEvent = SYST.T.hoadEvent;
 
@@ -1524,7 +1517,7 @@
 
         //------------------------Private----------------------
         _init: function(){
-            if(!this.model.props || {} == this.model.props)
+            if(!this.model.props)
                 return this;
             if(isObserve){
                 //IF Objext.observe exist
@@ -1604,6 +1597,7 @@
         _getBindModelTags: function(propName){
             var bindModelTags = SYST.$('['+ st_model +']'),
                 model, $bindTag;
+
             for(var i = 0, len = bindModelTags.length; i < len; ++i){
 
                 model = bindModelTags[i].getAttribute(st_model);
@@ -1632,7 +1626,6 @@
          * @private
          */
         _getBindElements: function(bindTag){
-
             //根据标签属性名来查找 绑定元素
             this._getBindElementForAttriburte(bindTag);
             //根据标签元素中内容查找 绑定元素
@@ -1857,6 +1850,7 @@
 
         //======================== st-template ========================================
         _getBindTemplates: function(bindTag){
+            if(isObserve && this.model.props && Object.keys(this.model.props).length === 0)  return;
             var $bindTag = bindTag,
                 templates = $bindTag.find('['+ st_template +']'),
                 i = 0, len = templates.length,
@@ -1886,7 +1880,7 @@
             var container = SYST.$(container),
                 data = SYST.V.isObject(data) ? SYST.extend(this.model.props, data) : this.model.props;
             var html = '';
-            if(Object.keys(data).length !== 0){
+            if(SYST.V.isObject(data)){
                 html = SYST.T.render(templateId, data, null, {open: '{{', close: '}}'});
             }
 
@@ -1896,6 +1890,7 @@
 
         //========================= st-style ===========================================
         _getBindStyles: function(bindTag){
+            if(isObserve && this.model.props && Object.keys(this.model.props).length === 0)  return;
             var self        = this, element, styleString, temp,
                 $bindTag    = bindTag,
                 styles      = $bindTag.find('['+ st_style +']'),
@@ -1952,17 +1947,19 @@
                 });
                 //console.log(styleString);
                 styleString = styleString.split(';');
-                styleString.forEach(function(style){
+                SYST.T.each(styleString, function(style){
                     style = style.split(':');
                     if(style[1] != null){
                         element.style[style[0]] = style[1];
                     }
                 });
+
             });
 
         },
         //========================= st-repeat ==========================================
         _getBindRepeats: function(bindTag){
+            if(isObserve && this.model.props && Object.keys(this.model.props).length === 0)  return;
             var self        = this, element, propName, outerHTML,
                 $bindTag    = bindTag,
                 repeats     = slice.call($bindTag.find('['+ st_repeat +']')),
@@ -2158,6 +2155,7 @@
         this.autoWatcher = true;
             //属性列表，数据绑定在里面
         this.props = {};
+        this.watcher = null;
         this._watchers = {};
         //状态列表
         this.states = {};
@@ -2175,10 +2173,11 @@
         _initialize: function(){
             SYST.shareModel.add(this.$mid || null, this);
             this.init && this.init.apply(this, arguments);
-            //初始化 Watcher
-            this.watcher = new SYST.Watcher(this);
-            this.autoWatcher !== false && this.watcher.init();
-
+            if(this.$mid || this.autoWatcher !== false){
+                //初始化 Watcher
+                this.watcher = new SYST.Watcher(this);
+                this.watcher.init();
+            }
         },
 
         /**
@@ -2187,7 +2186,7 @@
          */
         generateApi: function(apis, urls, options){
             var self = this;
-            SYST.V.isArray(apis) && apis.forEach(function(key){
+            SYST.V.isArray(apis) && SYST.T.each(apis, function(key, index){
                 self._generateApi(key, urls[key], options);
             });
 
@@ -2202,10 +2201,13 @@
             var self = this;
             options = SYST.V.isObject(options) && options || {};
             options['callTarget'] = this;
-            //console.log(key, url);
-            Object.defineProperty(self, key, { value: function(postData, su, fail){
+            function _vfn(postData, su, fail){
                 self.$http.doAjax(url, postData, su, fail, options);
-            } });
+            }
+            ('defineProperty' in Object)
+                ? Object.defineProperty(self, key, { value: _vfn })
+                : (self[key] = _vfn);
+
         },
 
         // 在本模型中存取
@@ -2299,7 +2301,7 @@
                 return this;
             }
             function _set(_k, _v){
-                if(SYST.V.isObject(_v)){
+                if(SYST.V.isObject(_v) || SYST.V.isArray(_v)){
                     _v = JSON.stringify(_v);
                 }
                 (!flag ? root.localStorage : root.sessionStorage).setItem(_k, _v);

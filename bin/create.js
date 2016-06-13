@@ -122,6 +122,15 @@ function _load$(from, to){
     mkdir(tot);
 
     var $content = loadTemplateFile('assets/js/' + $name + '/' + $name + '.js');
+
+
+    if($name === 'zepto'){
+        //加入 fastclick 库
+        $content += '\n\r\t/* fastclick.js */\n' + loadTemplateFile('assets/js/' + $name + '/fastclick.js');
+        $content += '\n' + '$(function() {' + '\n\r\t' + 'FastClick.attach(document.body);'+ '\n' +'});';
+        //writeTemplateFile(T.Path.resolve(tot, 'fastclick.js'), $content);
+    }
+
     writeTemplateFile(T.Path.resolve(tot, $name + '.js'), $content);
 
     var gulpConfig = loadTemplateFile('gulp-config.js');
