@@ -8,6 +8,11 @@
     "name": "MIT",
     "url": "https://en.wikipedia.org/wiki/MIT_License"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RodeyManager/gupack.git"
+  },
+  "homepage": "https://github.com/RodeyManager/gupack.git#readme",
   "bin": {
     "gupack": "./bin/gupack.js"
   },
