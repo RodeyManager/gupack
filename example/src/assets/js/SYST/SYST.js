@@ -1397,16 +1397,16 @@
                     if(SYST.T.indexOf(this.bindTags, $bindTag) === -1){
                         this.bindTags.push($bindTag);
                     }
-                    this._getBindElements($bindTag, propName);
+                    this.bindElements[propName] && this._getBindElements($bindTag, propName);
                     //获取绑定的模板 【 st-template 】
-                    this._getBindTemplates($bindTag, propName);
+                    this.bindTemplates[propName] && this._getBindTemplates($bindTag, propName);
                     //获取绑定的样式 【st-style】
-                    this._getBindStyles($bindTag);
+                    this.bindStyles[propName] && this._getBindStyles($bindTag);
                     //获取绑定样式 【st-repeat】
-                    this._getBindRepeats($bindTag);
+                    this.bindRepeats[propName] && this._getBindRepeats($bindTag);
                 }
             }
-            this._setProps(this.bindElements[propName]);
+            this._makeProps(this.bindElements[propName]);
         },
 
         /**
@@ -1450,11 +1450,10 @@
                 }
                 elements = this.bindElements[propName] || elements;
                 //同步更新绑定样式
-                this.updateBindStyles(propName);
-                this.updateBindRepeats(propName);
+                this.bindElements[propName] && this.updateBindProps(propName);
+                this.bindStyles[propName] && this.updateBindStyles(propName);
+                this.bindRepeats[propName] && this.updateBindRepeats(propName);
             }
-            this._setProps(elements);
-            //更新样式
 
         },
         //重新获取监听属性tag
@@ -1463,8 +1462,11 @@
             //如果 props key 存在
             //只更新 props对应的key
             this._getBindModelTags();
-            this._setProps(this.elements);
 
+        },
+
+        updateBindProps: function(propName, elements){
+            this._makeProps(elements);
         },
 
         /**
@@ -1521,11 +1523,10 @@
                 return this;
             if(isObserve){
                 //IF Objext.observe exist
-                this._initObserve();
+                //this._initObserve();
             }
 
             this._getBindModelTags();
-            this._setProps(this.elements);
 
         },
 
@@ -1630,6 +1631,8 @@
             this._getBindElementForAttriburte(bindTag);
             //根据标签元素中内容查找 绑定元素
             this._getBindElementForContent(bindTag);
+            //开始填充数据
+            this._makeProps();
 
         },
         /**
@@ -1707,20 +1710,22 @@
 
         },
         //更新UI
-        _setProps: function(elements){
+        _makeProps: function(elements){
             var self = this,
-                elements = elements || this.bindElements,
-                i = 0, len = elements.length;
-            if(elements && elements.length !== 0){
-                for(; i < len; ++i){
-                    //console.log(elements[i]);
-                    self._setProp(elements[i]);
+                _elements = elements || this.bindElements;
+            SYST.T.each(_elements, function(elements, index, prop){
+                var els = elements || self.bindElements[prop];
+                if(els && els.length !== 0){
+                    SYST.T.each(els, function(element){
+                        self._makeProp(prop, element);
+                    });
                 }
-            }
+            });
 
         },
         //监听 props属性变化
-        _setProp: function(element){
+        _makeProp: function(propName, element){
+            if(this.model.props[propName] == null) return;
             var self = this, attr;
             attr = element.getAttribute(st_prop);
             //------------------------
@@ -1735,7 +1740,8 @@
                      };
                  }else{
                      element['onkeyup'] = function(evt){
-                         self.model.props[attr] = this.value;
+                         self.model.set(attr, this.value);
+                         //self.model.props[attr] = this.value;
                          element.value = self._getProp(element);
                      };
                  }
@@ -1903,7 +1909,7 @@
                     //获取绑定的元素集合
                     while((temp = reg.exec(styleString)) != null){
                         element[st_style] = styleString;
-                        element.removeAttribute(st_style);
+                        //element.removeAttribute(st_style);
                         var propName = self._getPropName(temp[1]);
                         self._toBindStyles(propName, element);
                         //self._toBindElements(propName, element);
@@ -1929,6 +1935,7 @@
             });
         },
         _makeStyle: function(propName, elements){
+            if(this.model.props[propName] == null) return;
             var self = this, styleString,
                 elements = elements || this.bindStyles[propName];
             SYST.V.isArray(elements)
@@ -1940,7 +1947,6 @@
                     if(/\|/gi.test($1)){
                         var propName = self._getPropName($1),
                             prop = self.model.props[propName];
-                        //self.model.props[propName] = self._makeFilters(prop, self._getFilters($1));
                         return self._makeFilters(prop, self._getFilters($1));
                     }
                     return self.model.props[$1];
@@ -2329,7 +2335,7 @@
 
         //监听 st-prop 属性变化
         _watchProrp: function(key, value){
-            if(!isObserve)
+            //if(!isObserve)
                 this.watcher && this.watcher.update(key);
         },
         //监听 st-template
