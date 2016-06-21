@@ -2,7 +2,8 @@
 //当前编译环境: stg: 测试环境(默认); int: 开发环境; prd: 生成环境
 var env = 'stg';
 //静态资源版本控制号
-var vQueryKey = '_cmbx_';
+var vQueryKey = '_cmbx_',
+    hashSize = 10;
 
 var config = {
     env: env,
@@ -25,13 +26,13 @@ var config = {
             ],
             //额外的插件样式，如果不是每个页面都用到，不建议合并到主样式文件中
             //可以单独在使用到的页面中引用
-            plugins: ['assets/js/plugins/tipDialog/css/xlongyu.css'],
+            plugins: [],
             dest: 'assets/css',
             loader: {
                 'gulp-sass': { outputStyle: 'compressed' },
-                'gulp-recache': { queryKey: vQueryKey, hashSize: 10 },
+                'gulp-recache': { queryKey: vQueryKey, hashSize: hashSize },
                 'gulp-autoprefixer': {
-                    browsers: ['> 5%', 'IE 9'],
+                    browsers: ['> 5%', 'IE > 8', 'last 2 versions'],
                     cascade: false
                 },
                 'gulp-uglifycss': { "_if": env === 'prd' },
@@ -63,11 +64,11 @@ var config = {
             dest: '',
             loader: {
                 'gulp-tag-include': null,
-                'gulp-html-inline': { queryKey: vQueryKey },
+                'gulp-html-inline': { queryKey: vQueryKey, hashSize: hashSize },
                 'gulp-recache': {
                     queryKey: vQueryKey,
                     //hash值长度
-                    hashSize: 8,
+                    hashSize: hashSize,
                     //超找类名，将此tag上的image转为base64
                     toBase64: ['to-base64'],
                     //相对当前文件的toPredir路径进行查找

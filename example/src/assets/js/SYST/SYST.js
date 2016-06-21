@@ -20,7 +20,7 @@
 
     var SYST = {}; //function(){};
     //框架属性
-    SYST.VERSION = '2.0.45';
+    SYST.VERSION = '2.0.46';
     SYST.AUTHOR = 'Rodey Luo';
     //判断是否有jquery，zepto插件
     try{
@@ -67,6 +67,7 @@
         if(SYST.V.isObject(firstArgument)){
             //if firstArgument is SYST's Object
             if('__instance_SYST__' in firstArgument){
+                //实现继承
                 args.shift();
                 for(len = args.length; i < len; ++i){
                     mg = _extend(mg, args[i]);
@@ -74,6 +75,7 @@
                 mg.__proto__ = firstArgument;
                 return mg;
             }else{
+                //直接创建对象
                 for(len = args.length; i < len; ++i){
                     mg = _extend(mg, args[i]);
                 }
@@ -81,6 +83,7 @@
                 return mg;
             }
         }else{
+            //直接创建原始对象
             return mg.__proto__ = new className();
         }
     };
@@ -851,7 +854,7 @@
          * @param fail
          */
         doRequest: function(url, postData, su, fail, options){
-            var self = this, type, dataType, commonData, setting = {}, callTarget;
+            var self = this, type, dataType, commonData, commonHandler, setting = {}, callTarget;
             if(!postData || typeof postData !== 'object' || !url || url == '') return;
             //记录当前ajax请求个数
             self._ajaxCount = 0;
@@ -868,6 +871,7 @@
                 type = options.type || self.ajaxType || SYST.httpConfig['ajaxType'] || 'POST';
                 dataType = options.dataType || self.ajaxDataType || SYST.httpConfig['ajaxDataType'] || 'json';
                 commonData = options.commonData || self.commonData || SYST.httpConfig['commonData'] || {};
+                commonHandler = options.commonHandler;
                 setting = options;
                 callTarget = options['callTarget'] || self;
             }
@@ -928,6 +932,7 @@
             }
 
             function end(res, data, status, xhr){
+                SYST.V.isFunction(commonHandler) && commonHandler();
                 var end;
                 SYST.V.isFunction(ajaxEnd) && (end = ajaxEnd.call(callTarget, res, data, status, xhr));
                 return end;
@@ -1546,20 +1551,20 @@
         },
         //======================== st-model =======================================
         _getModelTags: function(propName){
-            var self = this, model, $bindTag;
-            self.bindModelTags = slice.call(_$('['+ st_model +'='+ this.model.$mid +']'));
+            var model, $bindTag;
+            this.bindModelTags = slice.call(_$('['+ st_model +'='+ this.model.$mid +']'));
 
-            SYST.T.each(self.bindModelTags, function(tag){
+            SYST.T.each(this.bindModelTags, function(tag){
                 model = tag.getAttribute(st_model);
                 $bindTag = _$(tag);
-                self._getBindElements($bindTag, propName);
+                this._getBindElements($bindTag, propName);
                 //获取绑定的模板 【 st-template 】
-                self._getBindTemplates($bindTag, propName);
+                this._getBindTemplates($bindTag, propName);
                 //获取绑定的样式 【st-style】
-                self._getBindStyles($bindTag, propName);
+                this._getBindStyles($bindTag, propName);
                 //获取绑定样式 【st-repeat】
-                self._getBindRepeats($bindTag, propName);
-            });
+                this._getBindRepeats($bindTag, propName);
+            }, this);
         },
         /**
          * 获取数据被绑定的UI as st-model
@@ -1589,7 +1594,7 @@
          * @private
          */
         _getBindElementForAttriburte: function(bindTag, propName){
-            var self = this, elements, $bindTag, name;
+            var elements, $bindTag, name;
             $bindTag = bindTag;
             if(propName){
                 elements = slice.call($bindTag.find('['+ st_prop +'='+ propName +']'));
@@ -1599,9 +1604,9 @@
             if(elements.length === 0)   return;
 
             SYST.T.each(elements, function(element){
-                name = self._getRootPropName(element.getAttribute(st_prop));
-                self._toBindElements(name, element);
-            });
+                name = this._getRootPropName(element.getAttribute(st_prop));
+                this._toBindElements(name, element);
+            }, this);
         },
         /**
          * 根据标签内容中含有被绑定属性，并以模板形式呈现的，如：{{ prop }}
@@ -1648,17 +1653,16 @@
         },
         //更新UI
         _makeProps: function(propName){
-            var self = this,
-                _elements = this.bindElements;
+            var _elements = this.bindElements;
             if(propName && !_elements[propName]) return;
             SYST.T.each(_elements, function(elements, index, prop){
-                var els = elements || self.bindElements[prop];
-                if(els && els.length !== 0){
+                var els = elements || this.bindElements[prop];
+                if(SYST.V.isArray(els) && els.length !== 0){
                     SYST.T.each(els, function(element){
-                        self._makeProp(prop, element);
-                    });
+                        this._makeProp(prop, element);
+                    }, this);
                 }
-            });
+            }, this);
 
         },
         //监听 props属性变化
@@ -1769,18 +1773,18 @@
             return filters;
         },
         _makeFilters: function(arg, filters){
-            var self = this, prop = arg, method;
+            var prop = arg, method;
             SYST.T.each(filters, function(filter){
-                method = self.model[SYST.T.trim(filter)];
+                method = this.model[SYST.T.trim(filter)];
                 if(SYST.V.isFunction(method)){
-                    prop = method.apply(self.model, [prop]);
+                    prop = method.apply(this.model, [prop]);
                 }else{
                     method = strProp[filter] || SYST.T[filter];
                     if(SYST.V.isFunction(method)){
                         prop = method(prop);
                     }
                 }
-            });
+            }, this);
             return prop;
         },
         //获取跟属性名 ex：user.name.first => user
@@ -1794,9 +1798,7 @@
 
         //======================== st-template ========================================
         _getBindTemplates: function(bindTag, propName){
-            //if(this.model.props && Object.keys(this.model.props).length === 0)  return;
-            var self = this,
-                templates,
+            var templates,
                 templateId;
             templates = this._getElements(propName, bindTag, st_template);
             if(templates.length === 0) return;
@@ -1804,10 +1806,10 @@
             SYST.T.each(templates, function(container){
                 templateId = '#' + container.getAttribute(st_template);
                 //添加到缓存
-                self._toBindTemplates(templateId, container);
+                this._toBindTemplates(templateId, container);
                 //解析模板并填充
-                self._renderTemplate(templateId, container);
-            });
+                this._renderTemplate(templateId, container);
+            }, this);
         },
         _toBindTemplates: function(templateId, container){
             if(!this.bindTemplates[templateId]){
@@ -1818,6 +1820,7 @@
             }
         },
         _renderTemplate: function(templateId, container, data){
+            if(this.model.props && Object.keys(this.model.props).length === 0)  return;
             container = _$(container);
             data = SYST.V.isObject(data) ? SYST.extend(this.model.props, data) : this.model.props;
             var html = '';
@@ -1830,7 +1833,7 @@
         //========================= st-style ===========================================
         _getBindStyles: function(bindTag, propName){
             //if(this.model.props && Object.keys(this.model.props).length === 0)  return;
-            var self = this, styleString, temp, styles;
+            var styleString, temp, styles;
             styles = this._getElements(propName, bindTag, st_style);
             if(styles.length === 0) return;
 
@@ -1840,11 +1843,11 @@
                 while((temp = reg.exec(styleString)) != null){
                     element[st_style] = styleString;
                     element.removeAttribute(st_style);
-                    var propName = self._getPropName(temp[1]);
-                    self._toBindStyles(propName, element);
-                    //self._toBindElements(propName, element);
+                    var propName = this._getPropName(temp[1]);
+                    this._toBindStyles(propName, element);
+                    //this._toBindElements(propName, element);
                 }
-            });
+            }, this);
 
             //开始解析 st-style
             this._makeStyles(propName);
@@ -1859,15 +1862,10 @@
             }
         },
         _makeStyles: function(propName){
-            var self = this, bindStyleElements = {};
-            if(propName){
-                bindStyleElements[propName] = this.bindStyles[propName];
-            }else{
-                bindStyleElements = this.bindStyles;
-            }
+            var bindStyleElements = this._getBinds(propName, this.bindStyles);
             SYST.T.each(bindStyleElements, function(styles, index, propName){
-                self._makeStyle(propName, styles);
-            });
+                this._makeStyle(propName, styles);
+            }, this);
         },
         _makeStyle: function(propName, elements){
             if(!(propName in this.model.props)) return;
@@ -1896,7 +1894,7 @@
         //========================= st-repeat ==========================================
         _getBindRepeats: function(bindTag, propName){
             //if(/*isObserve && */this.model.props && Object.keys(this.model.props).length === 0)  return;
-            var self = this, prop, outerHTML, repeats;
+            var prop, outerHTML, repeats;
             repeats = this._getElements(propName, bindTag, st_repeat);
             if(repeats.length === 0) return;
 
@@ -1906,8 +1904,8 @@
                 outerHTML = element.outerHTML;
                 element['rawOuterHTML'] = outerHTML;
                 element['parent'] = element.parentNode;
-                self._toBindRepeats(prop, element);
-            });
+                this._toBindRepeats(prop, element);
+            }, this);
 
             //解析
             this._makeRepeats();
@@ -1925,40 +1923,35 @@
             }
         },
         _makeRepeats: function(propName){
-            var self = this, bindRepeatElements = {};
-            if(propName){
-                bindRepeatElements[propName] = this.bindRepeats[propName];
-            }else{
-                bindRepeatElements = this.bindRepeats;
-            }
+            var bindRepeatElements = this._getBinds(propName, this.bindRepeats);
             SYST.T.each(bindRepeatElements, function(elements, index, prop){
-                self._makeRepeat(prop, elements);
-            });
+                this._makeRepeat(prop, elements);
+            }, this);
         },
         _makeRepeat: function(propName, elements){
             if(!(propName in this.model.props)) return;
             if(!elements || elements.length === 0)  return;
-            var self = this, i = 0, len = elements.length;
-            var outerHTML, element, temp = '', item;
-            var prop = self.model.get(propName);
+            var outerHTML, temp = '', item, len = 0;
+            var prop = this.model.get(propName);
 
             SYST.T.each(elements, function(element){
-                outerHTML = self._removeBindAttr(element);
+                outerHTML = this._removeBindAttr(element);
                 item = element.getAttribute(st_item);
                 if(!SYST.V.isEmpty(item)){
                     repeatReg = new RegExp(startRS + '(\\$?'+ item +'[^\\{]*?)' + endRS, mRS);
                 }
                 if(SYST.V.isArray(prop)){
-                    for(var j = 0, l = prop.length; j < l; ++j){
+                    len = prop.length;
+                    SYST.T.each(prop, function(p, index){
                         //替换其他属性，如 索引
-                        temp += self._replaceBindsArray(outerHTML, prop[j], j, l - 1, item);
-                    }
+                        temp += this._replaceBindsArray(outerHTML, p, index, len - 1, item);
+                    }, this);
                 }
                 else if(SYST.V.isObject(prop)){
                     SYST.T.each(prop, function(val, index, key){
                         //替换其他属性，如 索引
-                        temp += self._replaceBindObject(outerHTML, key, val, index);
-                    });
+                        temp += this._replaceBindObject(outerHTML, key, val, index);
+                    }, this);
                 }
 
                 //element.parent.innerHTML = temp;
@@ -1973,7 +1966,7 @@
                 }else{
                     $(element).replaceWith(temp);
                 }
-            });
+            }, this);
 
         },
         _removeBindAttr: function(element){
@@ -2072,6 +2065,15 @@
                 elements     = slice.call($bindTag.find('['+ stString +']'));
             }
             return elements;
+        },
+        _getBinds: function(propName, binds){
+            var bindElements = {};
+            if(propName){
+                bindElements[propName] = binds[propName];
+            }else{
+                bindElements = binds;
+            }
+            return bindElements;
         }
 
     };
@@ -2097,10 +2099,9 @@
         this.__instance_SYST__ = 'SYST Model';
         this.__name__ = 'SYST Model';
         this.autoWatcher = true;
-            //属性列表，数据绑定在里面
+        //属性列表，数据绑定在里面
         this.props = {};
         this.watcher = null;
-        this._watchers = {};
         //状态列表
         this.states = {};
     };
@@ -2193,18 +2194,18 @@
             return Boolean(this.props[key]);
         },
         removeProps: function(keys){
-            var self = this;
+            //var self = this;
             if(SYST.V.isString(keys)){
                 this.remove(keys);
             }
             else if(SYST.V.isArray(keys)){
                 SYST.T.each(keys, function(key){
-                    self.remove(key);
-                });
+                    this.remove(key);
+                }, this);
             }else if(SYST.V.isObject(keys)){
                 SYST.T.each(keys, function(value, index, key){
-                    self.remove(key);
-                });
+                    this.remove(key);
+                }, this);
             }else{
                 this.watcher.removeListener();
                 this.props = {};
@@ -2260,12 +2261,12 @@
         removeItems: function(keys, flag){
             var self = this;
             if(SYST.V.isString(keys)){
-                self.removeItem(keys, flag);
+                this.removeItem(keys, flag);
             }
             else if(SYST.V.isArray(keys)){
                 SYST.T.each(keys, function(key){
-                    self.removeItem(key, flag);
-                });
+                    this.removeItem(key, flag);
+                }, this);
             }else{
                 flag ? sessionStorage.clear() : localStorage.clear();
             }
@@ -2631,7 +2632,7 @@
             var redirectTo = this['redirectTo'];
             if(hash && '' !== hash){
                 var currentRoute = _getRouteKey(hash);
-                this.switch(currentRoute);
+                this.switcher(currentRoute);
             }else{
                 if(redirectTo){
                     this._updateHash(redirectTo);
@@ -2667,12 +2668,12 @@
          * @param router
          * @returns {SYST.Router}
          */
-        switch: function(route, router){
+        switcher: function(route, router){
             if(!this._cache || {} === this._cache)  return;
             var routeOption = this._getRouter(route),
-                router = routeOption.router;
-            if(!router){
-
+                router = router || routeOption.router;
+            if(router){
+                this._cache[route] = router;
             }
             //获取url参数列表
             this.params = SYST.T.params(null, window.location.href);
@@ -2737,19 +2738,17 @@
                 ps = [], rs = {};
 
             if(SYST.V.isArray(params) && params.length > 0){
-                for(var i = 0, len = params.length; i < len; ++i){
-                    var param = params[i];
+                SYST.T.each(params, function(param){
                     ps.push(param ? decodeURIComponent(param) : null);
-                }
+                });
             }
 
             if(SYST.V.isArray(keys) && keys.length > 0){
-                for(var j = 0, len = keys.length; j < len; ++j){
-                    var key = keys[j];
+                SYST.T.each(keys, function(key, i){
                     if(key){
-                        rs[key.replace(/^[^\w]|[^\w]$/i, '')] = ps[j];
+                        rs[key.replace(/^[^\w]|[^\w]$/i, '')] = ps[i];
                     }
-                }
+                });
             }
 
             return {paramsObject: rs, params: ps};
@@ -2842,7 +2841,7 @@
                 this._onDestroy(function(){
                     self.router = currentRouter;
                     //开始路由
-                    self.switch(currentURL);
+                    self.switcher(currentURL);
                 });
             }
         },
