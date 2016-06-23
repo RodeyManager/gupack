@@ -74,12 +74,24 @@ if(util.isObject(builds)){
 
         var build = builds[taskName],
             source = build['src'] || [],
+            watcher = build['watch'] || source || [],
             pathPrefix = build['pathPrefix'] || '';
 
         tasks.push(taskName);
 
         //watcher
-        watchers[taskName] = loadWatch(build['watch'] || build['src'], pathPrefix);
+        if(!build['watch'] && pathPrefix){
+            if(util.isString(source)){
+                watcher = pathPrefix + source;
+            }else if(util.isArray(source)){
+                watcher = source.map(function(s){
+                    return pathPrefix + s;
+                });
+            }else{
+                throw new ReferenceError('没有可用的源文件，请设置 src 文件地址');
+            }
+        }
+        watchers[taskName] = loadWatch(watcher);
 
         gulp.task(taskName, () => {
 

@@ -35,7 +35,7 @@ var config = {
                     browsers: ['> 5%', 'IE > 8', 'last 2 versions'],
                     cascade: false
                 },
-                'gulp-uglifycss': { "_if": env === 'prd' },
+                'gulp-uglifycss': { _if: env === 'prd' },
                 'gulp-concat-css': 'app.min.css'
             },
             watch: ['assets/css/**/*']
@@ -46,9 +46,9 @@ var config = {
             src: ['**/*'],
             //过滤掉不进行编译的文件或目录
             filters: [
+                'config.js',
                 'model.js',
                 'view.js',
-                'config.js',
                 'main.js'
             ],
             dest: 'modules',
@@ -102,6 +102,7 @@ var config = {
         'build.main': {
             src: [
                 'modules/config.js',
+                'modules/main.js',
                 'modules/model.js',
                 'modules/view.js'
             ],

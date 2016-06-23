@@ -2,9 +2,10 @@
  * Created by Rodey on 2015/7/20.
  */
 
-var appModel = (function(){
+var appModel;
+$(function(){
 
-    var appMpdel = SYST.Model({
+    appMpdel = SYST.Model({
         $mid: 'appModel',
         init: function(){
             //全局ajax请求方式
@@ -33,16 +34,11 @@ var appModel = (function(){
 
         //接口测试用
         test: function(postData, su, fail){
-            this.$http.doServer(App.getWebServiceUrl('test'), postData, su, fail, { callTarget: this });
+            this.$http.doAjax(App.getWebServiceUrl('test'), postData, su, fail, { callTarget: this });
         }
 
     });
 
-    return appMpdel;
-
-})();
-
-if(SYST){
     var requestTipDom = $('#request-tip');
 
     SYST.httpConfig = {
@@ -68,4 +64,6 @@ if(SYST){
             //console.log('请求失败', this);
         }
     };
-}
+
+});
+

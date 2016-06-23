@@ -3,9 +3,10 @@
  * name: '__ VIEW 公共视图 __'
  */
 
-var appView = (function(appModel){
+var appView;
+$(function(){
 
-    var appView = SYST.View({
+    appView = SYST.View({
 
         model: appModel,
         events: {
@@ -25,6 +26,4 @@ var appView = (function(appModel){
 
     });
 
-    return appView;
-
-})(appModel);
+});

@@ -1668,40 +1668,43 @@
         //监听 props属性变化
         _makeProp: function(propName, element){
             if(this.model.props[propName] == null) return;
-            var self = this, attr;
-            attr = element.getAttribute(st_prop);
+            var self = this, filters = [],
+                fts = element.getAttribute(st_filter),
+                attr = element.getAttribute(st_prop),
+                value = this._getProp(element);
+            if(attr){
+                attr = this._getPropName(attr);
+                filters = this._getFilters(attr);
+            }
+            if(fts){
+                filters = filters.concat(this._getFilters(fts, true));
+                value = self._makeFilters(value, this._getFilters(fts, true));
+            }
             //------------------------
              //valueType = /TEXTAREA|INPUT|SELECT/.test(elm.nodeName) ? 'value' : 'innerHTML';
              if(/TEXTAREA|INPUT/.test(element.nodeName)){
-                 element.value = self._getProp(element);
+
                  //textarea、input
                  if(/radio|checkbox/.test(element.type)){
-                     element['onclick'] = function(evt){
-                         self.model.set(attr, this.checked);
-                         //self.model.props[attr] = this.checked;
-                     };
+                     if(element.value == value){
+                         element.checked = true;
+                     }
                  }else{
+                     element.value = value;
                      element['onkeyup'] = function(evt){
-                         self.model.set(attr, this.value);
-                         //self.model.props[attr] = this.value;
+                         var value = this.value;
+                         value = self._makeFilters(value, filters);
+                         self.model.set(attr, value);
                          element.value = self._getProp(element);
                      };
                  }
 
              }
              else if(/SELECT/.test(element.nodeName)){
-                 element.value = self._getProp(element);
+                 element.value = value;
                  element['onchange'] = function(evt){
-                     //self.model.props[attr] = this.value;
-                     var value = this.value,
-                         filters = element.getAttribute(st_filter);
-                     if(filters){
-                         filters = filters.split('|');
-                     }
-                     if(filters && filters.length !== 0){
-                         value = self._makeFilters(value, filters);
-                         //console.log(value);
-                     }
+                     var value = this.value;
+                     value = self._makeFilters(value, filters);
                      self.model.set(attr, value);
                      element.value = self._getProp(element);
                  };
@@ -1767,12 +1770,13 @@
             return tts;
         },
         //获取所有过滤器 ex: {{ name | trim | addLastName }}
-        _getFilters: function(attrStr){
+        _getFilters: function(attrStr, flag){
             var filters = trimAttrValue(attrStr).split('|');
-            filters.shift();
+            !flag && filters.shift();
             return filters;
         },
         _makeFilters: function(arg, filters){
+            if(!SYST.V.isArray(filters) || 0 === filters.length) return arg;
             var prop = arg, method;
             SYST.T.each(filters, function(filter){
                 method = this.model[SYST.T.trim(filter)];

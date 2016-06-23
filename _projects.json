@@ -3,6 +3,10 @@
     "pack": {
       "config": "src/gulp-config.js",
       "path": "D:\\Sites\\test\\pack"
+    },
+    "payment": {
+      "config": "src/gulp-config.js",
+      "path": "D:\\Sites\\cmbx\\payment"
     }
   }
 }
