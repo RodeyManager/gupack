@@ -1,6 +1,6 @@
 {
   "name": "gupack",
-  "version": "1.0.40",
+  "version": "1.0.41",
   "description": "(基于gulp的前端构建工具)Based on the front-end build tools of gulp",
   "keyword": "gulp, webpack",
   "author": "Rodey",

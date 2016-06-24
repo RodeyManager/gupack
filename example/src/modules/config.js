@@ -1,64 +1,54 @@
 ;(function() {
     window.App = window.App || new Object();
-    /**
-     * 常量定义
-     */
+    //调式模式
     App.IS_DEBUG = false;
 
+    /*-------项目其他配置参数 Start--------*/
     //短信发送间隔时间
     App.sendTime = 60;
 
-    var href = window.location.href.replace(window.location.hash, '');
-    var origin = window.location.origin;
-    // 服务器地址
-    var webServiceUrls = {};
+    /*-------项目其他配置参数 End--------*/
+
+    /*-------项目所有api接口配置 Start--------*/
+    var href = window.location.href.replace(window.location.hash, ''),
+        port = location.port,
+        host = location.host,
+        origin = window.location.origin || (function(){
+                return location.protocol  + '//' + host + (port != '' ? ':' + port : port);
+            })();
+    var webServiceUrls = {
+        //登录
+        login          : 'members/logout'
+    };
 
     // 强制使用某个环境(测试用),默认就设置为空
-    App.testEnv = 'int';
+    App.testEnv = 'local';
 
     if(App.testEnv == 'stg' || App.testEnv == 'prd' || App.testEnv == ''){
         //调配链接环境
-        App.ServerHost = location.origin + '/' + location.pathname.split('/')[1] + '/';
+        App.ServerHost = origin + '/' + location.pathname.split('/')[1] + '/';
 
     }else if(App.testEnv == 'int'){
         //开发环境
-        App.ServerHost = 'http://10.141.139.52:8080/';  //（Rick Yu）
+        App.ServerHost = 'http://10.141.139.52:8080/';  //（Jack）
 
     }else if(App.testEnv == 'local'){
         //本地环境
         var ma = (location.pathname.match(/[\w-]+.(html|do|action)/gi))[0];
-        href = origin + '/' + location.pathname.replace(ma, '');
-        App.ServerHost = href;
+        App.ServerHost = origin + location.pathname.replace(ma, '');
         // 会员登陆验证
         webServiceUrls = {
-
-            //测试接口用
-            test                : 'module/test.json'
+            //登录
+            login               : 'assets/mockData/login.json'
         };
     }
-
-    // api接口地址
-    webServiceUrls = {
-
-        //获取投保人信息
-        getInsuranceInfo        : 'online/sale/template/mobile/entrance/getInsuranceInfo',
-        //提交签名
-        signature               : 'online/sale/template/mobile/entrance/signature',
-        getSignature            : 'online/sale/template/mobile/entrance/getSignature',
-        //获取问卷调查列表
-        getQuestions            : 'online/sale/template/mobile/entrance/getQuestionnaire',
-
-        //退出
-        logout          : 'members/logout',
-        //测试接口用
-        test            : 'module/test.json'
-
-    };
 
     //更具key获取api地址
     App.webServiceUrls = webServiceUrls;
     App.getWebServiceUrl = function(name, host) {
         return (host || App.ServerHost) + webServiceUrls[name];
     };
+
+    /*-------项目所有api接口配置 End--------*/
 
 }).call(this);

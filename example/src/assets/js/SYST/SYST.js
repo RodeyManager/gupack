@@ -20,7 +20,7 @@
 
     var SYST = {}; //function(){};
     //框架属性
-    SYST.VERSION = '2.0.46';
+    SYST.VERSION = '2.0.47';
     SYST.AUTHOR = 'Rodey Luo';
     //判断是否有jquery，zepto插件
     try{
@@ -49,7 +49,7 @@
         if(!child) return parent;
         var clone = _clone(parent);
         for(var prop in child)
-            if(child.hasOwnProperty(prop))
+            //if(child.hasOwnProperty(prop))
                 clone[prop] = child[prop];
         return clone;
     };
@@ -64,6 +64,7 @@
     var _extendClass = function(args, className){
         var args = Array.prototype.slice.call(args),
             firstArgument = args[0], i = 0, mg = {}, len;
+        var hasProto = '__proto__' in mg;
         if(SYST.V.isObject(firstArgument)){
             //if firstArgument is SYST's Object
             if('__instance_SYST__' in firstArgument){
@@ -72,19 +73,29 @@
                 for(len = args.length; i < len; ++i){
                     mg = _extend(mg, args[i]);
                 }
-                mg.__proto__ = firstArgument;
+                if(!hasProto)
+                    mg = _extend(mg, firstArgument);
+                else
+                    mg.__proto__ = firstArgument;
                 return mg;
             }else{
                 //直接创建对象
                 for(len = args.length; i < len; ++i){
                     mg = _extend(mg, args[i]);
                 }
-                mg.__proto__ = new className();
+                if(!hasProto)
+                    mg = _extend(mg, className.prototype);
+                else
+                    mg.__proto__ = new className();
                 return mg;
             }
         }else{
             //直接创建原始对象
-            return mg.__proto__ = new className();
+            if(!hasProto)
+                mg = new className();
+            else
+                mg.__proto__ = new className();
+            return mg;
         }
     };
 
@@ -121,6 +132,7 @@
 
     'use strict';
 
+    var toString = Object.prototype.toString;
 
     var Validate = function(){
         this.__instance_SYST__ = 'SYST Validate';
@@ -1888,10 +1900,16 @@
                     }
                     return self.model.props[$1];
                 });
-                //console.log(styleString);
-                var style = element.style.cssText;
-                style = style.length === 0 ? '' : style.replace(/;$/i, '') + ';';
-                element.style.cssText = style + styleString;
+                //console.log(styleString); //cssText方式在IE中的性能极差
+                //var style = element.style.cssText;
+                //style = style.length === 0 ? '' : style.replace(/;$/i, '') + ';';
+                //element.style.cssText = style + styleString;
+
+                var styles = styleString.split(';');
+                styles && SYST.T.each(styles, function(s){
+                    var sy = s.split(':');
+                    sy && $(element).css(sy[0], sy[1]);
+                });
             });
 
         },
@@ -2103,11 +2121,7 @@
         this.__instance_SYST__ = 'SYST Model';
         this.__name__ = 'SYST Model';
         this.autoWatcher = true;
-        //属性列表，数据绑定在里面
-        this.props = {};
         this.watcher = null;
-        //状态列表
-        this.states = {};
     };
 
     SYST.Model = function(){
@@ -2117,9 +2131,11 @@
     };
 
     Model.prototype = {
-        $http: SYST.Http(),
 
         _initialize: function(){
+            this.$http = this.$http || new SYST.Http();
+            //属性列表，数据绑定在里面
+            this.props = this.props || {};
             //初始化 Watcher
             this.watcher = new SYST.Watcher(this);
             SYST.shareModel.add(this.$mid || null, this);
@@ -2345,8 +2361,6 @@
     var View = function(){
         this.__instance_SYST__ = 'SYST View';
         this.__Name__ = 'SYST View';
-        this.container = 'body';
-        this.template = null;
     };
     SYST.View = function(){
         var view = SYST.extendClass(arguments, View);
@@ -2355,7 +2369,11 @@
     };
 
     View.prototype = {
+
         _initialize: function(){
+            this.model = this.model || new SYST.Model();
+            this.container = this.container || 'body';
+            this.template = null;
             this.container = SYST.$(this.container);
             this.containerSelector = this.container.selector;
 
@@ -2486,7 +2504,6 @@
             }
             return this;
         },
-        model: new SYST.Model(),
         shareModel: SYST.shareModels
     };
 
@@ -2515,9 +2532,9 @@
         return ctrl;
     };
     SYST.Controller.prototype = {
-        defaultHost: location.host,
         shareModel: SYST.shareModel,
         _initialize: function(){
+            this.defaultHost = this.defaultHost || location.host;
             SYST.V.isFunction(this.init) && this.init.apply(this, arguments);
         },
         getModel: function(key){
@@ -2579,13 +2596,6 @@
     };
 
     SYST.R = Router.prototype = {
-        _cache: {},
-        _stateCache: [],
-        routes: null,
-        container: 'body',
-        router: null,
-        params: null,
-        isRender: false,
 
         //一个路由对象，包涵当前所有的路由列表
         //exp:
@@ -2599,6 +2609,7 @@
          * @private
          */
         _initialize: function(){
+            this._reset();
             if(SYST.V.isObject(this.routes) && this.routes != {}){
 
                 var routes = this.routes;
@@ -2610,6 +2621,15 @@
 
             }
             //this.init && SYST.V.isFunction(this.init) && this.init.apply(this);
+        },
+        _reset: function(){
+            this._cache = this._cache || {};
+            this._stateCache = this._stateCache || [];
+            this.routes = this.routes || null;
+            this.container = this.container || 'body';
+            this.router = this.router || null;
+            this.params = this.params || null;
+            this.isRender = this.isRender || false;
         },
 
         /**
