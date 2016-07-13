@@ -1,9 +1,12 @@
+var nodePath = require('path');
 
 //当前编译环境: stg: 测试环境(默认); int: 开发环境; prd: 生成环境
 var env = 'stg';
 //静态资源版本控制号
 var vQueryKey = '_cmbx_',
-    hashSize = 10;
+    hashSize = 10,
+    //项目编译后的路径
+    buildPath = nodePath.resolve(__dirname, '../build');
 
 var config = {
     env: env,
@@ -27,10 +30,21 @@ var config = {
             //额外的插件样式，如果不是每个页面都用到，不建议合并到主样式文件中
             //可以单独在使用到的页面中引用
             plugins: [],
+            //输出路径
             dest: 'assets/css',
+            //依赖task列表
+            rely: ['build.images', 'build.fonts'],
+            //gulp插件列表
             loader: {
                 'gulp-sass': { outputStyle: 'compressed' },
-                'gulp-recache': { queryKey: vQueryKey, hashSize: hashSize },
+                'gulp-recache': {
+                    queryKey: vQueryKey,
+                    //hash值长度
+                    hashSize: hashSize,
+                    //资源根路径, 如：编译后的路径 D:\\Sites\\test\\web_components\\build
+                    //需要添加缓存的资源将会从basePath下开始查找
+                    basePath: buildPath
+                },
                 'gulp-autoprefixer': {
                     browsers: ['> 5%', 'IE > 8', 'last 2 versions'],
                     cascade: false
@@ -62,33 +76,16 @@ var config = {
             src: ['views/**/*.html'],
             filters: [],
             dest: '',
+            rely: ['build.css', 'build.main', 'build.libs'],
             loader: {
                 'gulp-tag-include': null,
                 'gulp-html-inline': { queryKey: vQueryKey, hashSize: hashSize },
                 'gulp-recache': {
                     queryKey: vQueryKey,
-                    //hash值长度
                     hashSize: hashSize,
-                    //超找类名，将此tag上的image转为base64
+                    //找类名，将此tag上的image转为base64
                     toBase64: ['to-base64'],
-                    //相对当前文件的toPredir路径进行查找
-                    //如 当前文件路径是 project/src/views/index.html
-                    //而 index.html中的 img地址都是 assets/images...的
-                    // views 与 assets 是同级的
-                    /**
-                     * 目录结构是这样的:
-                     * src
-                     *    assets
-                     *         css
-                     *         images
-                     *    views
-                     *         index.html
-                     *    module
-                     */
-                    toPredir: {
-                        css: '../../build/',
-                        image: '../'
-                    }
+                    basePath: buildPath
                 },
                 'gulp-minify-html': {
                     _if: env === 'prd',

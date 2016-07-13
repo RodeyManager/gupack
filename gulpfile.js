@@ -93,7 +93,7 @@ if(util.isObject(builds)){
         }
         watchers[taskName] = loadWatch(watcher);
 
-        gulp.task(taskName, () => {
+        gulp.task(taskName, build['rely'] || [], () => {
 
             //源文件 src
             (source && source.length !== 0)

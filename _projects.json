@@ -7,6 +7,14 @@
     "payment": {
       "config": "src/gulp-config.js",
       "path": "D:\\Sites\\cmbx\\payment"
+    },
+    "web_components": {
+      "config": "src/gulp-config.js",
+      "path": "D:\\Sites\\test\\web_components"
+    },
+    "website": {
+      "config": "src/gulp-config.js",
+      "path": "D:\\Sites\\cmbx\\website"
     }
   }
 }
