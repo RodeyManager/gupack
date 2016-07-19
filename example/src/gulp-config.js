@@ -49,6 +49,7 @@ var config = {
                     browsers: ['> 5%', 'IE > 8', 'last 2 versions'],
                     cascade: false
                 },
+                //当 _if 为true时，表示执行该loader
                 'gulp-uglifycss': { _if: env === 'prd' },
                 'gulp-concat-css': 'app.min.css'
             },
@@ -83,8 +84,6 @@ var config = {
                 'gulp-recache': {
                     queryKey: vQueryKey,
                     hashSize: hashSize,
-                    //找类名，将此tag上的image转为base64
-                    toBase64: ['to-base64'],
                     basePath: buildPath
                 },
                 'gulp-minify-html': {

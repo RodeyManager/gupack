@@ -5,22 +5,19 @@
 var gulp            = require('gulp'),
     watch           = require('gulp-watch'),
     plumber         = require('gulp-plumber'),
-    sourcemaps      = require('gulp-sourcemaps'),
-    watch           = require('gulp-watch'),
     del             = require('del'),
     util            = require('util'),
-    fse             = require('fs-extra'),
     tool            = require('./lib/tools');
 
 
 //获取配置
 var projects = require('./projects.js');
-var cwd = tool.argv['cwdir'] || '';
+var cwd = tool.argv['cwdir'] || process.cwd();
 var resolve = tool.Path.resolve;
 
 
 //变量
-var proName, proOpt, company, projectPath, basePath, sourcePath, buildPath,
+var proName, proOpt, projectPath, basePath, sourcePath, buildPath,
     proConfig, tasks, builds, watchers, env, cleans;
 
 //指定构建的项目名称, 在gulp后面传递参数
@@ -128,8 +125,6 @@ if(util.isObject(builds)){
                         //如果为生产环境，执行压缩
                         (options['_if'] || env === 'prd' || env === 'production' )
                         && (stream = stream.pipe(gulplugin(options)));
-                    }else{
-                        stream = stream.pipe(gulplugin(options));
                     }
                 }else{
                     stream = stream.pipe(gulplugin(options));

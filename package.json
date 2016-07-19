@@ -1,6 +1,6 @@
 {
   "name": "gupack",
-  "version": "1.0.42",
+  "version": "1.0.43",
   "description": "(基于gulp的前端构建工具)Based on the front-end build tools of gulp",
   "keyword": "gulp, webpack",
   "author": "Rodey",
@@ -32,27 +32,23 @@
     "commander": "^2.9.0",
     "del": "^2.2.0",
     "fs-extra": "^0.30.0",
+    "minimist": "^1.2.0",
+    "mkdirp": "^0.5.1",
+    "prompt": "^1.0.0",
     "gulp": "^3.9.0",
     "gulp-autoprefixer": "^3.1.0",
-    "gulp-clean": "^0.3.1",
     "gulp-concat": "^2.6.0",
     "gulp-concat-css": "^2.2.0",
     "gulp-html-builder": "^0.1.0",
     "gulp-html-inline": "^3.0.0",
     "gulp-plumber": "^1.0.1",
     "gulp-recache": "^1.0.1",
-    "gulp-sourcemaps": "^1.6.0",
     "gulp-tag-include": "^1.1.2",
     "gulp-uglify": "^1.4.2",
     "gulp-uglifycss": "^1.0.4",
-    "gulp-watch": "^4.3.5",
-    "install": "^0.4.1",
-    "minimist": "^1.2.0",
-    "mkdirp": "^0.5.1",
-    "prompt": "^1.0.0"
+    "gulp-watch": "^4.3.6"
   },
   "devDependencies": {
-    "gulp-watch": "^4.3.6"
   },
   "_npmVersion": "2.15.1",
   "_npmUser": {
