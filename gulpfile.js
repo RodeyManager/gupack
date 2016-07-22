@@ -3,11 +3,11 @@
  */
 
 var gulp            = require('gulp'),
-    watch           = require('gulp-watch'),
     plumber         = require('gulp-plumber'),
     del             = require('del'),
     util            = require('util'),
-    tool            = require('./lib/tools');
+    tool            = require('./lib/tools'),
+    runSequence    = require('run-sequence');
 
 
 //获取配置
@@ -64,6 +64,8 @@ if(buildPath && /^\./i.test(buildPath)){
 
 //缓存插件
 var gulplugins = {};
+var taskCache = {};
+var relies = {};
 
 if(util.isObject(builds)){
 
@@ -74,7 +76,7 @@ if(util.isObject(builds)){
             watcher = build['watch'] || source || [],
             pathPrefix = build['pathPrefix'] || '';
 
-        tasks.push(taskName);
+        //tasks.push(taskName);
 
         //watcher
         if(!build['watch'] && pathPrefix){
@@ -90,41 +92,52 @@ if(util.isObject(builds)){
         }
         watchers[taskName] = loadWatch(watcher);
 
-        gulp.task(taskName, build['rely'] || [], () => {
+        //源文件 src
+        (source && source.length !== 0)
+        && (source = loadSource(source, pathPrefix));
 
-            //源文件 src
-            (source && source.length !== 0)
-            && (source = loadSource(source, pathPrefix));
+        //过滤文件 filters
+        var filters = build['filters'] || [];
+        filters = loadSource(filters, pathPrefix, '!');
+        source = source.concat(filters);
 
-            //过滤文件 filters
-            var filters = build['filters'] || [];
-            filters = loadSource(filters, pathPrefix, '!');
-            source = source.concat(filters);
+        //插件样式
+        var plugins = build['plugins'] || [];
+        plugins = loadSource(plugins, pathPrefix);
+        source = source.concat(plugins);
 
-            //插件样式
-            var plugins = build['plugins'] || [];
-            plugins = loadSource(plugins, pathPrefix);
-            source = source.concat(plugins);
+        //合并压缩后的输出
+        var dist = build['dest'] ? resolve(buildPath, build['dest']) : buildPath;
 
-            //合并压缩后的输出
-            var dist = build['dest'] ? resolve(buildPath, build['dest']) : buildPath;
+        taskCache[taskName] = () => {
 
             //加载的gulp插件
             var loaders = build['loader'];
             var stream = gulp.src(source);
             stream = stream.pipe(plumber());
+
+            gulplugins[taskName] = {};
+
             loaders && (Object.keys(loaders).forEach(loader => {
-                var gulplugin = gulplugins[loader] || (()=>{
+                var gulplugin;
+                if(gulplugins[taskName][loader]){
+                    gulplugin = gulplugins[taskName][loader]
+                }else{
+                    gulplugin = (()=>{
                         var pp = require(loader);
-                        gulplugins[loader] = pp;
+                        gulplugins[taskName][loader] = pp;
                         return pp;
                     })();
+                }
+
                 var options = loaders[loader];
                 if(util.isObject(options)){
                     if('_if' in options){
                         //如果为生产环境，执行压缩
                         (options['_if'] || env === 'prd' || env === 'production' )
                         && (stream = stream.pipe(gulplugin(options)));
+                    }else{
+                        stream = stream.pipe(gulplugin(options));
                     }
                 }else{
                     stream = stream.pipe(gulplugin(options));
@@ -134,8 +147,9 @@ if(util.isObject(builds)){
             //输出
             stream.pipe(gulp.dest(dist));
             return stream;
+        };
 
-        });
+        relies[taskName] = build['rely'] || null;
 
     });
 
@@ -148,7 +162,7 @@ function loadSource(source, pathPrefix, nos){
     if(util.isString(source)){
         source = [nos + resolve(sourcePath, pathPrefix, source)];
     }else{
-        source = source.map(function(src){
+        source = source.map(src => {
             return  nos + resolve(sourcePath, pathPrefix, src);
         });
     }
@@ -160,34 +174,17 @@ function loadWatch(source, pathPrefix){
     if(util.isString(source)){
         source = resolve(sourcePath, pathPrefix, source);
     }else{
-        source = source.map(function(src){
+        source = source.map(src => {
             return  resolve(sourcePath, pathPrefix, src);
         });
     }
     return source;
 }
 
-//监听文件变化
-gulp.task('watch', function(){
-    if(watchers){
-        var source, watch;
-        for(var k in watchers){
-            source = watchers[k];
-            watch = gulp.watch(source, [k]);
-        }
-        /*watch.on('change', function(event) {
-            console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
-        });*/
-    }
-});
-
 //合并当前项目指定的task数组
 function isTask(taskname){
     return tasks.indexOf(taskname) !== -1;
 }
-
-//添加监听任务
-tasks.push('watch');
 
 //在执行任务之前进行清理
 if(util.isArray(cleans) && cleans.length !== 0){
@@ -197,5 +194,67 @@ if(util.isArray(cleans) && cleans.length !== 0){
     del.sync(cleans, { force: true });
 }
 
+tasks = Object.keys(taskCache).map(taskName => {
+    gulp.task(taskName, builds[taskName]['rely'] || [], () => {
+        return taskCache[taskName]();
+    });
+    return taskName;
+});
+
+//重组task，按照rely
+//先存储所有被 rely的
+var paiallels = [], //并行
+    sequences = [], //串行
+    removeTemp;
+Object.keys(relies).forEach(rely => {
+
+    if(util.isArray(relies[rely]) && relies[rely].length !== 0){
+        relies[rely].forEach(task => {
+            if(paiallels.indexOf(task) === -1){
+                paiallels.unshift(task);
+            }
+        });
+    }
+});
+//根据rely和taskName重组顺序
+Object.keys(relies).forEach(rely => {
+
+    if(relies[rely] && paiallels.indexOf(rely) !== -1){
+        removeTemp = paiallels.splice([paiallels.indexOf(rely)], 1);
+        sequences.unshift(removeTemp[0]);
+    }else if(paiallels.indexOf(rely) === -1){
+        sequences.push(rely);
+    }
+});
+
+sequences.unshift(paiallels);
+tasks = sequences;
+//console.log(sequences); return;
+
+//监听文件变化
+var isWatch = Object.keys(watchers).length !== 0;
+isWatch && (() => {
+    gulp.task('watch', function(){
+        console.log('======== Start Watcher ========');
+        var source, watcher;
+        Object.keys(watchers).forEach(k => {
+            source = watchers[k];
+            var ts = [];
+            //查找依赖，如: build.html的rely包含 build.css
+            //当build.css的watch中的文件变化，将反转执行task（build.css -> build.htnl）
+            Object.keys(relies).forEach(rely => {
+                if(relies[rely] && relies[rely].indexOf(k) !== -1){
+                    ts.unshift(rely);
+                }
+            });
+            ts.push(k);
+            watcher = gulp.watch(source, ts);
+        });
+    });
+    //添加监听任务
+    tasks.push('watch');
+})();
+
+
 //清理成功后执行任务列表
-gulp.task('default', tasks);
+gulp.task('default', runSequence.apply(gulp, tasks));

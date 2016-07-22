@@ -1,12 +1,16 @@
 var nodePath = require('path');
+var argv = process.argv.slice(2),
+    _envIndex = argv.indexOf('-e') || argv.indexOf('--env'),
+    _env = _envIndex !== -1 ? argv[_envIndex + 1] : null;
 
 //当前编译环境: stg: 测试环境(默认); int: 开发环境; prd: 生成环境
-var env = 'stg';
+var env = _env || 'stg';
 //静态资源版本控制号
 var vQueryKey = '_cmbx_',
     hashSize = 10,
     //项目编译后的路径
-    buildPath = nodePath.resolve(__dirname, '../build');
+    buildPath = nodePath.resolve(__dirname, '../build'),
+    sourcePath = nodePath.resolve(__dirname, 'src');
 
 var config = {
     env: env,
@@ -19,13 +23,13 @@ var config = {
         //---说明：单个任务配置
         'build.css': {
             src: [
-                'assets/css/reset.css',
-                'assets/css/app.css',
-                'assets/css/public.css',
-                'assets/css/animate.css',
-                'assets/css/fonts.css',
-                'assets/css/media.css',
-                'assets/css/index.scss'
+                'assets/css/reset.css'
+                ,'assets/css/app.css'
+                ,'assets/css/public.css'
+                ,'assets/css/animate.css'
+                ,'assets/css/fonts.css'
+                ,'assets/css/media.css'
+                //'assets/css/index.scss'
             ],
             //额外的插件样式，如果不是每个页面都用到，不建议合并到主样式文件中
             //可以单独在使用到的页面中引用
@@ -36,22 +40,22 @@ var config = {
             rely: ['build.images', 'build.fonts'],
             //gulp插件列表
             loader: {
-                'gulp-sass': { outputStyle: 'compressed' },
+                //'gulp-sass': { outputStyle: 'compressed' },
+                'gulp-concat-css': 'app.min.css',
                 'gulp-recache': {
                     queryKey: vQueryKey,
                     //hash值长度
                     hashSize: hashSize,
                     //资源根路径, 如：编译后的路径 D:\\Sites\\test\\web_components\\build
                     //需要添加缓存的资源将会从basePath下开始查找
-                    basePath: buildPath
+                    basePath: buildPath + '/assets'
                 },
                 'gulp-autoprefixer': {
                     browsers: ['> 5%', 'IE > 8', 'last 2 versions'],
                     cascade: false
                 },
                 //当 _if 为true时，表示执行该loader
-                'gulp-uglifycss': { _if: env === 'prd' },
-                'gulp-concat-css': 'app.min.css'
+                'gulp-uglifycss': { _if: true }
             },
             watch: ['assets/css/**/*']
         },
@@ -117,7 +121,7 @@ var config = {
             dest: 'assets/js',
             loader: {
                 'gulp-concat': 'libs.js',
-                'gulp-uglify': { _if : env === 'prd', preserveComments: '!' }
+                'gulp-uglify': { _if : true, preserveComments: '!' }
             }
         },
 
