@@ -19,6 +19,10 @@
     "mpayment": {
       "config": "src/gulp-config.js",
       "path": "D:\\Sites\\cmbx\\mpayment"
+    },
+    "weixin": {
+      "config": "src/gulp-config.js",
+      "path": "D:\\Sites\\cmbx\\weixin"
     }
   }
 }

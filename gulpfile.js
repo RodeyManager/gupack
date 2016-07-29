@@ -4,7 +4,8 @@
 
 var gulp            = require('gulp'),
     plumber         = require('gulp-plumber'),
-    del             = require('del'),
+    gulpClean       = require('gulp-clean'),
+    //del             = require('del'),
     util            = require('util'),
     tool            = require('./lib/tools'),
     runSequence    = require('run-sequence');
@@ -18,7 +19,7 @@ var resolve = tool.Path.resolve;
 
 //变量
 var proName, proOpt, projectPath, basePath, sourcePath, buildPath,
-    proConfig, tasks, builds, watchers, env, cleans;
+    proConfig, tasks, builds, watchers, env, cleans, cleansFilter;
 
 //指定构建的项目名称, 在gulp后面传递参数
 proName = tool.argv['p'] || tool.argv['project'];
@@ -47,7 +48,9 @@ if(buildPath && /^\./i.test(buildPath)){
     //编译产出路径
     buildPath = buildPath || tool.getBuildPath(basePath, (proConfig['build'] || 'build'));
     //执行任务前需要清理的
-    cleans = proConfig['clean'] || [buildPath];
+    cleans = proConfig['clean'] || [];// || [resolve(buildPath, '**', '*')];
+    //执行任务前不被清理的
+    cleansFilter = (proConfig['cleanFilter'] || ['.svn', '.git']).map(function(path){ return '!' + resolve(buildPath, path) });
     //任务列表
     tasks = proConfig['task'] || [];
     //需要监听
@@ -75,8 +78,6 @@ if(util.isObject(builds)){
             source = build['src'] || [],
             watcher = build['watch'] || source || [],
             pathPrefix = build['pathPrefix'] || '';
-
-        //tasks.push(taskName);
 
         //watcher
         if(!build['watch'] && pathPrefix){
@@ -108,6 +109,8 @@ if(util.isObject(builds)){
 
         //合并压缩后的输出
         var dist = build['dest'] ? resolve(buildPath, build['dest']) : buildPath;
+        //编译之前需要清理，加入到清理队列中
+        cleans.push(dist);
 
         taskCache[taskName] = () => {
 
@@ -188,10 +191,16 @@ function isTask(taskname){
 
 //在执行任务之前进行清理
 if(util.isArray(cleans) && cleans.length !== 0){
-    cleans = cleans.map(function(clean){
-        return resolve(buildPath, clean);
+    //cleans = cleans.map(function(clean){
+    //    return resolve(buildPath, clean);
+    //});
+    //cleans = [].concat(cleans, cleansFilter);
+    //del.sync(cleans, { force: true });
+    cleans = cleans.concat(cleansFilter);
+    //console.log(cleans);
+    gulp.task('build._cleans', function(){
+        return gulp.src(cleans).pipe(gulpClean({ read: true }));
     });
-    del.sync(cleans, { force: true });
 }
 
 tasks = Object.keys(taskCache).map(taskName => {
@@ -206,6 +215,7 @@ tasks = Object.keys(taskCache).map(taskName => {
 var paiallels = [], //并行
     sequences = [], //串行
     removeTemp;
+
 Object.keys(relies).forEach(rely => {
 
     if(util.isArray(relies[rely]) && relies[rely].length !== 0){
@@ -227,7 +237,7 @@ Object.keys(relies).forEach(rely => {
     }
 });
 
-sequences.unshift(paiallels);
+paiallels.length !== 0 && sequences.unshift(paiallels);
 tasks = sequences;
 //console.log(sequences); return;
 
@@ -255,6 +265,8 @@ isWatch && (() => {
     tasks.push('watch');
 })();
 
+//添加清理任务
+tasks.unshift('build._cleans');
 
 //清理成功后执行任务列表
 gulp.task('default', runSequence.apply(gulp, tasks));

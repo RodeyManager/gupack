@@ -1,6 +1,6 @@
 {
   "name": "gupack",
-  "version": "1.0.45",
+  "version": "1.0.46",
   "description": "(基于gulp的前端构建工具)Based on the front-end build tools of gulp",
   "keyword": "gulp, webpack",
   "author": "Rodey",
@@ -28,7 +28,6 @@
   ],
   "dependencies": {
     "commander": "^2.9.0",
-    "del": "^2.2.0",
     "fs-extra": "^0.30.0",
     "gulp": "^3.9.0",
     "gulp-autoprefixer": "^3.1.0",
