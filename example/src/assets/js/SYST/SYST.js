@@ -20,7 +20,7 @@
 
     var SYST = {}; //function(){};
     //框架属性
-    SYST.VERSION = '2.0.48';
+    SYST.VERSION = '2.0.49';
     SYST.AUTHOR = 'Rodey Luo';
     //判断是否有jquery，zepto插件
     try{
@@ -293,7 +293,7 @@
             }
         },
         /**
-         * Function 判断数组是否存在某元素  存在： 返回该元素索引； 不存在： 返回 -1
+         * Function 判断数组或字符串是否存在某元素  存在： 返回该元素索引； 不存在： 返回 -1
          * @param array
          * @param obj
          * @return {*}
@@ -362,64 +362,55 @@
         dateFm: function(n){ return (n < 10) ? '0'+n : n; },
         /**
          * Function 将指定时间戳转为： yyyy-mm-dd hh:ii:ss
-         * @param timestamp
+         * @param date Date对象 | 时间戳 | 时间字符串，如：1462327561371 或 '2016/5/4 10:03:20'
+         * @param format {String} yyyy-mm-dd hh:ii:ss | yyyy-m-d
          * @return {String}
          */
-        setDateFormat: function(timestamp, format, prefix){
+        setDateFormat: function(date, format){
             if(!timestamp) return '';
-            var self = this;
-            var date = new Date(parseInt(timestamp, 10)), ds = [], ts = [];
-            if(!format)
-                return date.getFullYear() +'-'+ this.dateFm(date.getMonth() + 1) +'-'+ this.dateFm(date.getDate()) + ' ' + this.dateFm(date.getHours()) + ':' + this.dateFm(date.getMinutes()) + ':' + this.dateFm(date.getSeconds());
-            var cs = format.match(/[^\w\d\s]+?/i), c1 = cs[0] || '-', c2 = cs[1] || ':';
+            format = format || 'yyyy-mm-dd hh:ii:ss';
+            date = (/^\d+$/gi.test(date) || /\d+\/+/gi.test(date)) ? new Date(date) : SYST.V.isDate(date) ? date : null;
+            if(!date)   return null;
+            format = format.replace(/(y+)/i, function(m){
+                var year = '' + date.getFullYear();
+                return m.length >= 4 ? year : year.substr(m.length);
+            }).replace(/(m+)/i, function(m){
+                return _toFormat(m, date.getMonth() + 1);
+            }).replace(/(d+)/i, function(m){
+                return _toFormat(m, date.getDate());
+            }).replace(/(h+)/i, function(m){
+                return _toFormat(m, date.getHours());
+            }).replace(/(i+)/i, function(m){
+                return _toFormat(m, date.getMinutes());
+            }).replace(/(s+)/i, function(m){
+                return _toFormat(m, date.getSeconds());
+            });
 
-            var year = format.split(c1)[0];
-            if(year.length <= 2){
-                year = ('' + date.getFullYear()).substr(2);
-            }else{
-                year = date.getFullYear();
+            function _toFormat(m, val){
+                return m.length > 1 ? this.dateFm(val) : val;
             }
-            push(year, ds);
 
-            if(/m+?/i.test(format))     push(date.getMonth() + 1, ds);
-            if(/d+?/i.test(format))     push(date.getDate(), ds);
-            if(/h+?/i.test(format))     push(date.getHours(), ts);
-            if(/i+?/i.test(format))     push(date.getMinutes(), ts);
-            if(/s+?/i.test(format))     push(date.getSeconds(), ts);
-            function push(value, toAr){
-                toAr.push(prefix ? self.dateFm(value) : value);
-            }
-            return SYST.T.trim(ds.join(c1) + (ts.length > 0 ? ' ' + ts.join(c2) : ''));
+            return format;
+        },
+        dateFormat: function(date, format){
+            return this.setDateFormat(date, format);
         },
 
         /**
          * 将时间转为中文格式时间
-         * @param timestamp 时间戳 或 时间字符串，如：1462327561371 或 '2016/5/4 10:03:20'
-         * @param format 格式 YY-m-d
-         * @param prefix 是否补0
-         * @returns {string}
          */
-        setDateFormatCN: function(timestamp, format, prefix){
-            var cdate   = /[-:\/\|_\.]/gi.test(timestamp)
-                            ? timestamp : this.setDateFormat(timestamp, format, prefix),
-                cds     = cdate.split(' '),
-                date    = cds[0],
-                time    = cds[1],
-                cnDates = ['年', '月', '日', '时', '分', '秒'],
-                index   = 0;
-
-            date = replaceDate(date, /[-\/\|_\.]/gi) + cnDates[2];
-            index++;
-            time = replaceDate(time, /:/gi) + cnDates[5];
-
-            function replaceDate(str, reg){
-                return str.replace(reg, function(){
-                    return cnDates[index++];
-                });
+        setDateFormatCN: function(date, format){
+            var fs = ['年', '月', '日', '时', '分', '秒', '毫秒'],
+                ds = this.setDateFormat(date, format).split(/[-:\s]+/gi);
+            if(!ds || ds.length === 0)  return '';
+            for(var i = 0; i < ds.length; ++i){
+                ds[i] = (i === 3 ? ' ' : '') + ds[i] + fs[i];
             }
+            return ds.join('');
 
-            return date + ' ' + time;
-
+        },
+        dateFormatCN: function(date, format){
+            return this.setDateFormatCN(date, format);
         },
 
         /**
@@ -447,7 +438,7 @@
 
         /**
          * Function 获取随机字符（包括数字和字母）
-         * @param len:  字符长度
+         * @param size:  字符长度
          * @param flag: 是否去除干扰
          * @return {String}
          */
@@ -475,6 +466,7 @@
         /**
          * Function 获取指定参数或者所有参数列表
          * @param name
+         * @param url       传入的url地址
          * @returns {Object|String}
          */
         params: function(name, url){
@@ -617,9 +609,14 @@
             }
             else if(SYST.V.isArray(keys)){
                 var rs = {}, name;
-                for(var i = 0, len = keys.length; i < len; ++i){
-                    name = keys[i];
+                if(keys.length === 1){
+                    name = keys[0];
                     rs[name] = self.getCookie(name);
+                }else{
+                    for(var i = 0, len = keys.length; i < len; ++i){
+                        name = keys[i];
+                        rs[name] = self.getCookie(name);
+                    }
                 }
                 return rs;
             }
@@ -638,6 +635,7 @@
         /**
          * 遍历对象
          * @param object
+         * @param target   回调作用域对象
          * @param callback
          */
         each: function(object, callback, target){
