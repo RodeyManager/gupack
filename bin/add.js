@@ -1,5 +1,6 @@
 
 var prompt = require('prompt');
+prompt.message = '\u63d0\u793a';
 
 var T  = require('../lib/tools');
 var projectList = require('../_projects.json');
@@ -9,7 +10,7 @@ function add(){
 
     var name, path,
         project = {
-            config: "src/gulp-config.js"
+            config: "src/gupack-config.js"
         };
 
     (T.argv._[1]) && (name = T.argv._[1]);
@@ -25,7 +26,7 @@ function add(){
 
         name = result.name;
         if(projectList['projectList'][name]){
-            T.confirm('\u5f53\u524d\u9879\u76ee\u5df2\u7ecf\u5b58\u5728\uff0c\u662f\u5426\u8986\u76d6? [yes/no]: ', function(ok){
+            T.confirm('\u5f53\u524d\u9879\u76ee\u5df2\u7ecf\u5b58\u5728\uff0c\u662f\u5426\u8986\u76d6? [yes/no]', function(ok){
                 if(ok){
                     getPath();
                 }else{
@@ -62,54 +63,109 @@ function add(){
 }
 
 //gupack remove
-function removeProject(){
-    _delete();
+function remove(){
+    _deleteProject(false);
 }
 
 function deleteProject(){
-    _delete(true);
+    _deleteProject(true);
+}
+
+function _deleteProject(flag){
+    //默认为移除项目 remove action
+    var message = '\u6b64\u64cd\u4f5c\u5c06\u79fb\u9664\u8be5\u9879\u76ee\uff08\u4e0d\u4f1a\u5220\u9664\u786c\u76d8\u6587\u4ef6\uff09\uff0c\u60a8\u786e\u5b9a\u8981\u79fb\u9664\u5417? [yes/no]';
+    if(flag){
+        message = '\u6b64\u64cd\u4f5c\u5c06\u5220\u9664\u8be5\u9879\u76ee\uff08\u5e76\u5220\u9664\u786c\u76d8\u6587\u4ef6\uff09\uff0c\u60a8\u786e\u5b9a\u8981\u5220\u9664\u5417? [yes/no]';
+    }
+
+    var name = T.argv._[1];
+    if(!name || '' == name){
+        T.log.red('\u672a\u6307\u5b9a\u9879\u76ee');
+        return false;
+    }
+    if(_isInProject(name)){
+        prompt.start();
+        prompt.confirm(message, { name: 'ok' }, function(err, result){
+            if(result){
+                _delete(flag, name);
+                prompt.stop();
+            }else{
+                prompt.stop();
+            }
+        });
+    }else{
+        T.log.red('\u672a\u627e\u5230\u5bf9\u5e94\u9879\u76ee');
+        prompt.stop();
+    }
+
 }
 
 // gupack create
 function addCreate(name){
 
     var project = {
-        config: "src/gulp-config.js",
-        path: T.Path.resolve(process.cwd(), name)
+        config: "src/gupack-config.js",
+        path: _getPath()
     };
     _add(name, project);
 
 }
 
+/**
+ * 添加项目
+ * @param name      项目名称
+ * @param project   项目配置对象
+ * @private
+ */
 function _add(name, project){
 
+    var plist = projectList.projectList,
+        host = T.argv['host'] || '127.0.0.1',
+        port = T.argv['port'] || Math.round(Math.random() * 1000 + 3000);
+    //端口去重
+    if(!T.argv['port']){
+        var tps = [];
+        Object.keys(plist).forEach(function(p){
+            plist[p]['port'] && tps.push(plist[p]['port']);
+        });
+        port = T.generatePort(tps, port);
+    }
+
+    //储存 gupack start时需要的 host 、 port 、sport
+    project['host'] = host;
+    project['port'] = port;
+    //websocket端口 在 http/https端口上加上 1000
+    project['sport'] = port + 1000;
+    //浏览器热更新延迟时间, 默认2秒
+    project['liveDelay'] = T.argv['liveDelay'] || 2000;
     projectList['projectList'][name] = project;
     projectList = JSON.stringify(projectList, null, 2);
 
     T.fs.writeFileSync(T.Path.resolve(__dirname, '..', '_projects.json'), projectList);
 }
 
-function _delete(flag){
-    var name = T.argv._[1];
+/**
+ * 移除项目
+ * @param flag      是否删除硬盘文件
+ * @param name      项目名称
+ * @returns {boolean}
+ * @private
+ */
+function _delete(flag, name){
 
-    if(!name || '' === name){
-        T.log.red('\u672a\u6307\u5b9a\u9879\u76ee');
-        return false;
-    }
-
-    if(!projectList['projectList'][name]){
-        T.log.red('\u5f53\u524d\u9879\u76ee\u4e0d\u5b58\u5728');
-        return false;
-    }
+    //if(!projectList['projectList'][name]){
+    //    T.log.red('\u5f53\u524d\u9879\u76ee\u4e0d\u5b58\u5728');
+    //    return false;
+    //}
 
     var path = projectList['projectList'][name]['path'];
     projectList['projectList'][name] = null;
     delete projectList['projectList'][name];
 
     var content = JSON.stringify(projectList, null, 2);
-    T.fs.writeFileSync(T.Path.resolve(__dirname, '..', '_projects.json'), content);
+    T.fs.writeFileSync(T.Path.resolve(__dirname, '..', '_projects.json'), content, 'utf8');
 
-    T.log.green('\n\r  \u5220\u9664\u6210\u529f\uff01');
+    T.log.green(flag ? '\n\r  \u5220\u9664\u6210\u529f\uff01' : '\n\r  \u79fb\u9664\u6210\u529f');
     T.log.cyan('\u5df2\u5b58\u5728\u7684\u9879\u76ee\u5217\u8868:  ');
     Object.keys(projectList['projectList']).forEach(function(project){
         T.log.green('\t' + project);
@@ -132,10 +188,23 @@ function _isInProject(name){
     return null != projectList['projectList'][name];
 }
 
+function _getPath(){
+
+    var name = T.argv._[1],
+        path = T.argv._[2] || T.argv['path'];
+    //存在路径,将作为作为项目路径
+    if(path && path !== true && (/^[\.]{1,2}/.test(path) || ':' === path.slice(1, 2))){
+        return T.Path.resolve(path, name || '');
+    }else{
+        return T.Path.resolve(process.cwd(), name || '');
+    }
+}
+
 module.exports = {
     add: add,
     addCreate: addCreate,
-    removeProject: removeProject,
+    remove: remove,
     deleteProject: deleteProject,
-    isInProject: _isInProject
+    isInProject: _isInProject,
+    getPath: _getPath
 };

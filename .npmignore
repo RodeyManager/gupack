@@ -8,3 +8,10 @@ ehthumbs.db
 node_modules
 npm-debug.log
 
+
+baks
+temp.js
+gulpfile_back.js
+
+.git
+.svn

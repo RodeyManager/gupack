@@ -3,6 +3,9 @@ var T = require('../lib/tools');
 var Add = require('./add');
 var prompt = require('prompt');
 var loadTemplates = require('../_templates.js');
+var cwd = process.cwd();
+
+prompt.message = '\u63d0\u793a';
 
 /**
  * 创建新项目
@@ -11,13 +14,37 @@ var loadTemplates = require('../_templates.js');
  * @param to        项目地址
  */
 
+
+function create(){
+
+    var projectName = T.argv._[1] || T.Path.parse(process.cwd())['name'];
+    var to = T.Path.resolve(cwd, T.argv._[1] ? projectName : '');
+    var from = T.Path.join(__dirname, '..', 'example');
+
+    prompt.start();
+    prompt.get([{
+        name: 'ok',
+        message: '\u662f\u5426\u521b\u5efa\u9879\u76ee? [yes/no]'
+    }], function(err, result){
+        if(/^y|yes|ok|\u662f$/i.test(result.ok)){
+            console.log('\n\r');
+            createProject(projectName, from, to);
+        }else{
+            console.log('\n\r\x1b[31m  Aborting\x1b[0m');
+            prompt.stop();
+        }
+
+    });
+
+}
+
 function createProject(name, from, to){
 
     if(Add.isInProject(name)){
         prompt.start();
         prompt.get([{
             name: 'ok',
-            message: '\u5f53\u524d\u9879\u76ee\u5df2\u7ecf\u5b58\u5728\uff0c\u662f\u5426\u9700\u8981\u8986\u76d6? [yes/no] '
+            message: '\u5f53\u524d\u9879\u76ee\u5df2\u7ecf\u5b58\u5728\uff0c\u662f\u5426\u9700\u8981\u8986\u76d6? [yes/no]'
         }], function(err, result){
             if(/^y|yes|ok|\u662f$/i.test(result.ok)){
                 _createProject(name, from, to);
@@ -133,9 +160,9 @@ function _load$(from, to){
 
     writeTemplateFile(T.Path.resolve(tot, $name + '.js'), $content);
 
-    var gulpConfig = loadTemplateFile('gulp-config.js');
+    var gulpConfig = loadTemplateFile('gupack-config.js');
     gulpConfig = gulpConfig.replace(/\{\{@_\$_\}\}/gi, $name);
-    writeTemplateFile(T.Path.resolve(to, 'src/gulp-config.js'), gulpConfig);
+    writeTemplateFile(T.Path.resolve(to, 'src/gupack-config.js'), gulpConfig);
 
 }
 
@@ -162,4 +189,4 @@ function writeTemplateFile(path, content, mode){
 
 
 
-module.exports = createProject;
+module.exports = create;

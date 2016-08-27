@@ -20,7 +20,7 @@
 
     var SYST = {}; //function(){};
     //框架属性
-    SYST.VERSION = '2.0.49';
+    SYST.VERSION = '2.0.5';
     SYST.AUTHOR = 'Rodey Luo';
     //判断是否有jquery，zepto插件
     try{
@@ -367,7 +367,8 @@
          * @return {String}
          */
         setDateFormat: function(date, format){
-            if(!timestamp) return '';
+            if(!date) return '';
+            var self = this;
             format = format || 'yyyy-mm-dd hh:ii:ss';
             date = (/^\d+$/gi.test(date) || /\d+\/+/gi.test(date)) ? new Date(date) : SYST.V.isDate(date) ? date : null;
             if(!date)   return null;
@@ -387,7 +388,7 @@
             });
 
             function _toFormat(m, val){
-                return m.length > 1 ? this.dateFm(val) : val;
+                return m.length > 1 ? self.dateFm(val) : val;
             }
 
             return format;

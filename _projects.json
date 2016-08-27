@@ -23,6 +23,18 @@
     "weixin": {
       "config": "src/gulp-config.js",
       "path": "D:\\Sites\\cmbx\\weixin"
+    },
+    "ali_oss": {
+      "config": "src/gulp-config.js",
+      "path": "D:\\Sites\\test\\ali_oss"
+    },
+    "tmall": {
+      "config": "src/gupack-config.js",
+      "path": "D:/Sites/test/tmall",
+      "host": "127.0.0.1",
+      "port": 3350,
+      "sport": 4350,
+      "liveDelay": 2000
     }
   }
 }

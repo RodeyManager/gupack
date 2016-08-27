@@ -22,7 +22,7 @@
     };
 
     // 强制使用某个环境(测试用),默认就设置为空
-    App.testEnv = 'local';
+    App.testEnv = '';
 
     if(App.testEnv == 'stg' || App.testEnv == 'prd' || App.testEnv == ''){
         //调配链接环境
@@ -34,7 +34,7 @@
 
     }else if(App.testEnv == 'local'){
         //本地环境
-        var ma = (location.pathname.match(/[\w-]+.(html|do|action)/gi))[0];
+        var ma = (location.pathname.match(/[\w-]+.(html|do|action)/gi) || [])[0];
         App.ServerHost = origin + location.pathname.replace(ma, '');
         // 会员登陆验证
         webServiceUrls = {

@@ -1,6 +1,6 @@
 {
   "name": "gupack",
-  "version": "1.0.47",
+  "version": "1.1.0",
   "description": "(基于gulp的前端构建工具)Based on the front-end build tools of gulp",
   "keyword": "gulp, webpack",
   "author": "Rodey",
@@ -19,12 +19,7 @@
   "engines": {},
   "files": [
     "bin",
-    "lib",
-    "gulpfile.js",
-    "projects.js",
-    "_projects.json",
-    "_templates.js",
-    "example"
+    "lib"
   ],
   "dependencies": {
     "commander": "^2.9.0",
@@ -40,8 +35,10 @@
     "gulp-tag-include": "^1.1.2",
     "gulp-uglify": "^1.4.2",
     "gulp-uglifycss": "^1.0.4",
+    "jsmin2": "^1.2.1",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
+    "pako": "^1.0.3",
     "prompt": "^1.0.0",
     "run-sequence": "^1.2.2"
   },
