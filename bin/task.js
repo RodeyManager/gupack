@@ -145,6 +145,7 @@ function _updateConfig(projectName, host, port, config){
             if(pn == projectName){
                 config['host'] = host;
                 config['port'] = port;
+                config['sport'] = port + 1000;
             }
         }
         var projects = JSON.stringify({"projectList": projectList}, null, 2);

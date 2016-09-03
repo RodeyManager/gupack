@@ -10,7 +10,10 @@
     },
     "web_components": {
       "config": "src/gulp-config.js",
-      "path": "D:\\Sites\\test\\web_components"
+      "path": "D:\\Sites\\test\\web_components",
+      "host": "127.0.0.1",
+      "port": 3349,
+      "liveDelay": 1000
     },
     "website": {
       "config": "src/gulp-config.js",
@@ -34,6 +37,14 @@
       "host": "127.0.0.1",
       "port": 3350,
       "sport": 4350,
+      "liveDelay": 2000
+    },
+    "portal-tm": {
+      "config": "src/gupack-config.js",
+      "path": "D:\\Sites\\cmbx\\portal-tm",
+      "host": "127.0.0.1",
+      "port": 3437,
+      "sport": 4437,
       "liveDelay": 2000
     }
   }

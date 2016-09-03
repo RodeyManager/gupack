@@ -1,11 +1,15 @@
+/**
+ * Created by Rodey on 2016/8/25.
+ * 对已有项目进行单个配置
+ */
 
 var util = require('util');
-
 var T  = require('../lib/tools');
 var projectList = require('../_projects.json').projectList;
 
 /**
  * 列出所有项目
+ * gupack list
  */
 module.exports.list = function(){
 
@@ -27,6 +31,7 @@ module.exports.list = function(){
 
 /**
  * 查看单个项目配置信息
+ * gupack info [projectName]
  */
 module.exports.info = function(){
 

@@ -41,9 +41,11 @@ if(!basePath){
  */
 const server = http.createServer((req, res) => {
     var headers = {
+        'Accept-Ranges': 'bytes',
         'Content-Type': 'text/plain',
         'access-control-allow-origin': '*',
-        'timing-allow-origin': '*'
+        'timing-allow-origin': '*',
+        'Server': 'NodeJS/' + process.version
     };
     var pathname = url.parse(req.url).pathname.replace(/\.\./g, '');
     if(pathname.slice(-1) === '/'){
@@ -71,7 +73,7 @@ const server = http.createServer((req, res) => {
         realPath = path.join(realPath, "/", config.indexFile.file);
     }
     //读取文件
-    tools.fs.readFile(realPath, "utf-8", (err, file) => {
+    tools.fs.readFile(realPath, "binary", (err, file) => {
         if(err){
             //读取文件失败
             tools.log.red('\x1b[32m--->>> \u8bfb\u53d6\u6587\u4ef6\u5931\u8d25 \x1b[39m');
@@ -79,7 +81,7 @@ const server = http.createServer((req, res) => {
         }else{
 
             var extname = path.extname(realPath).replace(/^\./i, '');
-            headers['Content-Type'] = mimeTypes[extname] || 'text/plain';
+            headers['Content-Type'] = (mimeTypes[extname] || 'text/plain') + '; charset=UTF-8';
 
             //缓存控制===========Start
             var cacher = setHeaderCache(req, stats, extname, headers);
@@ -124,9 +126,9 @@ const server = http.createServer((req, res) => {
  * @param body      响应数据
  * @param headers   响应头信息对象
  */
-function sendResponse(req, res, status, body, headers){
+function sendResponse(req, res, status, body, headers, charType){
     res.writeHead(status, headers);
-    res.write(body, "binary");
+    res.write(body, charType || 'binary');
     res.end();
 }
 
@@ -158,13 +160,15 @@ function implanteScriptCode(content, realPath){
  * @returns {{content: *, headers: *}}
  */
 function setHeaderGzip(req, content, headers){
+    //将字符串数据转成二进制数据流，（有效解决二进制存储文件显示，如：图片，字体等）
+    var bin = new Buffer(content, 'binary');
     var acceptEncoding = req.headers['accept-encoding'] || "";
     if(/\bgzip\b/gi.test(acceptEncoding)){
         headers['Content-Encoding'] = 'gzip';
-        content = pako.gzip(content, { to: 'string' });
+        content = pako.gzip(new Uint8Array(bin), { to: 'string' });
     }else if(/\bdeflate\b/gi.test(acceptEncoding)){
         headers['Content-Encoding'] = 'deflate';
-        content = pako.gzip(content, { to: 'string' });
+        content = pako.gzip(new Uint8Array(bin), { to: 'string' });
     }
     return { content: content, headers: headers };
 }
