@@ -1,0 +1,15 @@
+html, body{ padding: 0; margin: 0; font-family: "Microsoft YaHei"; }
+.header, .footer{ display:block; }
+.header{ width: 100%; height: 80px; background-color: #eaeaea;  }
+.header p{ width: 90%; margin: 0 auto; padding: 10px 0; }
+.header p>a{ display: inline-block; vertical-align: middle; text-decoration: none; margin-right: 30px; color: #00CCCA;}
+.header img.logo{ display: block; width: 60px; height: 60px; }
+.header:after{ content: ""; display: block; clear: both;}
+.wrap{ width: 90%; margin: 0 auto; padding: 0; }
+.options p{ padding:0; margin: 8px 0; font-size: 12px; line-height: 12px; text-indent: 30px; }
+.options p a{ font-weight: bold; }
+.main{ margin: 30px auto; }
+.code .rexp{ padding: 0;margin: 3px 0;font-size: 10px;color: gray; }
+.code .rexp ul li{ font-size: 10px; }
+.return, .return:active, .return:hover{text-decoration: underline;  color: #31C1D4;  font-weight: bold;  /*font-size: 18px;*/ }
+.return{ display: none; }
