@@ -1,32 +1,34 @@
 <!--build header-->
-<include src="../assets/layout/header.html"
+<include src="../templates/layout/header.html"
+         path=""
          title="用户中心">
 </include>
     <header class="header">
         用户登录
     </header>
-    <div class="wrapper">
-        <section class="center login-main" st-model="loginModel">
+    <div class="wrapper" id="app" st-lock>
+        <section class="center login-main">
             <div class="form-group"></div>
             <div class="form-group">
-                <label class="name"><input type="text" st-prop="name" id="username" placeholder="用户名"/></label>
+                <label class="name"><input type="text" st-prop="name" id="username" autofocus placeholder="用户名"/></label>
             </div>
             <div class="form-group">
-                <label class="pwd"><input type="password" id="password" placeholder="密码"/></label>
+                <label class="pwd"><input type="password" st-prop="pass" id="password" placeholder="密码"/></label>
             </div>
             <div class="form-group err">
                 <p id="err-tip"></p>
             </div>
             <div class="form-group">
-                <include src="../assets/components/legalSelector/index.html"></include>
+                <include src="../components/legalSelector/index.html"></include>
             </div>
             <div class="form-group">
-                <input type="submit" value="登 录" id="login-btn"/>
+                <input type="submit" value="登 录" id="login-btn" st-on="click: login"/>
             </div>
         </section>
     </div>
 
 <!--build footer-->
-<include src="../assets/layout/footer.html"
+<include src="../templates/layout/footer.html"
+         path=""
          view="modules/passport/loginView.js">
 </include>

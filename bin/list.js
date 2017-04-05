@@ -3,9 +3,10 @@
  * 对已有项目进行单个配置
  */
 
-var util = require('util');
-var T  = require('../lib/tools');
-var projectList = require('../_projects.json').projectList;
+const
+    util = require('util'),
+    T  = require('../lib/tools'),
+    projectList = require('../_projects.json').projectList;
 
 /**
  * 列出所有项目

@@ -1,19 +1,21 @@
 #!/usr/bin/env node
 
-var prompt = require('prompt')
-    ,program = require('commander');
-
-var T  = require('../lib/tools');
-var version = require('../package.json')['version'];
+const
+    prompt = require('prompt')
+    ,program = require('commander')
+    ,T  = require('../lib/tools')
+    ,version = require('../package.json')['version'];
 
 prompt.message = '\u63d0\u793a';
 
 // --helper
 program
-    .version(version)
-    .usage('[options] \n\r\t \u6b22\u8fce\u4f7f\u7528\u524d\u7aef\u81ea\u52a8\u5316\u6784\u5efa\u5de5\u5177 Gupak\uff0c \n\r\t ' +
+    //.version(version)
+    .usage('[options] \n\r\t \u6b22\u8fce\u4f7f\u7528\u524d\u7aef\u81ea\u52a8\u5316\u6784\u5efa\u5de5\u5177 Gupack\uff0c \n\r\t ' +
     '\u5c06\u5e2e\u52a9\u60a8\u7b80\u5316\u524d\u7aef\u5f00\u53d1\u6d41\u7a0b\u548c\u63d0\u5347\u5f00\u53d1\u6548\u7387\u3002')
-    .option('-v, --version', '\u67e5\u770b\u5f53\u524d\u7248\u672c\u53f7')
+    .option('-v, --version', '\u67e5\u770b\u5f53\u524d\u7248\u672c\u53f7', ()=> {
+        require('./version').displayVersion();
+    })
     .option('-p, --project', '\u6307\u5b9a\u5f53\u524d\u7f16\u8bd1\u7684\u9879\u76ee')
     .option('-i, --info', '\u9879\u76ee\u914d\u7f6e\u4fe1\u606f')
     .option('-d, --buildpath', '\u6307\u5b9a\u7f16\u8bd1\u540e\u7684\u8f93\u51fa\u8def\u5f84')
@@ -22,8 +24,7 @@ program
     .option('--port', '\u670d\u52a1\u5668\u7aef\u53e3')
     .option('--liveDelay', '\u9875\u9762\u5ef6\u8fdf\u66f4\u65b0\u65f6\u95f4\uff08\u5f00\u53d1\u8c03\u5f0f\u5b9e\u65f6\u66f4\u65b0\uff09')
     .option('--server-path', '\u9879\u76ee\u76ee\u5f55\uff08\u542f\u52a8\u670d\u52a1\u5668\u5f00\u53d1\u8def\u5f84\uff0c\u7f16\u8bd1\u540e\u7684\u76ee\u5f55\uff09')
-    .option('-$, --terminal', '\u6307\u5b9a\u9879\u76ee\u8fd0\u884c\u7684\u7ec8\u7aef\u5e73\u53f0\uff0c\n\r\t\t       ' +
-                                'pc\u5c06\u4f7f\u7528jQuery\uff1bmobile\u5c06\u4f7f\u7528Zepto')
+
     .option('create', '\u521b\u5efa\u4e00\u4e2a\u9879\u76ee; EXP: gupack create mall')
     .option('add', '\u6dfb\u52a0\u9879\u76ee; EXP: gupack add mall D:\\Sites\\mall')
     .option('build', '\u7f16\u8bd1\u9879\u76ee; EXP: gupack build mall')
@@ -44,8 +45,9 @@ program
     .parse(process.argv);
 
 //console.log(T.argv);
-var argv = T.argv;
-var cwd = process.cwd();
+const
+    argv = T.argv,
+    cwd = process.cwd();
 //console.log(cwd);
 
 // Create Project 在当前目录先创建项目

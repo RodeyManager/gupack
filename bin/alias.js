@@ -6,8 +6,9 @@
  * 之后可以使用 gp命令 代替 gupack命令
  */
 
-var T = require('../lib/tools');
-var prompt = require('prompt');
+const
+    T = require('../lib/tools'),
+    prompt = require('prompt');
 prompt.message = '\u63d0\u793a';
 
 function alias(){
@@ -21,7 +22,7 @@ function alias(){
     }
 
     var npmRoot = T.exec('npm root -g');
-    npmRoot.stdout.on('data', function(data){
+    npmRoot.stdout.on('data', data => {
         npmPath = data;
         isRemove ? remove(aliasName, npmPath) : _alias(aliasName, npmPath);
     });
@@ -44,7 +45,7 @@ function _alias(name, path){
     prompt.get([{
         name: 'ok',
         message: '\u662f\u5426\u786e\u8ba4\u521b\u5efa\u522b\u540d\uff08\u522b\u540d\u6709\u53ef\u80fd\u8986\u76d6\u7cfb\u7edf\u547d\u4ee4\uff0c\u8bf7\u786e\u4fdd\u522b\u540d\u4e0d\u4e0e\u7cfb\u7edf\u5176\u5b83\u547d\u4ee4\u91cd\u590d\uff09? [yes/no]'
-    }], function(err, result){
+    }], (err, result) => {
         if(/^y|yes|ok|\u662f$/i.test(result.ok)){
             console.log('\n\r');
             _copyFiles(name, path);
@@ -80,7 +81,7 @@ function remove(name, path){
     prompt.get([{
         name: 'ok',
         message: '\u662f\u5426\u786e\u8ba4\u5220\u9664\u522b\u540d? [yes/no]'
-    }], function(err, result){
+    }], (err, result) => {
         if(/^y|yes|ok|\u662f$/i.test(result.ok)){
             console.log('\n\r');
             _remove(name, path);

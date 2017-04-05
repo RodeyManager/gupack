@@ -1,4 +1,4 @@
-$(function(){
-    FastClick && FastClick.attach(document.body);
-});
+// SYST.$(function(){
+//     FastClick && FastClick.attach(document.body);
+// });
 

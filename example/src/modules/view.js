@@ -4,7 +4,7 @@
  */
 
 var appView;
-$(function(){
+SYST.$(function(){
 
     appView = SYST.View({
 

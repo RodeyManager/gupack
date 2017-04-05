@@ -1,8 +1,7 @@
 {
   "name": "gupack",
-  "version": "1.1.2",
   "description": "(基于gulp的前端构建工具)Based on the front-end build tools of gulp",
-  "keyword": "gulp, webpack",
+  "keyword": "javascript, nodejs, gulp, webpack",
   "author": "Rodey",
   "license": {
     "name": "MIT",
@@ -16,7 +15,6 @@
   "bin": {
     "gupack": "./bin/gupack.js"
   },
-  "engines": {},
   "files": [
     "bin",
     "lib"
@@ -30,19 +28,19 @@
     "gulp-concat-css": "^2.2.0",
     "gulp-html-builder": "^0.1.0",
     "gulp-html-inline": "^3.0.0",
-    "gulp-plumber": "^1.0.1",
-    "gulp-recache": "^1.0.3",
+    "gulp-jsminer": "^1.0.1",
+    "gulp-plumber": "^1.1.0",
+    "gulp-recache": "^1.0.5",
     "gulp-tag-include": "^1.1.2",
-    "gulp-uglify": "^1.4.2",
     "gulp-uglifycss": "^1.0.4",
     "jsmin2": "^1.2.1",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "pako": "^1.0.3",
-    "prompt": "^1.0.0",
-    "run-sequence": "^1.2.2"
+    "prompt": "^1.0.0"
   },
   "devDependencies": {},
+  "engines": {},
   "_npmVersion": "2.15.1",
   "_npmUser": {
     "name": "rodey",

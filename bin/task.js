@@ -1,21 +1,26 @@
 
-var T  = require('../lib/tools'),
+const
+    T  = require('../lib/tools'),
     os = require('os');
 
-var taskName = T.argv._.slice(-1)[0];
-var from = T.Path.join(__dirname, '..');
-var isBuildPath = (T.argv['d'] || T.argv['buildpath']) != null;
-var buildPath = T.argv['d'] || T.argv['buildpath'];
+const
+    taskName = T.argv._.slice(-1)[0],
+    from = T.Path.join(__dirname, '..'),
+    isBuildPath = (T.argv['d'] || T.argv['buildpath']) != null,
+    buildPath = T.argv['d'] || T.argv['buildpath'],
+    isEnv = (T.argv['e'] || T.argv['env']) != null,
+    env = T.argv['e'] || T.argv['env'],
+    cwd = process.cwd();
 
-var isEnv = (T.argv['e'] || T.argv['env']) != null;
-var env = T.argv['e'] || T.argv['env'];
+const gulpShell = 'node ' + T.Path.resolve(__dirname, '../node_modules/gulp/bin/gulp.js');
+//const gulpShell = 'gulp ';
 
 //项目列表
-var projectList = require('../projects').projectList;
+const projectList = require('../projects').projectList;
 
 //task as gulp task
 function task(){
-    var shell = 'gulp';
+    var shell = gulpShell;
     if(taskName)
         shell += ' ' + taskName;
 
@@ -25,19 +30,21 @@ function task(){
 //build project
 function build(){
 
-    var shell = 'gulp';
-    var projectName = T.argv._[1] || T.argv['p'] || T.argv['project'] || T.Path.parse(process.cwd())['name'];
+    //start();
+
+    //var shell = 'gulp';
+    var shell = gulpShell;
+    var projectName = _getProjectName();
     shell += ' -p ' + projectName;
     if(isBuildPath){
-        shell += ' -d ' + buildPath + ' --cwdir ' + process.cwd();
+        shell += ' -d ' + buildPath + ' --cwdir ' + cwd;
     }
     if(isEnv){
         shell += ' -e ' + env;
     }
     shell += ' --gulpfile ' + T.Path.resolve(from, 'gupackFile.js');
-    //console.log(shell);
 
-    execute(shell);
+    execute(shell, 'gulp build');
 
 }
 
@@ -45,7 +52,6 @@ function build(){
 function start(){
 
     var server = _startServer();
-
     //打开默认浏览器
     _openBrowse(server.host, server.port);
 
@@ -58,7 +64,7 @@ function restart(){
 
 function _startServer(){
 
-    var projectName = T.argv._[1] || T.argv['p'] || T.argv['project'] || T.Path.parse(process.cwd())['name'],
+    var projectName = _getProjectName(),
         projectConf = T.getProjectConfig(projectName);
     //判断项目是否存在
     if(!projectConf){
@@ -85,9 +91,8 @@ function _startServer(){
 
     //start nodemon
     //console.log('\x1b[32m--->>> \u5f00\u59cb\u542f\u52a8\u670d\u52a1 \x1b[39m');
-    T.log.green('\x1b[32m--->>> starting server \x1b[39m');
+    T.log.green(`\x1b[32m--->>> starting server: http://${host}:${port} \x1b[39m`);
     execute(nodemonShell);
-
     return { host: host, port: port };
 }
 
@@ -105,15 +110,15 @@ function _openBrowse(host, port){
 }
 
 function _getHost(config){
-    return T.argv['host'] || config['host'] || '127.0.0.1';
+    return T.argv['host'] || (config && config['host']) || '127.0.0.1';
 }
 
 function _getPort(config){
-    var port = T.argv['port'] || config['port'] || Math.round(Math.random() * 1000 + 3000);
+    var port = T.argv['port'] || (config && config['port']) || Math.round(Math.random() * 1000 + 3000);
     //随机生成，端口去重
-    if(!T.argv['port'] && !config['port']){
+    if(!T.argv['port'] && (!config || !config['port'])){
         var tps = [];
-        Object.keys(projectList).forEach(function(project){
+        Object.keys(projectList).forEach((project) => {
             projectList[project]['port'] && tps.push(projectList[project]['port']);
         });
         port = T.generatePort(tps, port);
@@ -153,31 +158,36 @@ function _updateConfig(projectName, host, port, config){
     }
 }
 
+function _getProjectName(){
+    return String(T.argv._[1] || T.argv['p'] || T.argv['project'] || T.Path.parse(cwd)['name']);
+}
+
 //编译并发布
 function publish(){
-    var shell = 'gulp';
-    var projectName = T.argv._[1] || T.argv['p'] || T.argv['project'] || T.Path.parse(process.cwd())['name'];
+    var shell = gulpShell;
+    var projectName = _getProjectName();
     shell += ' -p ' + projectName + ' --env prd --publish true';
     if(isBuildPath){
-        shell += ' -d ' + buildPath + ' --cwdir ' + process.cwd();
+        shell += ' -d ' + buildPath + ' --cwdir ' + cwd;
     }
     //console.log(shell);
 
-    execute(shell);
+    execute(shell, 'gulp publish');
 }
 
-function execute(shell){
+function execute(shell, shellName){
     //未指定可用命令
     if(!shell){
         console.log('\x1b[32m--->>> \u672a\u6307\u5b9a\u53ef\u7528\u547d\u4ee4 \x1b[39m');
         return false;
     }
     var gulpExec = T.exec(shell, {cwd: from});
-    gulpExec.stdout.on('data', function(data){
+
+    gulpExec.stdout.on('data', data => {
         process.stdout.write('\x1b[32m' + data + '\x1b[39m');
     });
 
-    gulpExec.on('exit', function(code){
+    gulpExec.on('exit', code => {
         process.exit(1);
     });
 

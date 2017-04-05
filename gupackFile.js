@@ -2,30 +2,35 @@
  * Created by Rodey on 2016/4/12.
  */
 
-var gulp            = require('gulp'),
+
+const
     plumber         = require('gulp-plumber'),
     gulpClean       = require('gulp-clean'),
-    //del             = require('del'),
     util            = require('util'),
     tool            = require('./lib/tools'),
     publish         = require('./lib/publish'),
-    runSequence     = require('run-sequence');
-
+    child           = require('child_process'),
+    //gulp            = require(tool.Path.resolve(__dirname, 'node_modules/gulp/index.js')),
+    gulp            = require('gulp'),
+    taskSequence    = require('./lib/task_sequence');
 
 //获取配置
-var projects = require('./projects.js');
-var cwd = tool.argv['cwdir'] || process.cwd();
-var resolve = tool.Path.resolve;
+const
+    projects        = require('./projects.js'),
+    cwd             = tool.argv['cwdir'] || process.cwd(),
+    resolve         = tool.Path.resolve,
+//指定构建的项目名称, 在gulp后面传递参数
+    proName         = tool.argv['p'] || tool.argv['project'],
+//是否发布
+    isPublish       = tool.argv['publish'],
+    empty           = function(){};
 
 //变量
-var proName, proOpt, projectPath, basePath, sourcePath, buildPath,
-    proConfig, tasks, builds, watchers, env, cleans, cleansFilter,
-    isPublish, hostName;
+var
+    proOpt, projectPath, basePath, sourcePath, buildPath,
+    proConfig, tasks, buildTasks, watchers, env, cleans, cleansFilter,
+    hostName, isProduction;
 
-//是否发布
-isPublish = tool.argv['publish'];
-//指定构建的项目名称, 在gulp后面传递参数
-proName = tool.argv['p'] || tool.argv['project'];
 //指定构建后的目录
 buildPath = tool.argv['d'] || tool.argv['buildpath'];
 if(buildPath && /^\./i.test(buildPath)){
@@ -54,16 +59,15 @@ if(buildPath && /^\./i.test(buildPath)){
     cleans = proConfig['clean'] || [];// || [resolve(buildPath, '**', '*')];
     //执行任务前不被清理的
     cleansFilter = (proConfig['cleanFilter'] || ['.svn', '.git']).map(function(path){ return '!' + resolve(buildPath, path) });
-    //任务列表
-    tasks = proConfig['task'] || [];
     //需要监听
     watchers = proConfig['watchers'] || {};
     //编译选项
-    builds = proConfig['builds'] || {};
+    buildTasks = proConfig['buildTasks'] || {};
     //是否指定域名，release
     hostName = proConfig['hostname'];
     //指定构建环境 stg: 测试；prd: 生成
     env = tool.argv['e'] || tool.argv['env'] || proConfig['env'] || 'stg';
+    isProduction = (env === 'prd' || env === 'production');
     if(isPublish){
         env = 'prd';
     }
@@ -71,15 +75,15 @@ if(buildPath && /^\./i.test(buildPath)){
 })();
 
 //缓存插件
-var gulplugins = {};
-var taskCache = {};
-var relies = {};
+var gulplugins = {},
+    taskCache = {},
+    relies = {};
 
-if(util.isObject(builds)){
+if(util.isObject(buildTasks)){
 
-    Object.keys(builds).forEach(taskName => {
+    Object.keys(buildTasks).forEach(taskName => {
 
-        var build = builds[taskName],
+        var build = buildTasks[taskName],
             source = build['src'] || [],
             watcher = build['watch'] || source || [],
             pathPrefix = build['pathPrefix'] || '';
@@ -87,10 +91,12 @@ if(util.isObject(builds)){
         //watcher
         if(!build['watch'] && pathPrefix){
             if(util.isString(source)){
-                watcher = pathPrefix + source;
+                //watcher = pathPrefix + source;
+                watcher = tool.Path.join(pathPrefix, source);
             }else if(util.isArray(source)){
-                watcher = source.map(function(s){
-                    return pathPrefix + s;
+                watcher = source.map(s => {
+                    //return pathPrefix + s;
+                    return tool.Path.join(pathPrefix, s);
                 });
             }else{
                 throw new ReferenceError('没有可用的源文件，请设置 src 文件地址');
@@ -104,13 +110,17 @@ if(util.isObject(builds)){
 
         //过滤文件 filters
         var filters = build['filters'] || [];
-        filters = loadSource(filters, pathPrefix, '!');
-        source = source.concat(filters);
+        if(filters.length > 0){
+            filters = loadSource(filters, pathPrefix, '!');
+            source = source.concat(filters);
+        }
 
         //插件样式
         var plugins = build['plugins'] || [];
-        plugins = loadSource(plugins, pathPrefix);
-        source = source.concat(plugins);
+        if(plugins.length > 0){
+            plugins = loadSource(plugins, pathPrefix);
+            source = source.concat(plugins);
+        }
 
         //合并压缩后的输出
         var dist = build['dest'] ? resolve(buildPath, build['dest']) : buildPath;
@@ -144,8 +154,8 @@ if(util.isObject(builds)){
                 if(util.isObject(options)){
                     if('_if' in options){
                         //如果为生产环境，执行压缩
-                            (options['_if'] || env === 'prd' || env === 'production' ) &&
-                            (stream = stream.pipe(gulplugin(options)));
+                        (options['_if'] || isProduction ) &&
+                        (stream = stream.pipe(gulplugin(options)));
                     }else{
                         stream = stream.pipe(gulplugin(options));
                     }
@@ -154,14 +164,11 @@ if(util.isObject(builds)){
                 }
             }));
 
-            //浏览器热更新
-
-
             //判断是否存在hostname配置,如果存在则执行替换任务(一般在release)
             if(isPublish && hostName){
                 stream = stream.pipe(publish({ hostname: hostName }));
             }
-
+            stream = stream.pipe(plumber());
             //输出
             stream.pipe(gulp.dest(dist));
             return stream;
@@ -208,14 +215,14 @@ function isTask(taskname){
 if(util.isArray(cleans) && cleans.length !== 0){
     cleans = cleans.concat(cleansFilter);
     //cleans = [tool.Path.resolve(buildPath, '/**/*')];
-    console.log(buildPath);
-    gulp.task('build._cleans', function(){
+    //console.log(buildPath);
+    gulp.task('build._cleans', () => {
         return gulp.src(cleans).pipe(gulpClean({ read: true }));
     });
 }
 
 tasks = Object.keys(taskCache).map(taskName => {
-    gulp.task(taskName, builds[taskName]['rely'] || [], () => {
+    gulp.task(taskName, buildTasks[taskName]['rely'] || [], () => {
         return taskCache[taskName]();
     });
     return taskName;
@@ -250,7 +257,7 @@ Object.keys(relies).forEach(rely => {
 
 paiallels.length !== 0 && sequences.unshift(paiallels);
 tasks = sequences;
-//console.log(sequences); return;
+//console.log(relies, sequences); return;
 
 //监听文件变化
 var isWatch = Object.keys(watchers).length !== 0;
@@ -262,7 +269,7 @@ isWatch && (() => {
             source = watchers[k];
             var ts = [];
             //查找依赖，如: build.html的rely包含 build.css
-            //当build.css的watch中的文件变化，将反转执行task（build.css -> build.htnl）
+            //当build.css的watch中的文件变化，将反转执行task（build.css -> build.html）
             Object.keys(relies).forEach(rely => {
                 if(relies[rely] && relies[rely].indexOf(k) !== -1){
                     ts.unshift(rely);
@@ -278,6 +285,7 @@ isWatch && (() => {
 
 //添加清理任务
 tasks.unshift('build._cleans');
+//console.log(tasks);
 
 //清理成功后执行任务列表
-gulp.task('default', runSequence.apply(gulp, tasks));
+gulp.task('default', taskSequence.apply(gulp, tasks));

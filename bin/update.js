@@ -1,5 +1,5 @@
 
-var T  = require('../lib/tools');
+const T  = require('../lib/tools');
 
 module.exports = function(){
     var pluginName = T.argv._.slice(-1)[0];
@@ -9,7 +9,7 @@ module.exports = function(){
         shell += ' ' + pluginName;
     }
 
-    T.exec(shell, { cwd: from }, function(error, stdout, stderr){
+    T.exec(shell, { cwd: from }, (error, stdout, stderr) => {
         if(error)   T.log.red(error);
         if(stdout)  T.log.green(stdout);
         if(stderr)  T.log.gray(stderr);

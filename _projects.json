@@ -5,39 +5,34 @@
       "path": "D:\\Sites\\test\\pack"
     },
     "payment": {
-      "config": "src/gulp-config.js",
-      "path": "D:\\Sites\\cmbx\\payment"
+      "config": "src/gupack-config.js",
+      "path": "D:\\Sites\\cmbx\\payment",
+      "host": "127.0.0.1",
+      "port": 3030,
+      "sport": 4030
     },
     "web_components": {
       "config": "src/gulp-config.js",
       "path": "D:\\Sites\\test\\web_components",
       "host": "127.0.0.1",
       "port": 3349,
-      "liveDelay": 1000
+      "liveDelay": 500
     },
     "website": {
       "config": "src/gulp-config.js",
       "path": "D:\\Sites\\cmbx\\website"
     },
     "mpayment": {
-      "config": "src/gulp-config.js",
-      "path": "D:\\Sites\\cmbx\\mpayment"
+      "config": "src/gupack-config.js",
+      "path": "D:\\Sites\\cmbx\\mpayment",
+      "host": "127.0.0.1",
+      "port": 3394,
+      "sport": 4394,
+      "liveDelay": 500
     },
     "weixin": {
       "config": "src/gulp-config.js",
       "path": "D:\\Sites\\cmbx\\weixin"
-    },
-    "ali_oss": {
-      "config": "src/gulp-config.js",
-      "path": "D:\\Sites\\test\\ali_oss"
-    },
-    "tmall": {
-      "config": "src/gupack-config.js",
-      "path": "D:/Sites/test/tmall",
-      "host": "127.0.0.1",
-      "port": 3350,
-      "sport": 4350,
-      "liveDelay": 2000
     },
     "portal-tm": {
       "config": "src/gupack-config.js",
@@ -46,6 +41,27 @@
       "port": 3437,
       "sport": 4437,
       "liveDelay": 2000
+    },
+    "pc": {
+      "config": "src/gupack-config.js",
+      "path": "D:\\Sites\\cmbx\\ESales\\pc",
+      "host": "127.0.0.1",
+      "port": 3696,
+      "sport": 4696,
+      "liveDelay": 2000
+    },
+    "mobile": {
+      "config": "src/gupack-config.js",
+      "path": "D:\\Sites\\cmbx\\ESales\\mobile",
+      "host": "127.0.0.1",
+      "port": 3754,
+      "sport": 4754,
+      "liveDelay": 2000
+    },
+    "epay-pc": {
+      "config": "src/gupack-config.js",
+      "path": "D:\\Sites\\cmbx\\epay\\epay-pc",
+      "host": "127.0.0.1"
     }
   }
 }

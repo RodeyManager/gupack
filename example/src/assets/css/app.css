@@ -89,16 +89,17 @@ body {
     display: block;
     width: 32px;
     height: 32px;
-    font-family: icomoon;
+    font-family: 'FontAwesome';
     position: absolute;
     left: 3px;
+    top: 5px;
     font-size: 1.6rem;
     color: #757575;
     text-align: center;
 }
 .login-main .form-group label.name:before{
-    content: "\e901";
+    content: "\f2c0";
 }
 .login-main .form-group label.pwd:before{
-    content: "\e903";
+    content: "\f13e";
 }

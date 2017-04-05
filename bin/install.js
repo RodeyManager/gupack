@@ -1,13 +1,15 @@
 
-var T  = require('../lib/tools');
+const T  = require('../lib/tools');
 
-var pluginName = T.argv._.slice(-1)[0];
-var from = T.Path.join(__dirname, '..');
+const
+    pluginName = T.argv._.slice(-1)[0],
+    from = T.Path.join(__dirname, '..'),
+    isG = T.argv['g'] != null,
+    isSave = T.argv['save'] != null,
+    isSaveDev = T.argv['save-dev'] != null,
+    isForce = T.argv['force'] != null;
+
 var shell = 'npm install';
-var isG = T.argv['g'] != null;
-var isSave = T.argv['save'] != null;
-var isSaveDev = T.argv['save-dev'] != null;
-var isForce = T.argv['force'] != null;
 
 //install as npm install
 function install(){

@@ -3,43 +3,36 @@
  */
 
 var appModel;
-$(function(){
+SYST.$(function(){
 
-    appMpdel = SYST.Model({
-        $mid: 'appModel',
+    var appHttp = SYST.Http({
+        init: function(){
+            this.generateApi(App.webServiceUrls);
+        }
+    });
+
+    appModel = SYST.Model({
+        $http: appHttp,
         init: function(){
             //全局ajax请求方式
             this.$http.ajaxType = 'POST';
-
-            //生产对应的接口请求方法
-            this.initGenerateApis();
-        },
-
-        initGenerateApis: function(){
-            var apis = {};
-            for(var key in App.webServiceUrls){
-                if(App.webServiceUrls.hasOwnProperty(key)){
-                    apis[key] = App.getWebServiceUrl(key);
-                }
-            }
-            this.generateApi(apis);
         },
 
         /*---------------------------------------会员相关----------------------------------------*/
 
         showPage: function(){
-            document.getElementsByTagName('html')[0].classList.remove('loading');
-            document.body.style.display = 'block';
+            this.$('html').removeClass('loading');
+            this.$('body').show();
         },
 
         //接口测试用
         test: function(postData, su, fail){
-            this.$http.doAjax(App.getWebServiceUrl('test'), postData, su, fail, { callTarget: this });
+            this.$http.test(postData, su, fail, { callTarget: this });
         }
 
     });
 
-    var requestTipDom = $('#request-tip');
+    var requestTipDom = SYST.$('#request-tip');
 
     SYST.httpConfig = {
         commonData: {

@@ -16,3 +16,7 @@
     opacity: 0;
     clear: both;
 }
+
+*[st-lock]{
+    visibility: hidden;
+}

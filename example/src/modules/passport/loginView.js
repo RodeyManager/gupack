@@ -1,29 +1,27 @@
 /**
- * Created by r9luox on 2016/5/18
  * name: '__ loginView 登录视图 __'
  */
 
-$(function(){
+SYST.$(function(){
 
-    var $name = $('#username'),
+    var $ = SYST.$,
+        $name = $('#username'),
         $pawd = $('#password'),
         $etip = $('#err-tip');
 
     var loginModel = SYST.Model({
-        $mid: 'loginModel',
-        props: {
-            name: SYST.T.Cookie('name') || SYST.T.getParams('name'),
-            pass: SYST.T.Cookie('pass')
-        }
-    });
-
-    var loginView = SYST.View({
         model: appModel,
-        events: {
-            'click #login-btn'       : 'login'
+        $mid: '#app',
+        props: {
+            name: SYST.T.getCookie('name') || SYST.T.getParams('name'),
+            pass: SYST.T.getCookie('pass'),
+            remember: SYST.T.getCookie('remember') || 1
         },
         init: function(){
             this.posting = false;
+            if(this.props.remember){
+                LegalSelector.check(true);
+            }
         },
         login: function(evt){
             if(this.posting)    return;
@@ -40,16 +38,14 @@ $(function(){
 
             var postData = { name: name, pass: pass };
             this.posting = true;
-            this.model.login(postData, this.loginSuccess.bind(this), this.loginError.bind(this), { type: 'GET' });
-
+            this.model.$http.login(postData, this.loginSuccess.bind(this), this.loginError.bind(this), { type: 'GET' });
         },
-
         loginSuccess: function(res){
             this.posting = false;
             if(200 === res.code){
                 //保存30天
                 if(LegalSelector.check()){
-                    SYST.T.Cookie('name', $name.val(), { expires: 30 });
+                    SYST.T.setCookie({ 'name': $name.val(), 'remember': 1 }, { expires: 30 });
                     SYST.T.jumpTo('index.html');
                 }else{
                     SYST.T.jumpTo('index.html', { name: $name.val() });
@@ -62,8 +58,15 @@ $(function(){
         loginError: function(err){
             this.posting = false;
             $etip.html('登录失败, 用户名或密码错误!');
-        }
+        },
 
+        logout: function(evt){
+            this.model.$http.logout({name: SYST.T.getCookie('name')}, function(){
+                SYST.T.setCookie('name', null);
+                SYST.T.setCookie('remember', null);
+                SYST.T.jumpTo('login.html');
+            });
+        }
     });
 
 });

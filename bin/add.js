@@ -1,9 +1,9 @@
 
-var prompt = require('prompt');
-prompt.message = '\u63d0\u793a';
-
-var T  = require('../lib/tools');
+const prompt = require('prompt'),
+    T  = require('../lib/tools');
 var projectList = require('../_projects.json');
+
+prompt.message = '\u63d0\u793a';
 
 // gupack add
 function add(){
@@ -22,11 +22,11 @@ function add(){
         name: 'name',
         default: name || '',
         message: '\u9879\u76ee\u540d\u79f0'
-    }], function(err, result){
+    }], (err, result) => {
 
         name = result.name;
         if(projectList['projectList'][name]){
-            T.confirm('\u5f53\u524d\u9879\u76ee\u5df2\u7ecf\u5b58\u5728\uff0c\u662f\u5426\u8986\u76d6? [yes/no]', function(ok){
+            T.confirm('\u5f53\u524d\u9879\u76ee\u5df2\u7ecf\u5b58\u5728\uff0c\u662f\u5426\u8986\u76d6? [yes/no]', ok => {
                 if(ok){
                     getPath();
                 }else{
@@ -48,7 +48,7 @@ function add(){
             name: 'path',
             default: path || '',
             message: '\u9879\u76ee\u8def\u5f84 (\u7edd\u5bf9)'
-        }], function(err, result){
+        }], (err, result) => {
             path = result.path;
 
             project['path'] = path;
@@ -85,7 +85,7 @@ function _deleteProject(flag){
     }
     if(_isInProject(name)){
         prompt.start();
-        prompt.confirm(message, { name: 'ok' }, function(err, result){
+        prompt.confirm(message, { name: 'ok' }, (err, result) => {
             if(result){
                 _delete(flag, name);
                 prompt.stop();
@@ -125,7 +125,7 @@ function _add(name, project){
     //端口去重
     if(!T.argv['port']){
         var tps = [];
-        Object.keys(plist).forEach(function(p){
+        Object.keys(plist).forEach(p => {
             plist[p]['port'] && tps.push(plist[p]['port']);
         });
         port = T.generatePort(tps, port);
@@ -174,7 +174,7 @@ function _delete(flag, name){
     if(flag){
         //delete directory
         if(T.fs.existsSync(path)){
-            T.fsa.remove(path, function(err){
+            T.fsa.remove(path, err => {
                 if(err) T.log.red(err);
             });
         }else{
@@ -190,8 +190,8 @@ function _isInProject(name){
 
 function _getPath(){
 
-    var name = T.argv._[1],
-        path = T.argv._[2] || T.argv['path'];
+    var name = String(T.argv._[1]),
+        path = String(T.argv._[2]) || T.argv['path'];
     //存在路径,将作为作为项目路径
     if(path && path !== true && (/^[\.]{1,2}/.test(path) || ':' === path.slice(1, 2))){
         return T.Path.resolve(path, name || '');
