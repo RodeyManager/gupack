@@ -1,13 +1,5 @@
 
-    <link rel="stylesheet" href="doc/assets/js/highlight/css/monokai-sublime.min.css"/>
-    <link rel="stylesheet" href="doc/assets/css/main.css"/>
-    <header class="header">
-
-            [![gupack](doc/assets/images/gupack-128.png)](#)
-            [Gupack 基于gulp的前端自动化构建工具](#)
-    </header>
-    <section class="wrap">
-        <div class="options" id="params">
+![gupack](/doc/assets/images/gupack-128.png)
 
 ### 命令使用参数
 
@@ -71,7 +63,7 @@
 ### 使用说明
 
 
-####create【创建项目】
+create【创建项目】
 ```
     add【添加项目】将项目添加到gupack项目列表中
                 
@@ -79,7 +71,7 @@
     //提示: 项目名称: (mall)
     //提示：项目路径: D:\\Sites\\mall
 ```
-####build【编译项目】对项目进行编译
+build【编译项目】对项目进行编译
 
 ```
     gupack build mall
@@ -87,67 +79,67 @@
     
     编译项目可带命令参数，请查看[命令参数]
 ```
-####start【启动项目】运行gupack自带的静态文件服务器，便于本地调式项目（包括浏览器实时更新功能）
+start【启动项目】运行gupack自带的静态文件服务器，便于本地调式项目（包括浏览器实时更新功能）
 ```
     gupack start mall
     //或者定位到项目下，执行 gupack start
     编译项目可带命令参数，请查看[命令参数]
 ```
 
-####restart【重启服务】
+restart【重启服务】
 ```
     gupack restart mall
     //或者定位到项目下，执行 gupack restart
 ```
-####publish【发布项目】
+publish【发布项目】
 ```
     gupack publish mall
     //或者定位到项目下，执行 gupack publish
 
     如果在gupack-config.js中配置了hostname选项，则publish后，项目中的所有连接地址都会加上hostname地址
 ```
-####remove【移除项目】
+remove【移除项目】
  ```   
     gupack remove mall
     //或者定位到项目下，执行 gupack remove
 
     从gupack项目列表中移除（不会删除硬盘文件）
 ```
-####delete【删除项目】
+delete【删除项目】
 ```
     gupack delete mall
     //或者定位到项目下，执行 gupack delete
 
     从gupack项目列表中删除（同时删除硬盘文件）
 ```
-####list【查看项目列表】
+list【查看项目列表】
 ```
     gupack list
 
     列出gupack所有项目
 ```
-####install【安装gulp插件】
+install【安装gulp插件】
 ```
     gupack install gulp-rename
     //任何位置执行
 
     安装gulp插件（由于gupack基于gulp插件运行）
 ```
-####uninstall【卸载gulp插件】
+uninstall【卸载gulp插件】
 ```
     gupack uninstall gulp-rename
     //任何位置执行
 
     卸载gulp插件（由于gupack基于gulp插件运行）
 ```
-####update【更新gulp插件】
+update【更新gulp插件】
 ```
     gupack update gulp-rename
     //任何位置执行
 
     更新gulp插件（由于gupack基于gulp插件运行）
 ```
-####alias【为gupack命令创建别名】
+alias【为gupack命令创建别名】
 ```
     gupack alias gp
     //任何位置执行
@@ -155,7 +147,7 @@
     
     创建成功后，将可以以别名的方式运行gupack命令
 ```
-####config【查看或设置项目配置项】                     
+config【查看或设置项目配置项】                     
 ```
     //查看项目服务端口
     gupack config tmall --port
