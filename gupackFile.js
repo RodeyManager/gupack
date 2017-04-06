@@ -81,12 +81,18 @@ var gulplugins = {},
 
 if(util.isObject(buildTasks)){
 
-    Object.keys(buildTasks).forEach(taskName => {
+    var tks = Object.keys(buildTasks);
+    for(var i = 0; i < tks.length; ++i){
+        var taskName = tks[i];
+
+    // Object.keys(buildTasks).forEach(taskName =>{
 
         var build = buildTasks[taskName],
             source = build['src'] || [],
             watcher = build['watch'] || source || [],
             pathPrefix = build['pathPrefix'] || '';
+
+        if(build['run'] === false)  continue;
 
         //watcher
         if(!build['watch'] && pathPrefix){
@@ -94,7 +100,7 @@ if(util.isObject(buildTasks)){
                 //watcher = pathPrefix + source;
                 watcher = tool.Path.join(pathPrefix, source);
             }else if(util.isArray(source)){
-                watcher = source.map(s => {
+                watcher = source.map(s =>{
                     //return pathPrefix + s;
                     return tool.Path.join(pathPrefix, s);
                 });
@@ -129,7 +135,7 @@ if(util.isObject(buildTasks)){
         //编译之前需要清理，加入到清理队列中
         build['dest'] && cleans.push(dist);
 
-        taskCache[taskName] = () => {
+        taskCache[taskName] = () =>{
 
             //加载的gulp插件
             var loaders = build['loader'];
@@ -138,12 +144,12 @@ if(util.isObject(buildTasks)){
 
             gulplugins[taskName] = {};
 
-            loaders && (Object.keys(loaders).forEach(loader => {
+            loaders && (Object.keys(loaders).forEach(loader =>{
                 var gulplugin;
                 if(gulplugins[taskName][loader]){
                     gulplugin = gulplugins[taskName][loader]
                 }else{
-                    gulplugin = (()=>{
+                    gulplugin = (() =>{
                         var pp = require(loader);
                         gulplugins[taskName][loader] = pp;
                         return pp;
@@ -168,7 +174,7 @@ if(util.isObject(buildTasks)){
 
             //判断是否存在hostname配置,如果存在则执行替换任务(一般在release)
             if(isPublish && hostName){
-                stream = stream.pipe(publish({ hostname: hostName }));
+                stream = stream.pipe(publish({hostname: hostName}));
             }
             stream = stream.pipe(plumber());
             //输出
@@ -180,7 +186,8 @@ if(util.isObject(buildTasks)){
 
         relies[taskName] = build['rely'] || null;
 
-    });
+        // });
+    }
 
 }
 
