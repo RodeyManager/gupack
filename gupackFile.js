@@ -102,7 +102,9 @@ if(util.isObject(buildTasks)){
                 throw new ReferenceError('没有可用的源文件，请设置 src 文件地址');
             }
         }
-        watchers[taskName] = loadWatch(watcher);
+        if(!build['nowatch']){
+            watchers[taskName] = loadWatch(watcher);
+        }
 
         //源文件 src
         (source && source.length !== 0)
@@ -123,7 +125,7 @@ if(util.isObject(buildTasks)){
         }
 
         //合并压缩后的输出
-        var dist = build['dest'] ? resolve(buildPath, build['dest']) : buildPath;
+        var dist = build['dest'] && resolve(buildPath, build['dest']);
         //编译之前需要清理，加入到清理队列中
         build['dest'] && cleans.push(dist);
 
@@ -170,7 +172,9 @@ if(util.isObject(buildTasks)){
             }
             stream = stream.pipe(plumber());
             //输出
-            stream.pipe(gulp.dest(dist));
+            if(dist){
+                stream.pipe(gulp.dest(dist || buildPath));
+            }
             return stream;
         };
 
@@ -289,3 +293,4 @@ tasks.unshift('build._cleans');
 
 //清理成功后执行任务列表
 gulp.task('default', taskSequence.apply(gulp, tasks));
+

@@ -22,7 +22,7 @@ const projectList = require('../projects').projectList;
 function task(){
     var shell = gulpShell;
     if(taskName)
-        shell += ' ' + taskName;
+        shell += ' ' + taskName + ' --gulpfile ' + T.Path.resolve(from, 'gupackFile.js');
 
     execute(shell);
 }
