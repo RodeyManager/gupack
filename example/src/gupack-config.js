@@ -24,24 +24,27 @@ const
 //导出模块
 module.exports      =  {
     env: env,
-    //源文件路径, 默认为 src
+    // 源文件路径, 默认为 src
     source: 'src',
-    //编译产出路径，可以是绝对或者相对路径，默认为 build
+    // 编译产出路径，可以是绝对或者相对路径，默认为 build
     build: 'build',
-    //task任务列表
+    // task任务列表
     buildTasks: {
-        //---说明：单个任务配置
+        // ---说明：单个任务配置
         'build.css': {
+            // 源文件
             src: 'assets/css/**/*',
-            //额外的插件样式，如果不是每个页面都用到，不建议合并到主样式文件中
-            //可以单独在使用到的页面中引用
+            // 额外的插件样式，如果不是每个页面都用到，不建议合并到主样式文件中
+            // 可以单独在使用到的页面中引用
             plugins: [],
             dest: 'assets/css',
-            //依赖task列表
+            // 依赖task列表
             rely: ['build.assets'],
+            // gulp插件
             loader: util._extend({
-                'gulp-concat-css': 'app.min.css'
+                'gulp-merge-css': 'app.min.css'
             }, cssLoaders()),
+            // 监听变化（文件改变执行该任务）
             watch: ['assets/css/**/*']
         },
 
@@ -59,7 +62,7 @@ module.exports      =  {
             watch: [ 'modules/**/*']
         },
 
-        'build.html': {
+        'build.views': {
             src: ['views/**/*.html'],
             filters: [],
             dest: '',
@@ -128,8 +131,7 @@ function cssLoaders(){
             basePath: buildPath + '/assets'
         },
         'gulp-autoprefixer': {
-            browsers: ['> 5%', 'IE > 8', 'last 2 versions'],
-            cascade: false
+            browsers: ['> 5%', 'IE > 8', 'last 2 versions']
         },
         'gulp-uglifycss': { _if: isIf }
     }

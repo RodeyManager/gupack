@@ -93,97 +93,95 @@ if(util.isObject(buildTasks)){
 
         if(build['run'] !== false){
 
-        //watcher
-        if(!build['watch'] && pathPrefix){
-            if(util.isString(source)){
-                //watcher = pathPrefix + source;
-                watcher = tool.Path.join(pathPrefix, source);
-            }else if(util.isArray(source)){
-                watcher = source.map(s =>{
-                    //return pathPrefix + s;
-                    return tool.Path.join(pathPrefix, s);
-                });
-            }else{
-                throw new ReferenceError('没有可用的源文件，请设置 src 文件地址');
-            }
-        }
-        if(!build['nowatch']){
-            watchers[taskName] = loadWatch(watcher);
-        }
-
-        //源文件 src
-        (source && source.length !== 0)
-        && (source = loadSource(source, pathPrefix));
-
-        //过滤文件 filters
-        var filters = build['filters'] || [];
-        if(filters.length > 0){
-            filters = loadSource(filters, pathPrefix, '!');
-            source = source.concat(filters);
-        }
-
-        //插件样式
-        var plugins = build['plugins'] || [];
-        if(plugins.length > 0){
-            plugins = loadSource(plugins, pathPrefix);
-            source = source.concat(plugins);
-        }
-
-        //合并压缩后的输出
-        var dist = build['dest'] && resolve(buildPath, build['dest']);
-        //编译之前需要清理，加入到清理队列中
-        build['dest'] && cleans.push(dist);
-
-        taskCache[taskName] = () =>{
-
-            //加载的gulp插件
-            var loaders = build['loader'];
-            var stream = gulp.src(source);
-            stream = stream.pipe(plumber());
-
-            gulplugins[taskName] = {};
-
-            loaders && (Object.keys(loaders).forEach(loader =>{
-                var gulplugin;
-                if(gulplugins[taskName][loader]){
-                    gulplugin = gulplugins[taskName][loader]
+            //watcher
+            if(!build['watch'] && pathPrefix){
+                if(util.isString(source)){
+                    watcher = tool.Path.join(pathPrefix, source);
+                }else if(util.isArray(source)){
+                    watcher = source.map(s =>{
+                        return tool.Path.join(pathPrefix, s);
+                    });
                 }else{
-                    gulplugin = (() =>{
-                        var pp = require(loader);
-                        gulplugins[taskName][loader] = pp;
-                        return pp;
-                    })();
+                    throw new ReferenceError('没有可用的源文件，请设置 src 文件地址');
                 }
+            }
+            if(!build['nowatch']){
+                watchers[taskName] = loadWatch(watcher);
+            }
 
-                //某些插件需要区分环境，
-                //可能在开发环境不需要执行，而在生产或者是测试环境需要执行
-                var options = loaders[loader];
-                if(util.isObject(options)){
-                    if('_if' in options){
-                        //如果为生产环境，执行压缩
-                        (options['_if'] || isProduction ) &&
-                        (stream = stream.pipe(gulplugin(options)));
+            //源文件 src
+            (source && source.length !== 0)
+            && (source = loadSource(source, pathPrefix));
+
+            //过滤文件 filters
+            var filters = build['filters'] || [];
+            if(filters.length > 0){
+                filters = loadSource(filters, pathPrefix, '!');
+                source = source.concat(filters);
+            }
+
+            //插件样式
+            var plugins = build['plugins'] || [];
+            if(plugins.length > 0){
+                plugins = loadSource(plugins, pathPrefix);
+                source = source.concat(plugins);
+            }
+
+            //合并压缩后的输出
+            var dist = build['dest'] && resolve(buildPath, build['dest']);
+            //编译之前需要清理，加入到清理队列中
+            build['dest'] && cleans.push(dist);
+
+            taskCache[taskName] = () =>{
+
+                //加载的gulp插件
+                var loaders = build['loader'];
+                var stream = gulp.src(source);
+                stream = stream.pipe(plumber());
+
+                gulplugins[taskName] = {};
+
+                loaders && (Object.keys(loaders).forEach(loader =>{
+                    var gulplugin;
+                    if(gulplugins[taskName][loader]){
+                        gulplugin = gulplugins[taskName][loader]
+                    }else{
+                        gulplugin = (() =>{
+                            var pp = require(loader);
+                            gulplugins[taskName][loader] = pp;
+                            return pp;
+                        })();
+                    }
+
+                    //某些插件需要区分环境，
+                    //可能在开发环境不需要执行，而在生产或者是测试环境需要执行
+                    var options = loaders[loader];
+                    if(util.isObject(options)){
+                        if('_if' in options){
+                            //如果为生产环境，执行压缩
+                            (options['_if'] || isProduction ) &&
+                            (stream = stream.pipe(gulplugin(options)));
+                        }else{
+                            stream = stream.pipe(gulplugin(options));
+                        }
                     }else{
                         stream = stream.pipe(gulplugin(options));
                     }
-                }else{
-                    stream = stream.pipe(gulplugin(options));
+                }));
+
+                //判断是否存在hostname配置,如果存在则执行替换任务(一般在release)
+                if(isPublish && hostName){
+                    stream = stream.pipe(publish({hostname: hostName}));
                 }
-            }));
+                stream = stream.pipe(plumber());
+                //输出
+                if(dist){
+                    stream.pipe(gulp.dest(dist || buildPath));
+                }
+                return stream;
+            };
 
-            //判断是否存在hostname配置,如果存在则执行替换任务(一般在release)
-            if(isPublish && hostName){
-                stream = stream.pipe(publish({hostname: hostName}));
-            }
-            stream = stream.pipe(plumber());
-            //输出
-            if(dist){
-                stream.pipe(gulp.dest(dist || buildPath));
-            }
-            return stream;
-        };
-
-        relies[taskName] = build['rely'] || null;
+            relies[taskName] = build['rely'] || null;
 
         }
 

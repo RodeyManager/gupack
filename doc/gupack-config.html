@@ -16,6 +16,27 @@
     </header>
     <section class="wrap">
         <div class="code">
+            <h5>配置选项</h5>
+            <ul>
+                <li><span class="field">env</span> 编译环境</li>
+                <li><span class="field">source</span> 源文件路径, 默认为 src</li>
+                <li><span class="field">build</span> 编译产出路径, 默认为 build</li>
+                <li><span class="field">buildTasks</span> 编译任务 Object</li>
+                <li>
+                    <strong>任务配置</strong>
+                    <ul>
+                        <li><span class="field">src</span> 编译的源文件</li>
+                        <li><span class="field">dest</span> 对应的编译输出路径, 默认为 build参数配置路径，当值为false时，不进行输出（如ftp任务等）</li>
+                        <li><span class="field">rely</span> 当前任务依赖的task列表</li>
+                        <li><span class="field">loader</span> 当前任务编译需要的gulp插件列表 Object</li>
+                        <li><span class="field">watch</span> 监听变化（文件改变执行该任务），默认为当前任务的 src</li>
+                        <li><span class="field">nowatch</span> 禁止监听变化</li>
+                        <li><span class="field">run</span> 是否执行当前任务，默认执行，当值为false时，不执行</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="code">
             <p>范例</p>
             <pre><code>
                 const
@@ -44,24 +65,27 @@
                 //导出模块
                 module.exports      =  {
                     env: env,
-                    //源文件路径, 默认为 src
+                    // 源文件路径, 默认为 src
                     source: 'src',
-                    //编译产出路径，可以是绝对或者相对路径，默认为 build
+                    // 编译产出路径，可以是绝对或者相对路径，默认为 build
                     build: 'build',
-                    //task任务列表
+                    // task任务列表
                     buildTasks: {
-                        //---说明：单个任务配置
+                        // ---说明：单个任务配置
                         'build.css': {
+                            // 源文件
                             src: 'assets/css/**/*',
-                            //额外的插件样式，如果不是每个页面都用到，不建议合并到主样式文件中
-                            //可以单独在使用到的页面中引用
+                            // 额外的插件样式，如果不是每个页面都用到，不建议合并到主样式文件中
+                            // 可以单独在使用到的页面中引用
                             plugins: [],
                             dest: 'assets/css',
-                            //依赖task列表
+                            // 依赖task列表
                             rely: ['build.assets'],
+                            // gulp插件
                             loader: util._extend({
-                                'gulp-concat-css': 'app.min.css'
+                                'gulp-merge-css': 'app.min.css'
                             }, cssLoaders()),
+                            // 监听变化（文件改变执行该任务）
                             watch: ['assets/css/**/*']
                         },
 
@@ -79,7 +103,7 @@
                             watch: [ 'modules/**/*']
                         },
 
-                        'build.html': {
+                        'build.views': {
                             src: ['views/**/*.html'],
                             filters: [],
                             dest: '',
