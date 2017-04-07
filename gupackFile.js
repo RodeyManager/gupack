@@ -81,18 +81,17 @@ var gulplugins = {},
 
 if(util.isObject(buildTasks)){
 
-    var tks = Object.keys(buildTasks);
-    for(var i = 0; i < tks.length; ++i){
-        var taskName = tks[i];
-
-    // Object.keys(buildTasks).forEach(taskName =>{
+    Object.keys(buildTasks).forEach(taskName =>{
 
         var build = buildTasks[taskName],
             source = build['src'] || [],
             watcher = build['watch'] || source || [],
             pathPrefix = build['pathPrefix'] || '';
 
-        if(build['run'] === false)  continue;
+        // console.log(taskName, build['run'] === false);
+        // if(build['run'] === false)  continue;
+
+        if(build['run'] !== false){
 
         //watcher
         if(!build['watch'] && pathPrefix){
@@ -186,8 +185,9 @@ if(util.isObject(buildTasks)){
 
         relies[taskName] = build['rely'] || null;
 
-        // });
-    }
+        }
+
+    });
 
 }
 
