@@ -2,7 +2,7 @@
     var App = {
         constructor: App,
         // 接口host
-        ServerHost: 'http://192.168.1.112/app/', //(xxx)
+        ServerHost: '../src/mockData/',
         method: 'POST',
         sendTime: 60,
         debug: true
@@ -14,15 +14,15 @@
         // 会员登陆验证
     App.webServiceUrls = {
         //登录
-        login               : 'member/login',
-        logout              : 'member/logout'
+        login               : 'login',
+        logout              : 'logout'
     };
 
     // 更具key获取api地址
     var protocolReg = /^(https?:)?\/\//i;
     App.getWebServiceUrl = function(name, host) {
         var APINAME = App.webServiceUrls[name];
-        return protocolReg.test(APINAME) ? APINAME : App.getHosts((host || App.ServerHost) + APINAME);
+        return protocolReg.test(APINAME) ? APINAME : App.getHosts((host || App.ServerHost) + APINAME + '.json');
     };
     App.getHosts = function(page){
         if(protocolReg.test(page) || /^\.+\//.test(page))  return page;
