@@ -142,12 +142,18 @@ if(util.isObject(buildTasks)){
                 gulplugins[taskName] = {};
 
                 loaders && (Object.keys(loaders).forEach(loader =>{
-                    var gulplugin;
-                    if(gulplugins[taskName][loader]){
-                        gulplugin = gulplugins[taskName][loader]
+                    var gulplugin,
+                        loaderData = gulplugins[taskName][loader];
+                    if(loaderData){
+                        gulplugin = loaderData
                     }else{
                         gulplugin = (() =>{
-                            var pp = require(loader);
+                            var ptemp = loaders[loader], pluginName = ptemp['pluginName'], pp;
+                            if(pluginName){
+                                pp = require(pluginName);
+                            }else{
+                                pp = require(loader);
+                            }
                             gulplugins[taskName][loader] = pp;
                             return pp;
                         })();

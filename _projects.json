@@ -62,6 +62,14 @@
       "config": "src/gupack-config.js",
       "path": "D:\\Sites\\cmbx\\epay\\epay-pc",
       "host": "127.0.0.1"
+    },
+    "epay-mobile": {
+      "config": "src/gupack-config.js",
+      "path": "D:\\Sites\\cmbx\\epay\\epay-mobile",
+      "host": "127.0.0.1",
+      "port": 3751,
+      "sport": 4751,
+      "liveDelay": 2000
     }
   }
 }
