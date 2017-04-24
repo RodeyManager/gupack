@@ -3,23 +3,26 @@ const
     util            = require('util');
 
 const
-    argv          = process.argv.slice(2),
-    _envIndex       = argv.indexOf('-e') || argv.indexOf('--env') || -1,
+    argv = process.argv.slice(2),
+    _envIndex = argv.indexOf('-e') || argv.indexOf('--env') || -1,
 
-    //当前编译环境: dev: 开发环境(默认); stg: 测试环境; prd: 生成环境
-    env             = argv[_envIndex + 1] || 'dev',
-    isDev           = env === 'dev',
-    isStg           = env === 'stg',
-    isProduction    = env === 'prd' || env === 'production',
-    isIf            = isStg || isProduction,
+    // 当前编译环境: local: 本地开发环境(mock datas); dev: 开发环境(默认); stg: 测试环境; prd: 生成环境
+    env = argv[_envIndex + 1] || 'local',
+    isLocal = env === 'local',
+    isDev = env === 'dev',
+    isStg = env === 'stg',
+    isProduction = env === 'prd' || env === 'production',
+    isIf = isStg || isProduction,
 
     //静态资源版本控制号
     vQueryKey       = '_rvc_',
     hashSize        = 10,
     //项目编译后的路径
-    buildPath       = nodePath.resolve(__dirname, '../build'),
-    //项目功能配置文件
-    config          = 'config-' + (isDev ? 'dev' : isStg ? 'stg' : isProduction ? 'prd': 'dev') + '.js';
+    buildPath       = nodePath.resolve(__dirname, '../build');
+
+// 项目功能配置文件
+const config = 'config-' + (isLocal ? 'local' : isDev ? 'dev' : isStg ? 'stg' : isProduction ? 'prd': 'dev') + '.js';
+// const configObject = require(nodePath.resolve(__dirname, '../src/config/' + config));
 
 //导出模块
 module.exports      =  {
