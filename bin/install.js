@@ -4,10 +4,9 @@ const T  = require('../lib/tools');
 const
     pluginName = T.argv._.slice(-1)[0],
     from = T.Path.join(__dirname, '..'),
-    isG = T.argv['g'] != null,
-    isSave = T.argv['save'] != null,
-    isSaveDev = T.argv['save-dev'] != null,
-    isForce = T.argv['force'] != null;
+    isG = !!T.argv['g'],
+    isSaveDev = !!T.argv['save-dev'],
+    isForce = !!T.argv['force'];
 
 var shell = 'npm install';
 
