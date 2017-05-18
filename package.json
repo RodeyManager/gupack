@@ -21,6 +21,9 @@
     "lib"
   ],
   "dependencies": {
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-es2016": "^6.24.1",
+    "babel-preset-es2017": "^6.24.1",
     "commander": "^2.9.0",
     "fs-extra": "^0.30.0",
     "gulp": "^3.9.0",
@@ -28,8 +31,8 @@
     "gulp-babel": "^6.1.2",
     "gulp-concat": "^2.6.0",
     "gulp-displace": "^1.0.0",
-    "gulp-html-builder": "^0.1.0",
     "gulp-html-inline": "^3.0.0",
+    "gulp-htmlmin": "^3.0.0",
     "gulp-jsminer": "^1.0.1",
     "gulp-merge-css": "^1.0.0",
     "gulp-plumber": "^1.1.0",
