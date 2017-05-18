@@ -336,6 +336,20 @@ function htmlLoaders(){
 
 ```
 
+####默认安装gulp插件
++ gulp-autoprefixer: ^3.1.0
++ gulp-babel: "^6.1.2"
++ gulp-concat: ^2.6.0
++ gulp-displace: ^1.0.0
++ gulp-html-inline: ^3.0.0
++ gulp-htmlmin: ^3.0.0
++ gulp-jsminer: ^1.0.1
++ gulp-merge-css: ^1.0.0
++ gulp-plumber: ^1.1.0
++ gulp-recache: ^1.0.5
++ gulp-tag-include: ^1.1.2
++ gulp-uglifycss: ^1.0.4
+
 
 
 #License

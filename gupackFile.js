@@ -154,7 +154,7 @@ if(util.isObject(buildTasks)){
                             }else{
                                 pp = require(loader);
                             }
-                            gulplugins[taskName][loader] = pp;
+                            pp && (gulplugins[taskName][loader] = pp);
                             return pp;
                         })();
                     }
@@ -162,17 +162,18 @@ if(util.isObject(buildTasks)){
                     //某些插件需要区分环境，
                     //可能在开发环境不需要执行，而在生产或者是测试环境需要执行
                     var options = loaders[loader];
-                    if(util.isObject(options)){
+                    if(gulplugin && util.isObject(options)){
                         if('_if' in options){
                             //如果为生产环境，执行压缩
-                            (options['_if'] || isProduction ) &&
-                            (stream = stream.pipe(gulplugin(options)));
+                            // (options['_if'] || isProduction ) && (stream = stream.pipe(gulplugin(options)));
+                            options['_if'] && (stream = stream.pipe(gulplugin(options)));
                         }else{
                             stream = stream.pipe(gulplugin(options));
                         }
                     }else{
                         stream = stream.pipe(gulplugin(options));
                     }
+
                 }));
 
                 //判断是否存在hostname配置,如果存在则执行替换任务(一般在release)

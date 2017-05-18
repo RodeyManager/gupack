@@ -22,6 +22,10 @@ function create(){
     var to = T.Path.resolve(cwd, String(T.argv._[1]) ? projectName : '');
     var from = T.Path.join(__dirname, '..', 'example');
 
+
+
+
+
     prompt.start();
     prompt.get([{
         name: 'ok',

@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-
 const
     prompt = require('prompt')
     ,program = require('commander')
