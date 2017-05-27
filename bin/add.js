@@ -13,8 +13,9 @@ function add(){
             config: "src/gupack-config.js"
         };
 
-    (T.argv._[1]) && (name = T.argv._[1]);
-    (T.argv._[2]) && (path = T.argv._[2]);
+    name = String(T.argv._[1] || T.Path.parse(process.cwd())['name']);
+    path = String(T.argv._[1] || T.Path.parse(process.cwd())['dir']);
+    path = T.Path.join(path, name);
 
     prompt.start();
     //添加项目名称
@@ -25,7 +26,7 @@ function add(){
     }], (err, result) => {
 
         name = result.name;
-        if(projectList['projectList'][name]){
+        if(name && projectList['projectList'][name]){
             T.confirm('\u5f53\u524d\u9879\u76ee\u5df2\u7ecf\u5b58\u5728\uff0c\u662f\u5426\u8986\u76d6? [yes/no]', ok => {
                 if(ok){
                     getPath();

@@ -165,7 +165,6 @@ if(util.isObject(buildTasks)){
                     if(gulplugin && util.isObject(options)){
                         if('_if' in options){
                             //如果为生产环境，执行压缩
-                            // (options['_if'] || isProduction ) && (stream = stream.pipe(gulplugin(options)));
                             options['_if'] && (stream = stream.pipe(gulplugin(options)));
                         }else{
                             stream = stream.pipe(gulplugin(options));
