@@ -70,6 +70,22 @@
       "port": 3751,
       "sport": 4751,
       "liveDelay": 2000
+    },
+    "esales-admin": {
+      "config": "src/gupack-config.js",
+      "path": "D:\\Sites\\test\\esales-admin",
+      "host": "127.0.0.1",
+      "port": 3507,
+      "sport": 4507,
+      "liveDelay": 2000
+    },
+    "gupack-test": {
+      "config": "src/gupack-config.js",
+      "path": "D:\\Sites\\test\\gupack-test",
+      "host": "127.0.0.1",
+      "port": 3513,
+      "sport": 4513,
+      "liveDelay": 2000
     }
   }
 }

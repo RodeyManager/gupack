@@ -12,7 +12,8 @@ const
     child           = require('child_process'),
     //gulp            = require(tool.Path.resolve(__dirname, 'node_modules/gulp/index.js')),
     gulp            = require('gulp'),
-    taskSequence    = require('./lib/task_sequence');
+    taskSequence    = require('./lib/task_sequence'),
+    gpbabel         = require('./lib/babel_transform');
 
 //获取配置
 const
@@ -37,6 +38,8 @@ if(buildPath && /^\./i.test(buildPath)){
     //相对路径
     buildPath = resolve(cwd, buildPath);
 }
+
+
 
 //执行初始化
 (function __init__(){
@@ -139,6 +142,11 @@ if(util.isObject(buildTasks)){
                 var stream = gulp.src(source);
                 stream = stream.pipe(plumber());
 
+                // babel
+                if('babel' in build){
+                    stream.pipe(gpbabel(build.babel));
+                }
+
                 gulplugins[taskName] = {};
 
                 loaders && (Object.keys(loaders).forEach(loader =>{
@@ -164,7 +172,6 @@ if(util.isObject(buildTasks)){
                     var options = loaders[loader];
                     if(gulplugin && util.isObject(options)){
                         if('_if' in options){
-                            //如果为生产环境，执行压缩
                             options['_if'] && (stream = stream.pipe(gulplugin(options)));
                         }else{
                             stream = stream.pipe(gulplugin(options));

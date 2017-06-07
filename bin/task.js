@@ -12,8 +12,8 @@ const
     env = T.argv['e'] || T.argv['env'],
     cwd = process.cwd();
 
-const gulpShell = 'node ' + T.Path.resolve(__dirname, '../node_modules/gulp/bin/gulp.js');
-//const gulpShell = 'gulp ';
+// const gulpShell = 'node ' + T.Path.resolve(__dirname, '../node_modules/gulp/bin/gulp.js');
+const gulpShell = 'gulp';
 
 //项目列表
 const projectList = require('../projects').projectList;
