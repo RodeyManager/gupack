@@ -106,7 +106,9 @@ function addCreate(name){
 
     var project = {
         config: "src/gupack-config.js",
-        path: _getPath()
+        path: _getPath(),
+        sourceDir: 'src',
+        buildDir: 'build'
     };
     _add(name, project);
 
@@ -154,11 +156,6 @@ function _add(name, project){
  */
 function _delete(flag, name){
 
-    //if(!projectList['projectList'][name]){
-    //    T.log.red('\u5f53\u524d\u9879\u76ee\u4e0d\u5b58\u5728');
-    //    return false;
-    //}
-
     var path = projectList['projectList'][name]['path'];
     projectList['projectList'][name] = null;
     delete projectList['projectList'][name];
@@ -186,7 +183,7 @@ function _delete(flag, name){
 }
 
 function _isInProject(name){
-    return null != projectList['projectList'][name];
+    return !!projectList['projectList'][name];
 }
 
 function _getPath(){

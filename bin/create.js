@@ -18,13 +18,9 @@ prompt.message = '\u63d0\u793a';
 
 function create(){
 
-    var projectName = String(T.argv._[1] || T.Path.parse(cwd)['name']);
-    var to = T.Path.resolve(cwd, String(T.argv._[1]) ? projectName : '');
-    var from = T.Path.join(__dirname, '..', 'example');
-
-
-
-
+    var projectName = String(T.argv._[1] || T.Path.parse(cwd)['name']),
+        to = T.Path.resolve(cwd, String(T.argv._[1]) ? projectName : ''),
+        from = T.Path.join(__dirname, '..', 'example');
 
     prompt.start();
     prompt.get([{

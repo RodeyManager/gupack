@@ -17,7 +17,7 @@ const
 
 //获取配置
 const
-    projects        = require('./projects.js'),
+    projects        = require('./_projects.json'),
     cwd             = tool.argv['cwdir'] || process.cwd(),
     resolve         = tool.Path.resolve,
 //指定构建的项目名称, 在gulp后面传递参数
@@ -39,8 +39,6 @@ if(buildPath && /^\./i.test(buildPath)){
     buildPath = resolve(cwd, buildPath);
 }
 
-
-
 //执行初始化
 (function __init__(){
 
@@ -52,14 +50,14 @@ if(buildPath && /^\./i.test(buildPath)){
     if(proOpt['config']){
         proConfig = require(resolve(basePath, proOpt['config']));
     }else{
-        proConfig = proOpt;
+        proConfig = require('./example/src/gupack-config.js');
     }
     //源文件路径
-    sourcePath = resolve(basePath, (proConfig['source'] || 'src'));
+    sourcePath = resolve(basePath, (proOpt['sourceDir'] || proConfig['sourceDir'] || 'src'));
     //编译产出路径
-    buildPath = buildPath || tool.getBuildPath(basePath, (proConfig['build'] || 'build'));
+    buildPath = buildPath || tool.getBuildPath(basePath, (proOpt['buildDir'] || proConfig['buildDir'] || 'build'));
     //执行任务前需要清理的
-    cleans = proConfig['clean'] || [];// || [resolve(buildPath, '**', '*')];
+    cleans = proConfig['clean'] || [];
     //执行任务前不被清理的
     cleansFilter = (proConfig['cleanFilter'] || ['.svn', '.git']).map(function(path){ return '!' + resolve(buildPath, path) });
     //需要监听
@@ -105,7 +103,7 @@ if(util.isObject(buildTasks)){
                         return tool.Path.join(pathPrefix, s);
                     });
                 }else{
-                    throw new ReferenceError('没有可用的源文件，请设置 src 文件地址');
+                    throw new ReferenceError('没有可用的源文件，请设置需要监听的文件或目录');
                 }
             }
             if(!build['nowatch']){
@@ -236,8 +234,6 @@ function isTask(taskname){
 //在执行任务之前进行清理
 if(util.isArray(cleans) && cleans.length !== 0){
     cleans = cleans.concat(cleansFilter);
-    //cleans = [tool.Path.resolve(buildPath, '/**/*')];
-    //console.log(buildPath);
     gulp.task('build._cleans', () => {
         return gulp.src(cleans).pipe(gulpClean({ read: true }));
     });
@@ -279,11 +275,9 @@ Object.keys(relies).forEach(rely => {
 
 paiallels.length !== 0 && sequences.unshift(paiallels);
 tasks = sequences;
-//console.log(relies, sequences); return;
 
 //监听文件变化
-var isWatch = Object.keys(watchers).length !== 0;
-isWatch && (() => {
+Object.keys(watchers).length !== 0 && (() => {
     gulp.task('build._watch', () => {
         console.log('======== Start Watcher ========');
         var source, watcher;

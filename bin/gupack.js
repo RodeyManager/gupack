@@ -43,11 +43,7 @@ program
                         '--path D:/Sites/lop --host 127.0.0.1 --port 8080 ')
     .parse(process.argv);
 
-//console.log(T.argv);
-const
-    argv = T.argv,
-    cwd = process.cwd();
-//console.log(cwd);
+const argv = T.argv;
 
 // Create Project 在当前目录先创建项目
 // Exp1: gupack create tmall

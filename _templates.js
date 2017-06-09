@@ -11,6 +11,8 @@ var templates = [
         'components/legalSelector/index.html',
         'components/legalSelector/style.css',
         'components/legalSelector/index.js',
+        'config/app-api.js',
+        'config/config-local.js',
         'config/config-dev.js',
         'config/config-stg.js',
         'config/config-prd.js',

@@ -16,7 +16,7 @@ const
 const gulpShell = 'gulp';
 
 //项目列表
-const projectList = require('../projects').projectList;
+const projectList = require('../_projects.json').projectList;
 
 //task as gulp task
 function task(){

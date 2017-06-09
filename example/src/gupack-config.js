@@ -28,9 +28,9 @@ const config = 'config-' + (isLocal ? 'local' : isDev ? 'dev' : isStg ? 'stg' : 
 module.exports      =  {
     env: env,
     // 源文件路径, 默认为 src
-    source: 'src',
+    sourceDir: 'src',
     // 编译产出路径，可以是绝对或者相对路径，默认为 build
-    build: 'build',
+    buildDir: 'build',
     // task任务列表
     buildTasks: {
         // ---说明：单个任务配置
@@ -61,7 +61,7 @@ module.exports      =  {
                 'main.js'
             ],
             dest: 'modules',
-            loader: util._extend({}, jsLoaders()),
+            loader: jsLoaders(),
             watch: [ 'modules/**/*']
         },
 
@@ -70,7 +70,7 @@ module.exports      =  {
             filters: [],
             dest: '',
             rely: ['build.assets', 'build.main'],
-            loader: util._extend({}, htmlLoaders()),
+            loader: htmlLoaders(),
             watch: [
                 'views/**/*',
                 'components/**/*',
@@ -81,6 +81,7 @@ module.exports      =  {
         'build.main': {
             src: [
                 'config/' + config,
+                'config/app-api.js',
                 'modules/main.js',
                 'modules/model.js',
                 'modules/view.js'
@@ -114,7 +115,7 @@ module.exports      =  {
         'build.assets': {
             src: 'assets/{fonts,images,js,libs}/**/*',
             dest: 'assets',
-            loader: util._extend({}, jsLoaders())
+            loader: jsLoaders()
         }
 
     }
@@ -128,7 +129,7 @@ function cssLoaders(){
             queryKey: vQueryKey,
             //hash值长度
             hashSize: hashSize,
-            // 1000字节大小以内的图片转base64,
+            // 500字节大小以内的图片转base64,
             toBase64Limit: 500,
             //资源根路径
             basePath: buildPath + '/assets'
