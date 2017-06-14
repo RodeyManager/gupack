@@ -1,28 +1,12 @@
 const
-    nodePath      = require('path'),
-    util            = require('util');
+    path  = require('path'),
+    util  = require('util'),
+    env   = require('./config/app-env');
 
 const
-    argv = process.argv.slice(2),
-    _envIndex = argv.indexOf('-e') || argv.indexOf('--env') || -1,
-
-    // 当前编译环境: local: 本地开发环境(mock datas); dev: 开发环境(默认); stg: 测试环境; prd: 生成环境
-    env = argv[_envIndex + 1] || 'local',
-    isLocal = env === 'local',
-    isDev = env === 'dev',
-    isStg = env === 'stg',
-    isProduction = env === 'prd' || env === 'production',
-    isIf = isStg || isProduction,
-
     //静态资源版本控制号
-    vQueryKey       = '_rvc_',
-    hashSize        = 10,
-    //项目编译后的路径
-    buildPath       = nodePath.resolve(__dirname, '../build');
-
-// 项目功能配置文件
-const config = 'config-' + (isLocal ? 'local' : isDev ? 'dev' : isStg ? 'stg' : isProduction ? 'prd': 'dev') + '.js';
-// const configObject = require(nodePath.resolve(__dirname, '../src/config/' + config));
+    vQueryKey = '_rvc_',
+    hashSize = 10;
 
 //导出模块
 module.exports      =  {
@@ -30,7 +14,7 @@ module.exports      =  {
     // 源文件路径, 默认为 src
     sourceDir: 'src',
     // 编译产出路径，可以是绝对或者相对路径，默认为 build
-    buildDir: 'build',
+    buildDir: env.dest.path,
     // task任务列表
     buildTasks: {
         // ---说明：单个任务配置
@@ -80,7 +64,7 @@ module.exports      =  {
 
         'build.main': {
             src: [
-                'config/' + config,
+                env.configPath,
                 'config/app-api.js',
                 'modules/main.js',
                 'modules/model.js',
@@ -124,50 +108,43 @@ module.exports      =  {
 function cssLoaders(){
     return {
         'gulp-sass': { outputStyle: 'compressed' },
-        'gulp-recache': {
-            _if: isIf,
-            queryKey: vQueryKey,
-            //hash值长度
-            hashSize: hashSize,
-            // 500字节大小以内的图片转base64,
-            toBase64Limit: 500,
-            //资源根路径
-            basePath: buildPath + '/assets'
-        },
+        'gulp-recache': recache(env.dest.path),
         'gulp-autoprefixer': {
             browsers: ['> 5%', 'IE > 8', 'last 2 versions']
         },
-        'gulp-uglifycss': { _if: isIf }
+        'gulp-uglifycss': { _if: env.isIf }
     }
 }
 
 function jsLoaders(){
     return {
         'gulp-jsminer': {
-            _if: isIf, preserveComments: '!'
+            _if: env.isIf, preserveComments: '!'
         }
     }
 }
 
 function htmlLoaders(){
     return {
-        'gulp-tag-include': {
-            compress: isIf
-        },
-        'gulp-recache': {
-            _if: isIf,
-            queryKey: vQueryKey,
-            //hash值长度
-            hashSize: hashSize,
-            // 1000字节大小以内的图片转base64,
-            toBase64Limit: 1000,
-            basePath: buildPath //'D:\\Sites\\test\\web_components\\build'
-        },
+        'gulp-tag-include': { compress: env.isIf },
+        'gulp-recache': recache(env.dest.path),
         'gulp-minify-html': {
-            _if: isIf,
+            _if: env.isIf,
             empty: true,       //去除空属性
             comments: false,    //去除html注释
             Spare: false        //属性值保留引号
         }
+    }
+}
+
+function recache(path){
+    return {
+        // _if: isIf,
+        queryKey: vQueryKey,
+        // hash值长度
+        hashSize: hashSize,
+        // 控制字节大小以内的图片转base64,
+        toBase64Limit: 2000,
+        basePath: path
     }
 }

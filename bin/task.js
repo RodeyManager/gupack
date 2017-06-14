@@ -6,17 +6,17 @@ const
 const
     taskName = T.argv._.slice(-1)[0],
     from = T.Path.join(__dirname, '..'),
-    isBuildPath = (T.argv['d'] || T.argv['buildpath']) != null,
-    buildPath = T.argv['d'] || T.argv['buildpath'],
+    isBuildPath = (T.argv['d'] || T.argv['dest']) != null,
+    buildPath = T.argv['d'] || T.argv['dest'],
     isEnv = (T.argv['e'] || T.argv['env']) != null,
     env = T.argv['e'] || T.argv['env'],
     cwd = process.cwd();
 
 // const gulpShell = 'node ' + T.Path.resolve(__dirname, '../node_modules/gulp/bin/gulp.js');
-const gulpShell = 'gulp';
+var gulpShell = 'gulp';
 
 //项目列表
-const projectList = require('../_projects.json').projectList;
+var projectList = require('../_projects.json').projectList;
 
 //task as gulp task
 function task(){

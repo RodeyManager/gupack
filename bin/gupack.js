@@ -17,7 +17,7 @@ program
     })
     .option('-p, --project', '\u6307\u5b9a\u5f53\u524d\u7f16\u8bd1\u7684\u9879\u76ee')
     .option('-i, --info', '\u9879\u76ee\u914d\u7f6e\u4fe1\u606f')
-    .option('-d, --buildpath', '\u6307\u5b9a\u7f16\u8bd1\u540e\u7684\u8f93\u51fa\u8def\u5f84')
+    .option('-d, --dest', '\u6307\u5b9a\u7f16\u8bd1\u540e\u7684\u8f93\u51fa\u8def\u5f84')
     .option('-e, --env', '\u8bbe\u7f6e\u73af\u5883')
     .option('--host', '\u670d\u52a1\u5668\u4e3b\u673a')
     .option('--port', '\u670d\u52a1\u5668\u7aef\u53e3')

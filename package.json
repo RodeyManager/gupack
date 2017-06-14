@@ -1,16 +1,13 @@
 {
   "name": "gupack",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "description": "(基于gulp的前端构建工具)Based on the front-end build tools of gulp",
-  "keyword": "javascript, nodejs, gulp, webpack",
+  "keyword": "javascript, nodejs, gulp, babel",
   "author": {
     "name": "Rodey Luo",
     "email": "rodeyluo@gmail.com"
   },
-  "license": {
-    "name": "MIT",
-    "url": "https://en.wikipedia.org/wiki/MIT_License"
-  },
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/RodeyManager/gupack.git"

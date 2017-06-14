@@ -33,7 +33,7 @@ var
     hostName, isProduction;
 
 //指定构建后的目录
-buildPath = tool.argv['d'] || tool.argv['buildpath'];
+buildPath = tool.argv['d'] || tool.argv['dest'];
 if(buildPath && /^\./i.test(buildPath)){
     //相对路径
     buildPath = resolve(cwd, buildPath);
@@ -68,7 +68,7 @@ if(buildPath && /^\./i.test(buildPath)){
     hostName = proConfig['hostname'];
     //指定构建环境 stg: 测试；prd: 生成
     env = tool.argv['e'] || tool.argv['env'] || proConfig['env'] || 'stg';
-    isProduction = (env === 'prd' || env === 'production');
+    isProduction = (env === 'prd');
     if(isPublish){
         env = 'prd';
     }
