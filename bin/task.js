@@ -6,9 +6,9 @@ const
 const
     taskName = T.argv._.slice(-1)[0],
     from = T.Path.join(__dirname, '..'),
-    isBuildPath = (T.argv['d'] || T.argv['dest']) !== null,
+    isBuildPath = (T.argv['d'] || T.argv['dest']) != null,
     buildPath = T.argv['d'] || T.argv['dest'],
-    isEnv = (T.argv['e'] || T.argv['env']) !== null,
+    isEnv = (T.argv['e'] || T.argv['env']) != null,
     env = T.argv['e'] || T.argv['env'],
     cwd = process.cwd();
 
@@ -183,6 +183,7 @@ function execute(shell, shellName){
         T.log.red('--->>> \u672a\u6307\u5b9a\u53ef\u7528\u547d\u4ee4 ');
         return false;
     }
+    // console.log(shell);
     var gulpExec = T.exec(shell, {cwd: from});
 
     gulpExec.stdout.on('data', data => {
