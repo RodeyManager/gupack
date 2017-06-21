@@ -9,6 +9,7 @@
 const
     T = require('../lib/tools'),
     prompt = require('prompt');
+// 提示
 prompt.message = '\u63d0\u793a';
 
 function alias(){
@@ -17,6 +18,7 @@ function alias(){
         isRemove = T.argv['remove'],
         npmPath;
     if(!aliasName){
+        // 未指定别名
         T.log.yellow('\n\r  \u672a\u6307\u5b9a\u522b\u540d');
         return false;
     }
@@ -44,6 +46,7 @@ function _alias(name, path){
     prompt.start();
     prompt.get([{
         name: 'ok',
+        // 是否确认创建别名（别名有可能覆盖系统命令，请确保别名不与系统其它命令重复）
         message: '\u662f\u5426\u786e\u8ba4\u521b\u5efa\u522b\u540d\uff08\u522b\u540d\u6709\u53ef\u80fd\u8986\u76d6\u7cfb\u7edf\u547d\u4ee4\uff0c\u8bf7\u786e\u4fdd\u522b\u540d\u4e0d\u4e0e\u7cfb\u7edf\u5176\u5b83\u547d\u4ee4\u91cd\u590d\uff09? [yes/no]'
     }], (err, result) => {
         if(/^y|yes|ok|\u662f$/i.test(result.ok)){
@@ -63,6 +66,7 @@ function _copyFiles(name, path){
     try{
         T.fsa.copySync(T.Path.resolve(path, '../gupack'), T.Path.resolve(path, '../', name));
         T.fsa.copySync(T.Path.resolve(path, '../gupack.cmd'), T.Path.resolve(path, '../', name + '.cmd'));
+        // 创建别名成功，您可以使用 $name 命令了！
         T.log.green('\u521b\u5efa\u522b\u540d\u6210\u529f\uff0c\u60a8\u53ef\u4ee5\u4f7f\u7528' + name + '\u547d\u4ee4\u4e86\uff01');
     }catch(e){
         T.log.red(e);
@@ -80,6 +84,7 @@ function remove(name, path){
     prompt.start();
     prompt.get([{
         name: 'ok',
+        // 是否确认删除别名
         message: '\u662f\u5426\u786e\u8ba4\u5220\u9664\u522b\u540d? [yes/no]'
     }], (err, result) => {
         if(/^y|yes|ok|\u662f$/i.test(result.ok)){
@@ -98,6 +103,7 @@ function _remove(name, path){
     try{
         T.fsa.removeSync(T.Path.resolve(path, '../', name));
         T.fsa.removeSync(T.Path.resolve(path, '../', name + '.cmd'));
+        // 删除成功！
         T.log.green('\u5220\u9664\u6210\u529f\uff01');
     }catch(e){
         T.log.red(e);

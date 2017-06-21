@@ -16,9 +16,8 @@ const
     configPath = path.resolve(__dirname, 'config-' + env + '.js');
 
 module.exports = {
-    argv: argv,
     name: env,
-    argvIndex: _ei,
+    envIndex: _ei,
     isLocal: env === 'local',
     isDev: env === 'dev',
     isStg: env === 'stg',
@@ -30,7 +29,7 @@ module.exports = {
     // 项目编译后的路径
     dest: {
         name: env,
-        argvIndex: _di,
+        index: _di,
         path: path.resolve(__dirname, '../', argv[_di + 1] || '../build')
     }
 };

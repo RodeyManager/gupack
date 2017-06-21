@@ -1,5 +1,4 @@
 const
-    path  = require('path'),
     util  = require('util'),
     env   = require('./config/app-env');
 
@@ -10,7 +9,7 @@ const
 
 //导出模块
 module.exports      =  {
-    env: env,
+    env: env.name,
     // 源文件路径, 默认为 src
     sourceDir: 'src',
     // 编译产出路径，可以是绝对或者相对路径，默认为 build
@@ -139,12 +138,12 @@ function htmlLoaders(){
 
 function recache(path){
     return {
-        // _if: isIf,
+        _if: env.isIf,
         queryKey: vQueryKey,
         // hash值长度
         hashSize: hashSize,
         // 控制字节大小以内的图片转base64,
-        toBase64Limit: 2000,
+        toBase64Limit: 1000,
         basePath: path
     }
 }

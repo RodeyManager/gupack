@@ -1,8 +1,11 @@
 
-const prompt = require('prompt'),
+const
+    prompt = require('prompt'),
     T  = require('../lib/tools');
+
 var projectList = require('../_projects.json');
 
+// 提示
 prompt.message = '\u63d0\u793a';
 
 // gupack add
@@ -22,21 +25,15 @@ function add(){
     prompt.get([{
         name: 'name',
         default: name || '',
+        // 项目名称
         message: '\u9879\u76ee\u540d\u79f0'
     }], (err, result) => {
 
         name = result.name;
         if(name && projectList['projectList'][name]){
-            T.confirm('\u5f53\u524d\u9879\u76ee\u5df2\u7ecf\u5b58\u5728\uff0c\u662f\u5426\u8986\u76d6? [yes/no]', ok => {
-                if(ok){
-                    getPath();
-                }else{
-                    //如果已经存在
-                    T.log.red('\u5f53\u524d\u9879\u76ee\u5df2\u5b58\u5728 ');
-                    prompt.stop();
-                }
-            });
-
+            // 当前项目已存在
+            T.log.red('\u5f53\u524d\u9879\u76ee\u5df2\u5b58\u5728 ');
+            prompt.stop();
         }else{
             getPath();
         }
@@ -48,13 +45,17 @@ function add(){
         prompt.get([{
             name: 'path',
             default: path || '',
+            // 项目路径 (绝对)
             message: '\u9879\u76ee\u8def\u5f84 (\u7edd\u5bf9)'
         }], (err, result) => {
             path = result.path;
 
             project['path'] = path;
+            project['sourceDir'] = 'src';
+            project['buildDir'] = 'build';
             projectList['projectList'][name] = project;
             _add(name, project);
+            // 添加项目成功！
             T.log.green('\u6dfb\u52a0\u9879\u76ee\u6210\u529f\uff01 ');
             prompt.stop();
 
@@ -74,13 +75,16 @@ function deleteProject(){
 
 function _deleteProject(flag){
     //默认为移除项目 remove action
+    // 此操作将移除该项目（不会删除硬盘文件），您确定要移除吗?
     var message = '\u6b64\u64cd\u4f5c\u5c06\u79fb\u9664\u8be5\u9879\u76ee\uff08\u4e0d\u4f1a\u5220\u9664\u786c\u76d8\u6587\u4ef6\uff09\uff0c\u60a8\u786e\u5b9a\u8981\u79fb\u9664\u5417? [yes/no]';
     if(flag){
+        // 此操作将删除该项目（并删除硬盘文件），您确定要删除吗?
         message = '\u6b64\u64cd\u4f5c\u5c06\u5220\u9664\u8be5\u9879\u76ee\uff08\u5e76\u5220\u9664\u786c\u76d8\u6587\u4ef6\uff09\uff0c\u60a8\u786e\u5b9a\u8981\u5220\u9664\u5417? [yes/no]';
     }
 
     var name = T.argv._[1];
-    if(!name || '' == name){
+    if(!name || '' === name){
+        // 未指定项目
         T.log.red('\u672a\u6307\u5b9a\u9879\u76ee');
         return false;
     }
@@ -95,6 +99,7 @@ function _deleteProject(flag){
             }
         });
     }else{
+        // 未找到对应项目
         T.log.red('\u672a\u627e\u5230\u5bf9\u5e94\u9879\u76ee');
         prompt.stop();
     }
@@ -163,7 +168,9 @@ function _delete(flag, name){
     var content = JSON.stringify(projectList, null, 2);
     T.fs.writeFileSync(T.Path.resolve(__dirname, '..', '_projects.json'), content, 'utf8');
 
+    // 删除成功！ 移除成功
     T.log.green(flag ? '\n\r  \u5220\u9664\u6210\u529f\uff01' : '\n\r  \u79fb\u9664\u6210\u529f');
+    // 已存在的项目列表
     T.log.cyan('\u5df2\u5b58\u5728\u7684\u9879\u76ee\u5217\u8868:  ');
     Object.keys(projectList['projectList']).forEach(function(project){
         T.log.green('\t' + project);
@@ -176,6 +183,7 @@ function _delete(flag, name){
                 if(err) T.log.red(err);
             });
         }else{
+            // 项目目录不存在
             T.log.green('\n\r  \u9879\u76ee\u76ee\u5f55\u4e0d\u5b58\u5728');
         }
     }

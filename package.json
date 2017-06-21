@@ -1,6 +1,6 @@
 {
   "name": "gupack",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "(基于gulp的前端构建工具)Based on the front-end build tools of gulp",
   "keyword": "javascript, nodejs, gulp, babel",
   "author": {
@@ -31,6 +31,7 @@
     "babel-preset-stage-1": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
     "babel-preset-stage-3": "^6.24.1",
+    "chalk": "^1.1.3",
     "commander": "^2.9.0",
     "del": "^2.2.2",
     "extend": "^3.0.1",
@@ -39,7 +40,7 @@
     "gulp-autoprefixer": "^3.1.0",
     "gulp-clean": "^0.3.2",
     "gulp-concat": "^2.6.0",
-    "gulp-displace": "^1.0.0",
+    "gulp-displace": "^1.0.1",
     "gulp-html-inline": "^3.0.0",
     "gulp-htmlmin": "^3.0.0",
     "gulp-jsminer": "^1.0.1",
@@ -48,6 +49,7 @@
     "gulp-recache": "^1.0.5",
     "gulp-tag-include": "^1.1.2",
     "gulp-uglifycss": "^1.0.4",
+    "gulp-util": "^3.0.8",
     "jsmin2": "^1.2.1",
     "lodash": "^4.17.4",
     "minimist": "^1.2.0",

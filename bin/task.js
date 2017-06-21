@@ -6,14 +6,13 @@ const
 const
     taskName = T.argv._.slice(-1)[0],
     from = T.Path.join(__dirname, '..'),
-    isBuildPath = (T.argv['d'] || T.argv['dest']) != null,
+    isBuildPath = (T.argv['d'] || T.argv['dest']) !== null,
     buildPath = T.argv['d'] || T.argv['dest'],
-    isEnv = (T.argv['e'] || T.argv['env']) != null,
+    isEnv = (T.argv['e'] || T.argv['env']) !== null,
     env = T.argv['e'] || T.argv['env'],
     cwd = process.cwd();
 
-// const gulpShell = 'node ' + T.Path.resolve(__dirname, '../node_modules/gulp/bin/gulp.js');
-var gulpShell = 'gulp';
+const gulpShell = 'node ' + T.Path.resolve(__dirname, '../node_modules/gulp/bin/gulp.js');
 
 //项目列表
 var projectList = require('../_projects.json').projectList;
@@ -32,9 +31,14 @@ function build(){
 
     //start();
 
-    //var shell = 'gulp';
     var shell = gulpShell;
     var projectName = _getProjectName();
+    // 判断项目是否存在编译列表中
+    if(!projectList[projectName]){
+        T.log.red('\u8bf7\u5148\u5c06\u5f53\u524d\u9879\u76ee\u6dfb\u52a0\u5230\u7f16\u8bd1\u5217\u8868\u4e2d\uff0c\u6267\u884c\u547d\u4ee4: gupack add');
+        process.exit(1);
+    }
+
     shell += ' -p ' + projectName;
     if(isBuildPath){
         shell += ' -d ' + buildPath + ' --cwdir ' + cwd;
@@ -68,7 +72,7 @@ function _startServer(){
         projectConf = T.getProjectConfig(projectName);
     //判断项目是否存在
     if(!projectConf){
-        T.log.red('\x1b[32m--->>> \u8be5\u9879\u76ee\u4e0d\u5b58\u5728 \x1b[39m');
+        T.log.red('--->>> \u8be5\u9879\u76ee\u4e0d\u5b58\u5728 ');
         process.exit(1);
     }
 
@@ -89,9 +93,7 @@ function _startServer(){
     nodemonShell += ' --host ' + host;
     nodemonShell += ' --port ' + port;
 
-    //start nodemon
-    //console.log('\x1b[32m--->>> \u5f00\u59cb\u542f\u52a8\u670d\u52a1 \x1b[39m');
-    T.log.green(`\x1b[32m--->>> starting server: http://${host}:${port} \x1b[39m`);
+    T.log.green(`--->>> starting server: http://${host}:${port} `);
     execute(nodemonShell);
     return { host: host, port: port };
 }
@@ -147,7 +149,7 @@ function _getDist(projectConf){
 function _updateConfig(projectName, host, port, config){
     if(!config['host'] && !config['port']){
         for(var pn in projectList){
-            if(pn == projectName){
+            if(pn === projectName){
                 config['host'] = host;
                 config['port'] = port;
                 config['sport'] = port + 1000;
@@ -178,16 +180,16 @@ function publish(){
 function execute(shell, shellName){
     //未指定可用命令
     if(!shell){
-        console.log('\x1b[32m--->>> \u672a\u6307\u5b9a\u53ef\u7528\u547d\u4ee4 \x1b[39m');
+        T.log.red('--->>> \u672a\u6307\u5b9a\u53ef\u7528\u547d\u4ee4 ');
         return false;
     }
     var gulpExec = T.exec(shell, {cwd: from});
 
     gulpExec.stdout.on('data', data => {
-        process.stdout.write('\x1b[32m' + data + '\x1b[39m');
+        process.stdout.write(T.chalk.green(data));
     });
 
-    gulpExec.on('exit', code => {
+    gulpExec.on('exit', () => {
         process.exit(1);
     });
 
