@@ -23,6 +23,7 @@
             <p>-i, --info, 项目配置信息</p>
             <p>-d, --buildpath, 指定编译后的输出路径</p>
             <p>-e, --env, 设置环境</p>
+            <p>-s, 启动本地服务器</p>
             <p>--host, 服务器主机</p>
             <p>--port, 服务器端口</p>
             <p>--liveDelay, 页面延迟更新时间（开发调式实时更新）</p>
@@ -30,11 +31,10 @@
         </div>
         <div class="options" id="command">
             <h3>命令</h3>
-            <p><a href="#create">create</a>, 创建一个项目; EXP: gupack create mall</p>
+            <p><a href="#new">create</a>, 创建一个项目; EXP: gupack create mall</p>
             <p><a href="#add">add</a>, 添加项目; EXP: gupack add mall D:\\Sites\\mall</p>
             <p><a href="#build">build</a>, 编译项目; EXP: gupack build mall</p>
-            <p><a href="#start">start</a>, 启动Node服务器; EXP: gupack start mall</p>
-            <p><a href="#restart">restart</a>, 重启Node服务器; EXP: gupack restart mall</p>
+            <p><a href="#server">server</a>, 启动Node服务器; EXP: gupack start mall</p>
             <p><a href="#publish">publish</a>, 编译并发布项目; EXP: gupack publish mall</p>
             <p><a href="#remove">remove</a>, 移除项目; EXP: gupack remove mall</p>
             <p><a href="#delete">delete</a>, 移除项目，并删除本地磁盘目录; EXP: gupack delete mall</p>
@@ -49,26 +49,12 @@
                 查看可配置的config选项：<a href="#config-options">Config Options</a>
             </p>
         </div>
-        <div class="options" id="gulp-plugins">
-            <h5>系统默认安装的 gulp 插件列表</h5>
-            <p><a href="https://github.com/sindresorhus/gulp-autoprefixer" target="_blank">gulp-autoprefixer（v: ^3.1.0）</a></p>
-            <p><a href="https://github.com/contra/gulp-concat" target="_blank">gulp-concat（v: ^2.6.0）</a></p>
-            <p><a href="https://github.com/mariocasciaro/gulp-concat-css" target="_blank">gulp-concat-css（v: ^2.2.0）</a></p>
-            <p><a href="https://github.com/RodeyManager/gulp-html-builder" target="_blank">gulp-html-builder（v: ^0.1.0）</a></p>
-            <p><a href="https://github.com/RodeyManager/gulp-html-inline" target="_blank">gulp-html-inline（v: ^3.0.0）</a></p>
-            <p><a href="https://github.com/floatdrop/gulp-plumber" target="_blank">gulp-plumber（v: ^1.0.1）</a></p>
-            <p><a href="https://github.com/RodeyManager/gulp-recache" target="_blank">gulp-recache（v: ^1.0.3）</a></p>
-            <p><a href="https://github.com/RodeyManager/gulp-tag-include" target="_blank">gulp-tag-include（v: ^1.1.2）</a></p>
-            <p><a href="https://github.com/terinjokes/gulp-uglify" target="_blank">gulp-uglify（v: ^1.4.2）</a></p>
-            <p><a href="https://github.com/rezzza/gulp-uglifycss" target="_blank">gulp-uglifycss（v: ^1.0.4）</a></p>
-            <p><a href="http://babeljs.io/" target="_blank">babel（v: ^1.0.4）</a></p>
-        </div>
         <div class="main">
             <h3>使用说明</h3>
-            <div class="code" id="create">
-                <p>create【创建项目】<a href="#command" class="return">∧</a></p>
+            <div class="code" id="new">
+                <p>new【创建项目】<a href="#command" class="return">∧</a></p>
                 <pre><code>
-    gupack create mall
+    gupack new mall
                 </code></pre>
             </div>
             <div class="code" id="add">
@@ -87,20 +73,13 @@
                 </code></pre>
                 <p class="rexp">编译项目可带命令参数，请查看<a href="#params">命令参数</a></p>
             </div>
-            <div class="code" id="start">
+            <div class="code" id="server">
                 <p>start【启动项目】运行gupack自带的静态文件服务器，便于本地调式项目（包括浏览器实时更新功能）<a href="#command" class="return">∧</a></p>
                 <pre><code>
-    gupack start mall
-    //或者定位到项目下，执行 gupack start
+    gupack server mall
+    //或者定位到项目下，执行 gupack server
                 </code></pre>
                 <p class="rexp">编译项目可带命令参数，请查看<a href="#params">命令参数</a></p>
-            </div>
-            <div class="code" id="restart">
-                <p>restart【重启服务】<a href="#command" class="return">∧</a></p>
-                <pre><code>
-    gupack restart mall
-    //或者定位到项目下，执行 gupack restart
-                </code></pre>
             </div>
             <div class="code" id="publish">
                 <p>publish【发布项目】<a href="#command" class="return">∧</a></p>
@@ -133,11 +112,18 @@
                 </code></pre>
                 <p class="rexp">列出gupack所有项目</p>
             </div>
+            <div class="code" id="info">
+                <p>info【查看项目详情】<a href="#command" class="return">∧</a></p>
+                <pre><code>
+    gupack info mall
+                </code></pre>
+                <p class="rexp">列出gupack所有项目</p>
+            </div>
             <div class="code" id="install">
                 <p>install【安装gulp插件】<a href="#command" class="return">∧</a></p>
                 <pre><code>
     gupack install gulp-rename
-    //任何位置执行
+    //任何位置执行(废弃)
                 </code></pre>
                 <p class="rexp">安装gulp插件（由于gupack基于gulp插件运行）</p>
             </div>
@@ -145,7 +131,7 @@
                 <p>uninstall【卸载gulp插件】<a href="#command" class="return">∧</a></p>
                 <pre><code>
     gupack uninstall gulp-rename
-    //任何位置执行
+    //任何位置执行(废弃)
                 </code></pre>
                 <p class="rexp">卸载gulp插件（由于gupack基于gulp插件运行）</p>
             </div>
@@ -153,7 +139,7 @@
                 <p>update【更新gulp插件】<a href="#command" class="return">∧</a></p>
                 <pre><code>
     gupack update gulp-rename
-    //任何位置执行
+    //任何位置执行(废弃)
                 </code></pre>
                 <p class="rexp">更新gulp插件（由于gupack基于gulp插件运行）</p>
             </div>

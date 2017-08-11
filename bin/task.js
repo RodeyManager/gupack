@@ -1,206 +1,85 @@
 
-const
-    T  = require('../lib/tools'),
-    os = require('os');
+'use strict';
 
 const
-    taskName = T.argv._.slice(-1)[0],
-    from = T.Path.join(__dirname, '..'),
-    isBuildPath = (T.argv['d'] || T.argv['dest']) != null,
-    buildPath = T.argv['d'] || T.argv['dest'],
-    isEnv = (T.argv['e'] || T.argv['env']) != null,
-    env = T.argv['e'] || T.argv['env'],
-    cwd = process.cwd();
+    inquirer = require('inquirer'),
+    T        = require('../lib/tools'),
+    Gupack   = require('../lib/config/gupack');
 
-const gulpShell = 'node ' + T.Path.resolve(__dirname, '../node_modules/gulp/bin/gulp.js');
+// if(T.isInSourcePath()){
+//     process.chdir(T.Path.resolve(process.cwd(), '../'));
+// }
 
-//项目列表
-var projectList = require('../_projects.json').projectList;
+// 项目列表
+let config = T.getConfig();
+if(!config){
+    T.log.red('× 不是有效的项目：缺少配置文件(src/gupack-config.js) ');
+    process.exit(1);
+}
 
-//task as gulp task
-function task(){
-    var shell = gulpShell;
-    if(taskName)
-        shell += ' ' + taskName + ' --gulpfile ' + T.Path.resolve(from, 'gupackFile.js');
+let gupack = new Gupack(config);
 
-    execute(shell);
+// 编译前是否清理相关目录
+gupack.startClean = 'c' in T.argv || 'clean' in T.argv || gupack.startClean;
+
+// task as gulp task
+// 支持指定多个任务  gupack task build.css+build.html
+// 如果不指定任务，将会从当前项目配置中读取供选择（可多选）  gupack task
+function task(name){
+
+    const taskName = name || T.argv._[1];
+    if(!!taskName){
+        gupack.runTask(taskName.split(/\+/i));
+    }else{
+        let tasks = config.buildTasks;
+        inquirer.prompt([{
+            type: 'checkbox',
+            name: 'tname',
+            message: '请选择单独编译的任务: ',
+            choices: Object.keys(tasks)
+        }]).then(awn => {
+            gupack.runTask(awn.tname);
+        });
+    }
 }
 
 //build project
 function build(){
-
-    //start();
-
-    var shell = gulpShell;
-    var projectName = _getProjectName();
-    // 判断项目是否存在编译列表中
-    if(!projectList[projectName]){
-        T.log.red('\u8bf7\u5148\u5c06\u5f53\u524d\u9879\u76ee\u6dfb\u52a0\u5230\u7f16\u8bd1\u5217\u8868\u4e2d\uff0c\u6267\u884c\u547d\u4ee4: gupack add');
-        process.exit(1);
+    if('t' in T.argv || 'task' in T.argv){
+        let taskName = T.argv['t'] || T.argv['task'];
+        return task(taskName);
     }
-
-    shell += ' -p ' + projectName;
-    if(isBuildPath){
-        shell += ' -d ' + buildPath + ' --cwdir ' + cwd;
-    }
-    if(isEnv){
-        shell += ' -e ' + env;
-    }
-    shell += ' --gulpfile ' + T.Path.resolve(from, 'gupackFile.js');
-
-    execute(shell, 'gulp build');
-
+    gupack.run();
 }
 
 //gupack start projectName
 function start(){
-
-    var server = _startServer();
-    //打开默认浏览器
-    _openBrowse(server.host, server.port);
-
+    gupack.runIndex = 1;
+    gupack.run();
 }
 
-//gupack restart projectName
-function restart(){
-    var server = _startServer();
-}
-
-function _startServer(){
-
-    var projectName = _getProjectName(),
-        projectConf = T.getProjectConfig(projectName);
-    //判断项目是否存在
-    if(!projectConf){
-        T.log.red('--->>> \u8be5\u9879\u76ee\u4e0d\u5b58\u5728 ');
-        process.exit(1);
-    }
-
-    var serverScript = T.Path.resolve(from, 'gupackServer.js'),
-        nodemonShell = 'node ' + serverScript,
-        host = _getHost(projectConf),
-        port = _getPort(projectConf),
-        dist = _getDist(projectConf);
-
-    //写入配置
-    _updateConfig(projectName, host, port, projectConf);
-
-    //加入文件变更重启
-    //nodemonShell += ' -w ' + serverScript;
-    //nodemonShell += ' --config ' + T.Path.resolve(__dirname, '..', 'nodemon.json');
-    nodemonShell += ' --project-name ' + projectName;
-    nodemonShell += ' --server-path ' + dist;
-    nodemonShell += ' --host ' + host;
-    nodemonShell += ' --port ' + port;
-
-    T.log.green(`--->>> starting server: http://${host}:${port} `);
-    execute(nodemonShell);
-    return { host: host, port: port };
-}
-
-/**
- * 打开默认浏览器
- * @param host
- * @param port
- * @private
- */
-function _openBrowse(host, port){
-    var osType = os.type();
-    var shellFile = /windows/gi.test(osType) ? 'open.cmd' : 'open';
-    shellFile = T.Path.resolve(__dirname, '../shell', shellFile);
-    T.execFile(shellFile, ['http://' + host + ':' + port]);
-}
-
-function _getHost(config){
-    return T.argv['host'] || (config && config['host']) || '127.0.0.1';
-}
-
-function _getPort(config){
-    var port = T.argv['port'] || (config && config['port']) || Math.round(Math.random() * 1000 + 3000);
-    //随机生成，端口去重
-    if(!T.argv['port'] && (!config || !config['port'])){
-        var tps = [];
-        Object.keys(projectList).forEach((project) => {
-            projectList[project]['port'] && tps.push(projectList[project]['port']);
-        });
-        port = T.generatePort(tps, port);
-    }
-    return port;
-}
-
-function _getDist(projectConf){
-    var projectPath = projectConf.path,
-        dist = '';
-    if(isBuildPath){
-        dist = buildPath;
-    }else{
-        //先找到项目的配置文件 gupack-config.js
-        var config = require(T.Path.resolve(projectPath, projectConf.config));
-        if(/^[a-zA-Z]\:/i.test(config.build)){
-            //绝对路径
-            dist = config.build;
-        }else{
-            dist = T.Path.resolve(projectPath, config.build);
-        }
-    }
-    return dist;
-}
-
-function _updateConfig(projectName, host, port, config){
-    if(!config['host'] && !config['port']){
-        for(var pn in projectList){
-            if(pn === projectName){
-                config['host'] = host;
-                config['port'] = port;
-                config['sport'] = port + 1000;
-            }
-        }
-        var projects = JSON.stringify({"projectList": projectList}, null, 2);
-        T.fs.writeFileSync(T.Path.resolve(__dirname, '..', '_projects.json'), projects);
-    }
-}
-
-function _getProjectName(){
-    return String(T.argv._[1] || T.argv['p'] || T.argv['project'] || T.Path.parse(cwd)['name']);
-}
-
-//编译并发布
+//编译并发布(部署)
 function publish(){
-    var shell = gulpShell;
-    var projectName = _getProjectName();
-    shell += ' -p ' + projectName + ' --env prd --publish true';
-    if(isBuildPath){
-        shell += ' -d ' + buildPath + ' --cwdir ' + cwd;
-    }
-    //console.log(shell);
-
-    execute(shell, 'gulp publish');
+    // gupack.isPublish = true;
+    // gupack.run();
+    gupack.runDeploy();
 }
 
-function execute(shell, shellName){
-    //未指定可用命令
-    if(!shell){
-        T.log.red('--->>> \u672a\u6307\u5b9a\u53ef\u7528\u547d\u4ee4 ');
-        return false;
-    }
-    // console.log(shell);
-    var gulpExec = T.exec(shell, {cwd: from});
+//编译并发布版本
+function release(){
+    gupack.statics._if = true;
+    publish();
+}
 
-    gulpExec.stdout.on('data', data => {
-        process.stdout.write(T.chalk.green(data));
-    });
-
-    gulpExec.on('exit', () => {
-        process.exit(1);
-    });
-
+function clean(){
+    gupack.cleanBuildDir();
 }
 
 module.exports = {
-    task: task,
-    start: start,
-    restart: restart,
-    build: build,
-    publish: publish,
-    release: publish
+    task,
+    start,
+    build,
+    publish,
+    release,
+    clean
 };

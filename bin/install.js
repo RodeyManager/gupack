@@ -1,50 +1,66 @@
 
-const T  = require('../lib/tools');
+'use strict';
 
 const
-    pluginName = T.argv._.slice(-1)[0],
-    from = T.Path.join(__dirname, '..'),
-    isG = !!T.argv['g'],
-    isSaveDev = !!T.argv['save-dev'],
-    isForce = !!T.argv['force'];
+    inquirer = require('inquirer'),
+    cliSpinners = require('cli-spinners'),
+    spawn = require('child_process').spawn,
+    T  = require('../lib/tools'),
+    Gupack = require('../lib/config/gupack');
 
-var shell = 'npm install';
+function getSourceDir(){
+    let gupack = new Gupack(T.getConfig());
+    return gupack.sourceDir;
+}
 
-//install as npm install
 function install(){
-
-    if(pluginName)
-        shell += ' ' + pluginName;
-
-    execute();
+    runSwap(getSourceDir(), null, 'Installing npm package......', 'Installed Done');
 }
-//install as npm uninstall
+
 function uninstall(){
-
-    shell = 'npm uninstall';
-    if(pluginName)
-        shell += ' ' + pluginName;
-
-    execute();
+    runSwap(getSourceDir(), null, 'Uninstalling npm package......', 'Uninstalled Done');
 }
 
-function execute(){
-    if(isG)
-        shell += ' -g';
-    if(isSaveDev)
-        shell += ' --save-dev';
-    if(isForce)
-        shell += ' --force';
-    //console.log('shell ==== ' + shell);
-    T.exec(shell, {cwd: from}, function(error, stdout, stderr){
-        if(error)   T.log.red(error);
-        if(stdout)  T.log.green(stdout);
-        //if(stderr)  T.log.gray(stderr);
+function update(){
+    runSwap(getSourceDir(), null, 'Updating npm package......', 'Updated Done');
+}
+
+function runSwap(cwdir, arg, startText, endText){
+
+    cwdir = cwdir || process.cwd();
+
+    arg = arg || process.argv.slice(2) || [];
+    arg = arg.filter(a => {
+        return !/^-+/.test(a);
+    });
+    arg = arg.concat(process.argv.slice(2).filter(a => {
+        return /^-+/.test(a);
+    }));
+
+    startText = startText || 'installing......';
+    endText = endText || 'installed done';
+
+    let allows = cliSpinners.bouncingBar.frames.reverse() ;//[ '⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
+
+    let loader = allows.map(s => T.msg.yellow(`${s} ${startText}`));
+    let len = loader.length, i = 0;
+    let ui = new inquirer.ui.BottomBar({bottomBar: loader[i % len]});
+
+    setInterval(function () {
+        ui.updateBottomBar(loader[i++ % len]);
+    }, 100);
+
+    let cmd = spawn(T.cmdify('npm'), arg, {stdio: 'pipe', cwd: cwdir });
+    cmd.stdout.pipe(ui.log);
+    cmd.on('close', function () {
+        ui.updateBottomBar(T.msg.yellow(endText) + '\n');
+        process.exit();
     });
 }
 
-
 module.exports = {
-    install: install,
-    uninstall: uninstall
+    install,
+    uninstall,
+    update,
+    runSwap
 };
