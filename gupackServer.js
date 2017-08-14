@@ -36,7 +36,7 @@ if(!basePath){
     throw new Error(T.msg.red('\u672a\u8bbe\u7f6e\u6b63\u786e\u7684\u9879\u76ee\u8def\u5f84'));
 }
 
-module.exports = function(){
+function createLiveServer(){
 
     /**
      * 创建web服务器
@@ -101,7 +101,8 @@ module.exports = function(){
 
                 //加入 实时更新===========Start
                 if(config.liveReload.match.test(extname)){
-                    file = implanteScriptCode(file, realPath);
+                    file = implanteStyleCode(file);
+                    file = implanteScriptCode(file);
                     oldRealPath && liveServer.unwatch(oldRealPath);
                     liveServer.watching(realPath);
                     oldRealPath = realPath;
@@ -170,16 +171,21 @@ function sendResponse(req, res, status, body, headers, charType){
  * @returns {*}
  */
 function implanteScriptCode(content){
-    let gupackBrowseScripts = T.getFileContent(T.Path.resolve(__dirname, 'lib/live/liveReloadBrowser.js'));
+    let scriptCode = T.getFileContent(T.Path.resolve(__dirname, 'lib/live/liveReloadBrowser.js'));
     let tag = '<script id="'+ Math.random()*999999 +'" data-host="'+ hostname +'" data-socket="true" data-port="'+ sport +'">';
     //将浏览器上的socket端口进行替换
-    gupackBrowseScripts = T.replaceVar(gupackBrowseScripts, null, sport);
-    if(gupackBrowseScripts.indexOf('</head>') !== -1){
-        tag += gupackBrowseScripts + '</script></head>';
-        content = content.replace('</head>', tag);
-    }else{
-        content += tag + gupackBrowseScripts +'</script>';
-    }
+    scriptCode = T.replaceVar(scriptCode, null, sport);
+    tag += scriptCode + '</script></body>';
+    content = content.replace('</body>', tag);
+    return content;
+}
+
+function implanteStyleCode(content){
+    let styleCode = T.getFileContent(T.Path.resolve(__dirname, 'lib/live/liveReloadStyle.css'));
+    let tag = '<style id="'+ Math.random()*999999 +'" data-host="'+ hostname +'" data-socket="true" data-port="'+ sport +'">';
+
+    tag += styleCode + '</style></head>';
+    content = content.replace('</head>', tag);
     return content;
 }
 
@@ -238,6 +244,13 @@ function connectSocket(){
     liveServer = new LiveServer({ port: sport, liveDelay: liveReloadDelay });
 }
 
+function emitBuilding(){
+    liveServer && liveServer.send('<<<-----start building----->>>');
+}
+
+module.exports = {
+    createLiveServer, emitBuilding
+};
 
 
 

@@ -56,24 +56,15 @@ const gupack = program
     .option('publish', T.msg.cyan('[<projectName>] 发布部署项目; '), function(){
         require('./task').publish();
     })
+    .option('g', T.msg.cyan('生成指定模块（类型：view、service、component）; '), function(){
+        require('./generator').generate();
+    })
     .option('clean', T.msg.cyan(' 清空编译路径下的所有文件; '), function(){
         require('./task').clean();
     })
     // remove project in projects file
     .option('delete', T.msg.cyan('<projectName> 从本地磁盘中删除(谨慎执行(u_u)); '), function(){
         require('./add').deleteProject();
-    })
-    // install gulp plugins
-    .option("install", T.msg.cyan('<pluginName> 安装插件（将会安装到当前项目的src目录下）; '), function(){
-        require('./install').install();
-    })
-    // uninstall gulp plugins
-    .option('uninstall', T.msg.cyan('<pluginName> 卸载插件（从当前项目的src目录下）; '), function(){
-        require('./install').uninstall();
-    })
-    // update gulp plugins
-    .option('update', T.msg.cyan('<pluginName> 更新插件; '), function(){
-        require('./install').update();
     })
     .option('alias', T.msg.cyan('<name> 为gupack设置一个全局命令别名;'), function(){
         require('./alias')();
