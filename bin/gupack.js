@@ -56,8 +56,17 @@ const gupack = program
     .option('publish', T.msg.cyan('[<projectName>] 发布部署项目; '), function(){
         require('./task').publish();
     })
-    .option('g', T.msg.cyan('生成指定模块（类型：view、service、component）; '), function(){
-        require('./generator').generate();
+    // .option('g', T.msg.cyan('<type> <name>生成指定模块（类型：view、service、component）; '), function(){
+    //     require('./generator').generate();
+    // })
+    .option('gc', T.msg.cyan('<type> <name>生成指定组件（类型：vue、react、angluar）; '), function(){
+        require('./generator').generateComponent();
+    })
+    .option('gs', T.msg.cyan('<type> <name>生成指定服务组件（类型：default、angluar）; '), function(){
+        require('./generator').generateService();
+    })
+    .option('gv', T.msg.cyan('<type> <name>生成指定视图模块（类型：default、angluar）; '), function(){
+        require('./generator').generateView();
     })
     .option('clean', T.msg.cyan(' 清空编译路径下的所有文件; '), function(){
         require('./task').clean();
