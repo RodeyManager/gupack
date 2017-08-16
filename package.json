@@ -2,7 +2,17 @@
   "name": "gupack",
   "version": "2.0.2",
   "description": "(基于gulp的前端构建工具)Based on the front-end build tools of gulp",
-  "keyword": "javascript, nodejs, gulp, babel",
+  "keyword": "javascript, nodejs, gulp, babel, browserify",
+  "keywords": [
+      "javascript",
+      "nodejs",
+      "gulp",
+      "babel",
+      "browserify",
+      "vue",
+      "react",
+      "angular2"
+  ],
   "author": {
     "name": "Rodey Luo",
     "email": "rodeyluo@gmail.com"
