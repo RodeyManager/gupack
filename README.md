@@ -1,5 +1,6 @@
+[![Coverage Status](https://coveralls.io/repos/github/RodeyManager/gupack/badge.svg?branch=master)](https://coveralls.io/github/RodeyManager/gupack?branch=master)
 
-![gupack](/doc/assets/images/gupack-128.png)
+<div style="text-align:center;"><img src="/doc/assets/images/gupack-128.png" alt="gupack" /></div>
 
 ### 安装
 ```javascript
