@@ -9,6 +9,9 @@ const
 
 const
     isAutoInstall = 'auto-install' in T.argv,
+    host = T.argv['host'],
+    port = T.argv['port'],
+    liveDelay = T.argv['liveDelay'],
     projectName = T.getProjectName(),
     to = T.Path.resolve(process.cwd(), projectName);
 let ui;
@@ -94,7 +97,11 @@ function _createProject(){
         let packageJSONPath = rawCopy + '/package.json';
         let packageObject = require(packageJSONPath);
         packageObject.name = projectName;
-        T.fs.writeFileSync(packageJSONPath, JSON.stringify(packageObject, null, 2));
+        T.fs.writeFileSync(packageJSONPath, JSON.stringify(packageObject, null, 2), 'utf8');
+        packageJSONPath = rawCopy + '/src/views/index.html';
+        packageObject = T.fs.readFileSync(packageJSONPath, 'utf8');
+        packageObject = packageJSONPath.replace('title="GuPack"', 'title="'+ projectName +'"');
+        T.fs.writeFileSync(packageJSONPath, packageObject, 'utf8');
     }
 
 }

@@ -1,6 +1,6 @@
 {
   "name": "gupack",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "(基于gulp的前端构建工具)Based on the front-end build tools of gulp",
   "keyword": "javascript, nodejs, gulp, babel",
   "author": {
@@ -14,7 +14,8 @@
   },
   "homepage": "https://github.com/RodeyManager/gupack.git#readme",
   "bin": {
-    "gupack": "./bin/gupack.js"
+    "gupack": "./bin/gupack.js",
+    "gp": "./bin/gupack.js"
   },
   "files": [
     "bin",
