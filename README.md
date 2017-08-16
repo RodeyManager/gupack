@@ -1,6 +1,8 @@
-[![Coverage Status](https://coveralls.io/repos/github/RodeyManager/gupack/badge.svg?branch=master)](https://coveralls.io/github/RodeyManager/gupack?branch=master)
+<h1 style="text-align:center;"><img src="/doc/assets/images/gupack-128.png" alt="gupack" /><br /><br /></h1>
 
-<div style="text-align:center;"><img src="/doc/assets/images/gupack-128.png" alt="gupack" /></div>
+
+[![Coverage Status](https://coveralls.io/repos/github/RodeyManager/gupack/badge.svg?branch=master)](https://coveralls.io/github/RodeyManager/gupack?branch=master)
+[![Build Status](https://travis-ci.org/RodeyManager/gupack.svg?branch=master)](https://travis-ci.org/RodeyManager/gupack)
 
 ### 安装
 ```javascript
