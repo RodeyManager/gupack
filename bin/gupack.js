@@ -19,6 +19,7 @@ const gupack = program
     .option('-t', '指定编译任务')
     .option('-T, --template', '新建项目时指定模板')
     .option('-c', '清理编译目录')
+    .option('-f, --gupackfile', '指定配置文件')
     .option('--host', '服务器主机')
     .option('--port', '服务器端口')
     .option('--liveDelay', '热更新延迟时间，单位ms')
@@ -68,12 +69,18 @@ const gupack = program
     .option('gv', T.msg.cyan('<type> <name>生成指定视图模块（类型：default、angluar）; '), function(){
         require('./generator').generateView();
     })
+    .option('gt', T.msg.cyan('<name>生成测试用例; '), function(){
+        require('./generator').generateSpec();
+    })
+    .option('test', T.msg.cyan('<testName[fileName]>用例测试; '), function(){
+        require('./testor').test();
+    })
     .option('clean', T.msg.cyan(' 清空编译路径下的所有文件; '), function(){
         require('./task').clean();
     })
     // remove project in projects file
-    .option('delete', T.msg.cyan('<projectName> 从本地磁盘中删除(谨慎执行(u_u)); '), function(){
-        require('./add').deleteProject();
+    .option('remove', T.msg.cyan('<projectName> 从本地磁盘中删除(谨慎执行(u_u)); '), function(){
+        require('./add').remove();
     })
     .option('alias', T.msg.cyan('<name> 为gupack设置一个全局命令别名;'), function(){
         require('./alias')();

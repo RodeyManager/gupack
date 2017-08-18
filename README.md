@@ -45,7 +45,7 @@
     gs                  <type> <name>生成指定服务组件（类型：default、angluar）;
     gv                  <type> <name>生成指定视图模块（类型：default、angluar）;
     clean                清空编译路径下的所有文件;
-    delete              <projectName> 从本地磁盘中删除(谨慎执行(u_u));
+    remove              <projectName> 从本地磁盘中删除(谨慎执行(u_u));
     alias               <name> 为gupack设置一个全局命令别名;
     versions            查看相关版本;
 
@@ -90,20 +90,6 @@ publish【发布项目】
     //或者定位到项目下，执行 gupack publish
 
     //如果在gupack-config.js中配置了statics选项，则publish后，项目中的所有连接地址都会加上statics中对应配置地址
-```
-remove【移除项目】
- ```javascript
-    gupack remove mall
-    //或者定位到项目下，执行 gupack remove
-
-    从gupack项目列表中移除（不会删除硬盘文件）
-```
-delete【删除项目】
-```javascript
-    gupack delete mall
-    //或者定位到项目下，执行 gupack delete
-
-    //从gupack项目列表中删除（同时删除硬盘文件）
 ```
 
 alias【为gupack命令创建别名】

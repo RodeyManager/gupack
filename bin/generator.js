@@ -9,7 +9,8 @@ const
     T = require('../lib/tools');
 
 const
-    args = T.argv._.slice(1);
+    args = T.argv._.slice(1),
+    strictDef = '\'use strict\';\n';
 
 let type = args[0],
     name = args[1];
@@ -17,20 +18,17 @@ if(!type){
     T.log.red('× 请指定需要生成的模块类型');
     process.exit(1);
 }
-if(!name){
-    T.log.red('× 请指定需要生成的模块名称');
-    process.exit(1);
-}
+// if(!name){
+//     name = type;
+    // T.log.red('× 请指定需要生成的模块名称');
+    // process.exit(1);
+// }
 
 let instance;
 
 class Generator {
 
-    constructor(){
-        this.strictDef = '\'use strict\';\n';
-        this.nameDef   = Generator.toFirstUpper(name) + Generator.toFirstUpper(type);
-        this.moduleDef = `${ this.strictDef }\n\nexport default class ${ this.nameDef }{\n\tconstructor(){}\n\n}`
-    }
+    constructor(){}
 
     generate(){
         switch(type){
@@ -43,6 +41,9 @@ class Generator {
             case 'component':
                 this.createComponent();
                 break;
+            case 'spec':
+                this.createSpec();
+                break;
             default:
                 T.log.red('× 请指定需要生成的模块类型（ view、service、component ）');
                 process.exit(1);
@@ -50,11 +51,18 @@ class Generator {
     }
 
     generateView(){
+        if(!name)   name = type;
         this.createView();
     }
 
     generateService(){
+        if(!name)   name = type;
         this.createService();
+    }
+
+    generateSpec(){
+        if(!name)   name = type;
+        this.createSpec();
     }
 
     generateComponent(){
@@ -82,7 +90,8 @@ class Generator {
             fn = Generator.getName(name),
             mpf = T.Path.join(mp, `${ fn }View.${ isNg ? 'ts' : 'js'}`);
         T.fsa.mkdirpSync(mp);
-        T.fsa.writeFileSync(mpf, isNg ? this.getAngularViewCode() : this.moduleDef, 'utf8');
+        let str = `${ strictDef }\n\nexport default class ${ Generator.toFirstUpper(fn) }View{\n\tconstructor(){}\n\n}`;
+        T.fsa.writeFileSync(mpf, isNg ? this.getAngularViewCode() : str, 'utf8');
         T.log.green(`\n√ mkdir '${mp}' successfully \n√ create file '${mp}' successfully `);
         process.exit(1);
     }
@@ -110,14 +119,17 @@ platformBrowserDynamic().bootstrapModule(${name}Module);
     }
 
     createService(){
+        console.log(type, name);
         let isNg = type === 'angular' || type === 'ng';
-        let mp  = T.Path.resolve(process.cwd(), `src/services`),
-            mpf = T.Path.join(mp, `${name}.service.${ isNg ? 'ts' : 'js'}`);
-        let str = this.strictDef;
+        let mp  = T.Path.resolve(process.cwd(), `src/services/${ Generator.getNamePath(name) }`),
+            fn  = Generator.getName(name),
+            mpf = T.Path.join(mp, `${fn}.service.${ isNg ? 'ts' : 'js'}`);
+        T.fsa.mkdirpSync(mp);
+        let str = strictDef;
         str += `\nconst\n\tAppService = require('./app.service');\n`;
-        str += `\nexport default class ${ this.nameDef }{\n\tconstructor(){}\n\n}`;
+        str += `\nexport default class ${ Generator.toFirstUpper(fn) }Service{\n\tconstructor(){}\n\n}`;
         T.fsa.writeFileSync(mpf, isNg ? this.getAngularServiceCode() : str, 'utf8');
-        T.log.green(`\n√ create file '${mp}' successfully `);
+        T.log.green(`\n√ create file '${mpf}' successfully `);
         process.exit(1);
     }
 
@@ -154,7 +166,7 @@ export class ${ Generator.toFirstUpper(name) }Service{\n
         T.log.green(`\n√ mkdir '${mp}' successfully`);
         T.fsa.writeFileSync(mphtml, `<incluede src="./${name}.css"></incluede><div class="${name}-component"></div>`, 'utf8');
         T.log.green(`√ create file '${mphtml}' successfully `);
-        T.fsa.writeFileSync(mpjs, `${this.strictDef}\nexport default class ${name}Component{\nconstructor(){}\n}`, 'utf8');
+        T.fsa.writeFileSync(mpjs, `${strictDef}\nexport default class ${name}Component{\nconstructor(){}\n}`, 'utf8');
         T.log.green(`√ create file '${mpjs}' successfully `);
         T.fsa.writeFileSync(mpcss, '', 'utf8');
         T.log.green(`√ create file '${mpcss}' successfully `);
@@ -168,7 +180,6 @@ export class ${ Generator.toFirstUpper(name) }Service{\n
             mpcss = T.Path.join(mp, `${fn}.css`);
         let str   = `<style src="./${fn}.css" scoped></style>\n<template>\n\n</template>\n\n<script>\n\texport default {\n\t\tname: '${fn}',\n\t\tdata () {\n\t\t\treturn {}\n\t\t},\n\t\tcomponents: {}\n\t}\n</script>`;
         T.fsa.mkdirpSync(mp);
-        T.log.green(`\n√ mkdir '${mp}' successfully`);
         T.fsa.writeFileSync(mpvue, str, 'utf8');
         T.log.green(`√ create file '${mpvue}' successfully `);
         T.fsa.writeFileSync(mpcss, '', 'utf8');
@@ -183,7 +194,6 @@ export class ${ Generator.toFirstUpper(name) }Service{\n
             mpcss   = T.Path.join(mp, `${fn}.css`);
         let str     = `\n\nclass ${ Generator.toFirstUpper(fn) } extends React.Component {\n\trender() {}\n}\n\nmodule.exports = ${ Generator.toFirstUpper(fn) };`;
         T.fsa.mkdirpSync(mp);
-        T.log.green(`\n√ mkdir '${mp}' successfully`);
         T.fsa.writeFileSync(mpreact, str, 'utf8');
         T.log.green(`√ create file '${mpreact}' successfully `);
         T.fsa.writeFileSync(mpcss, '', 'utf8');
@@ -202,13 +212,26 @@ export class ${ Generator.toFirstUpper(name) }Service{\n
         let str = `import { Component } from '@angular/core';\n\n@Component({\n\tselector: '${fn}',\n\ttemplateUrl: './${fnc}.html',\n\tentryComponents: [  ]\n})\nexport class ${ Generator.toFirstUpper(fn) }Component{\n\n\tconstructor(){}\n\n}`;
 
         T.fsa.mkdirpSync(mp);
-        T.log.green(`\n√ mkdir '${mp}' successfully`);
         T.fsa.writeFileSync(mpts, str, 'utf8');
         T.log.green(`√ create file '${mpts}' successfully `);
         T.fsa.writeFileSync(mphtml, '', 'utf8');
         T.log.green(`√ create file '${mphtml}' successfully `);
         T.fsa.writeFileSync(mpcss, '', 'utf8');
         T.log.green(`√ create file '${mpcss}' successfully `);
+        process.exit(1);
+    }
+
+    createSpec(){
+        let isNg = type === 'angular' || type === 'ng';
+        let mp  = T.Path.resolve(process.cwd(), `test/${ Generator.getNamePath(name) }`),
+            fn      = Generator.getName(name),
+            mpf = T.Path.join(mp, `${fn}.spec.${ isNg ? 'ts' : 'js'}`);
+        T.fsa.mkdirpSync(mp);
+        let str = this.strictDef;
+        str += `\nconst\n\tassert = require('assert');\n`;
+        str += `\ndescribe('#${fn}()', function() {\n\tit('should message', function() {\n\t\t// TODO... \n\t}); \n});`;
+        T.fsa.writeFileSync(mpf, str, 'utf8');
+        T.log.green(`\n√ create file '${mpf}' successfully `);
         process.exit(1);
     }
 

@@ -37,5 +37,5 @@ function deleteProject(){
 }
 
 module.exports = {
-    deleteProject: deleteProject
+    remove: deleteProject
 };
