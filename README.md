@@ -53,7 +53,7 @@
 
 new【新建项目】
 ```javascript
-    gupack new <prohectName>
+    gupack new <projectName>
     // 新建项目后自定安装npm依赖模块
     gupack new mall --auto-install
     // 新建项目将提示选择对应的模板
@@ -65,7 +65,7 @@ new【新建项目】
 build【编译项目】对项目进行编译
 
 ```javascript
-    gupack build <prohectName>
+    gupack build <projectName>
     //或者定位到项目下，执行 gupack build
     
     //编译项目可带命令参数，请查看[命令参数]
