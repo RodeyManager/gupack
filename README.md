@@ -12,7 +12,7 @@
 
 ### 命令使用参数
 
-**使用帮助查看命令：gupack --help**
+**使用帮助查看命令：gupack -h**
 
     -p, --project       指定当前编译的项目
     -d, --dest          指定编译后的输出路径
@@ -95,14 +95,10 @@ publish【发布项目】
 alias【为gupack命令创建别名】
 ```javascript
     gupack alias gp
-    //任何位置执行
-    gp create mall
-    
-    创建成功后，将可以以别名的方式运行gupack命令
 ```
                     
 
-## upack-config文件配置
+## gupack-config文件配置
 *   ```env```：string, 当前编译环境(本地(默认):local; 开发:dev; 测试:stg; 生产:prd)
 *   ```sourceDir```：string, 源文件路径, 默认为项目下的src
 *   ```buildDir```：string, 编译产出路径，可以是绝对或者相对路径，默认项目下的build
@@ -110,8 +106,9 @@ alias【为gupack命令创建别名】
 *   ```liveDelay```：number, 浏览器实时更新延迟时间
 *   ```buildTasks```：object, 项目编译任务列表
 *   ```statics```: object, 发布部署CDN相关配置
-*   ```deploy```: object, 发布部署服务器相关配置
+*   ```deploy```: array, 发布部署服务器相关配置(支持多节点上传)
 *   ```startClean```: boolean, 编译项目前是否清空编译目录
+*   ```indexFile```: string, 启动内置Node静态服务器，默认打开的首页，相对于buildDir路径
 
 ## buildTask下单个任务相关配置
 *   ```src```：string or array, 当前任务编译源码(支持glob)

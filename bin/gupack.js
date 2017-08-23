@@ -11,7 +11,6 @@ const
 const gupack = program
     .usage('[options] \n\r\t 欢迎使用前端自动化构建工具 Gupack; \n\r\t ' +
     '将帮助您简化前端开发流程和提升开发效率。')
-    .option('-p, --project', '指定当前编译的项目')
     .option('-d, --dest', '指定编译后的输出路径')
     .option('-e, --env', '设置环境')
     .option('-s, --server', '是否启动内置静态服务器')
