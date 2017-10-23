@@ -36,6 +36,47 @@ function deleteProject(){
     });
 }
 
+function addTemplate(){
+    let templates = require('../templates');
+    let [ action, name, url, vs ] = T.argv._;
+    vs && (vs = '^' + String(vs).replace(/^\^/, ''));
+    if(!name || !url){
+        T.log.red(`× 必须指定模板名称<templateName>和模板地址<templateGitUrl(username/repo)> 
+                    \n 如：gupack addTemplate vue_browserify RodeyManager/vue_browserify`);
+        return false;
+    }
+    templates[String(name)] = {
+        url, vs
+    };
+    templates = JSON.stringify(templates, null, 4);
+    T.fs.writeFile(T.Path.resolve(__dirname, '../templates.json'), templates, 'utf8', (err) => {
+        if(err) T.log.red(`× ${ err }`);
+        else    T.log.green(`√ 模板添加成功! 你可以使用 gupack new myproject --template ${ name } 来创建项目了!`);
+    });
+}
+
+function removeTemplate(){
+    let templates = require('../templates');
+    let [ action, name] = T.argv._;
+    if(!name){
+        T.log.red(`× 必须指定需要删除模板名称<templateName> 
+                    \n 如：gupack removeTemplate vue_browserify`);
+        return false;
+    }
+    if(!(name in templates)){
+        T.log.red(`× 未找到当前指定模板，当前已存在的模板：${ Object.keys(templates).join('、') }`);
+        return false;
+    }
+    delete templates[name];
+    templates = JSON.stringify(templates, null, 4);
+    T.fs.writeFile(T.Path.resolve(__dirname, '../templates.json'), templates, 'utf8', (err) => {
+        if(err) T.log.red(`× ${ err }`);
+        else    T.log.green(`√ 模板删除成功! 你以后将不能使用 gupack new myproject --template ${ name } 来创建项目了(╯﹏╰)!`);
+    });
+}
+
 module.exports = {
-    remove: deleteProject
+    remove: deleteProject,
+    addTemplate,
+    removeTemplate
 };

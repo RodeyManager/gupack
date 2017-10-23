@@ -5,10 +5,13 @@ const
     prompt        = require('prompt'),
     downloader    = require('download-github-repo'),
     fsrr          = require('fs-readdir-recursive'),
-    inquirer      = require('inquirer');
+    inquirer      = require('inquirer'),
+    _templetes    = require('../templates.json');
 
 const
     isAutoInstall = 'auto-install' in T.argv,
+    isSkipCacheTemplete = 'skip-cache-templete' in T.argv,
+    templateNamed = T.argv['template'],
     host = T.argv['host'],
     port = T.argv['port'],
     liveDelay = T.argv['liveDelay'],
@@ -38,43 +41,59 @@ function create(){
 
 function _createProject(){
 
-    let templates = {
-        'simple': { url: 'gupack_simple', desc: '', vs: '^1.0.0' },
-        'vue + browserify': { url: 'vue_browserify', vs: '^1.0.0' },
-        'react + browserify': { url: 'react_browserify', vs: '^1.0.0' },
-        'angluar2 + browserify': { url: 'angular_browserify', vs: '^1.0.0' }
-    };
+    let templates = _templetes;
     //
     let tkeys = Object.keys(templates),
         selectedTemplate, tempPath;
 
-    inquirer.prompt([{
-        type: 'list',
-        name: 'template',
-        message: '选择一款适合自己项目的模板: ',
-        choices: tkeys
-    }]).then(awn => {
-        selectedTemplate = templates[awn.template];
-        _next(selectedTemplate);
-    });
+    // one: 如果 --template存在
+    if(templateNamed){
+
+        if(templates[templateNamed]){
+            selectTemplatePrompt();
+        }else if(/^[^\/]+\/[^/]+$/.test(templateNamed)){
+            _next({ url: templateNamed });
+        }
+
+    // two: --template 不存在
+    }else{
+        selectTemplatePrompt();
+    }
+
+    function selectTemplatePrompt(){
+        inquirer.prompt([{
+            type: 'list',
+            name: 'template',
+            message: '选择一款适合自己项目的模板: ',
+            choices: tkeys
+        }]).then(awn => {
+            selectedTemplate = templates[awn.template];
+            _next(selectedTemplate);
+        });
+    }
 
     function _next(template){
 
         tempPath = T.Path.resolve(__dirname, '../templates/', template.url);
 
         // 如果之前已经下载过
-        if(T.fs.existsSync(tempPath)){
+        if(isSkipCacheTemplete && T.fs.existsSync(tempPath)){
             _copyDir();
             return false;
         }
 
-        downloadTemplateRepo(template).then(result => {
-            T.log.green('\n\n' + result.toString());
+        // 跳过缓存 或 缓存不存在则下载
+        if(isSkipCacheTemplete || !T.fs.existsSync(tempPath)){
+            downloadTemplateRepo(template).then(result => {
+                T.log.green('\n\n' + result.toString());
+                _copyDir();
+            }).catch(err => {
+                T.log.red(err.toString());
+                process.exit(1);
+            });
+        }else{
             _copyDir();
-        }).catch(err => {
-            T.log.red(err.toString());
-            process.exit(1);
-        });
+        }
 
     }
 
@@ -98,10 +117,13 @@ function _createProject(){
         let packageObject = require(packageJSONPath);
         packageObject.name = projectName;
         T.fs.writeFileSync(packageJSONPath, JSON.stringify(packageObject, null, 2), 'utf8');
-        packageJSONPath = rawCopy + '/src/views/index.html';
-        packageObject = T.fs.readFileSync(packageJSONPath, 'utf8');
-        packageObject = packageJSONPath.replace('title="GuPack"', 'title="'+ projectName +'"');
-        T.fs.writeFileSync(packageJSONPath, packageObject, 'utf8');
+        let indexPath = rawCopy + '/src/views/index.html';
+        if(T.fs.existsSync(indexPath)){
+            packageObject = T.fs.readFileSync(indexPath, 'utf8');
+            // packageObject = packageObject.replace('title="GuPack"', 'title="'+ projectName +'"');
+            packageObject = packageObject.replace(/(title=["'])([^"']*?)(["'])([^"']*?)/i, "$1"+ projectName +"$3$4");
+            T.fs.writeFileSync(indexPath, packageObject, 'utf8');
+        }
     }
 
 }
@@ -113,7 +135,7 @@ function downloadTemplateRepo(template){
 
     return new Promise((resove, reject) => {
         let stin = downloading();
-        downloader('RodeyManager/' + url, tempPath, err => {
+        downloader(url, tempPath, err => {
             clearInterval(stin);
             downloaded();
             if(err)

@@ -30,8 +30,9 @@ const gupack = program
      Exp1: gupack new tmall
      Exp2: gupack new tmall --host 127.0.0.1 --port 3000 --liveDelay 2000
      */
-    .option('new', T.msg.cyan('<projectName> 创建项目; '
+    .option('new', T.msg.cyan('<projectName*> 创建项目; '
         + exp('\n\t --auto-install: 新建项目后自动安装npm相关依赖模块'
+        + '\n\t --skip-cache-template: 跳过缓存,下载模板'
         + '\n\t -T --template: 选择项目模板')
         + ''), function(){
         require('./create')();
@@ -68,7 +69,7 @@ const gupack = program
     .option('gv', T.msg.cyan('<type> <name>生成指定视图模块（类型：default、angluar）; '), function(){
         require('./generator').generateView();
     })
-    .option('gt', T.msg.cyan('<name>生成测试用例; '), function(){
+    .option('gt', T.msg.cyan('<name*>生成测试用例; '), function(){
         require('./generator').generateSpec();
     })
     .option('test', T.msg.cyan('<testName[fileName]>用例测试; '), function(){
@@ -78,10 +79,16 @@ const gupack = program
         require('./task').clean();
     })
     // remove project in projects file
-    .option('remove', T.msg.cyan('<projectName> 从本地磁盘中删除(谨慎执行(u_u)); '), function(){
+    .option('remove', T.msg.cyan('<projectName*> 从本地磁盘中删除(谨慎执行(u_u)); '), function(){
         require('./add').remove();
     })
-    .option('alias', T.msg.cyan('<name> 为gupack设置一个全局命令别名;'), function(){
+    .option('addTemplate', T.msg.cyan('<templateName*> <templateGitUrl(注：github用户名/repo)*> [<templateVersion>]添加项目模板; '), function(){
+        require('./add').addTemplate();
+    })
+    .option('removeTemplate', T.msg.cyan('<templateName>删除指定项目模板; '), function(){
+        require('./add').removeTemplate();
+    })
+    .option('alias', T.msg.cyan('<name*> 为gupack设置一个全局命令别名;'), function(){
         require('./alias')();
     })
     .option('versions', T.msg.cyan('查看相关版本;'), function(){

@@ -190,7 +190,7 @@ export class ${ Generator.toFirstUpper(name) }Service{\n
     createReactComponent(){
         let mp      = T.Path.resolve(process.cwd(), `src/components/${ Generator.getNamePath(name) }`),
             fn      = Generator.getName(name),
-            mpreact = T.Path.join(mp, `${fn}.jsx`),
+            mpreact = T.Path.join(mp, `${fn}.js`),
             mpcss   = T.Path.join(mp, `${fn}.css`);
         let str     = `\n\nclass ${ Generator.toFirstUpper(fn) } extends React.Component {\n\trender() {}\n}\n\nmodule.exports = ${ Generator.toFirstUpper(fn) };`;
         T.fsa.mkdirpSync(mp);

@@ -1,0 +1,23 @@
+{
+    "simple": {
+        "url": "RodeyManager/gupack_simple",
+        "desc": "",
+        "vs": "^1.0.0"
+    },
+    "vue + browserify": {
+        "url": "RodeyManager/vue_browserify",
+        "vs": "^1.0.0"
+    },
+    "react + browserify": {
+        "url": "RodeyManager/react_browserify",
+        "vs": "^1.0.0"
+    },
+    "angluar2 + browserify": {
+        "url": "RodeyManager/angular_browserify",
+        "vs": "^1.0.0"
+    },
+    "react + webpack": {
+        "url": "RodeyManager/react_webpack",
+        "vs": "^1.0.0"
+    }
+}
