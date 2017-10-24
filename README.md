@@ -145,7 +145,7 @@ alias【为gupack命令创建别名】
 
 更多认证参数请参考 [ssh2](https://github.com/mscdex/ssh2)
 
-## [gupack-config.js](https://github.com/RodeyManager/gupack/doc/gupack-config.js) 文件配置实例
+## [gupack-config.js](https://github.com/RodeyManager/gupack/blob/master/doc/gupack-config.js) 文件配置实例
 
 #License
 [MIT License](https://en.wikipedia.org/wiki/MIT_License)
