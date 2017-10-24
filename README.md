@@ -57,8 +57,7 @@ new【新建项目】
     // 新建项目后自定安装npm依赖模块
     gupack new mall --auto-install
     // 新建项目将提示选择对应的模板
-    // 目前模板列表（ES6+Browserify; vue+Browserify; react+Browserify; angluar2+Browserify）
-    // 后期提供webpack相关模板
+    // 目前模板列表（simple; vue_browserify; react_rowserify; angluar2_rowserify...）
     // 项目编译主要已gulp为基础
 ```
 
@@ -66,8 +65,6 @@ build【编译项目】对项目进行编译
 
 ```javascript
     gupack build <projectName>
-    //或者定位到项目下，执行 gupack build
-    
     //编译项目可带命令参数，请查看[命令参数]
 ```
 
@@ -80,15 +77,12 @@ task【编译指定任务】
 start【启动项目】运行gupack自带的静态文件服务器，便于本地调式项目（包括浏览器实时更新功能）
 ```javascript
     gupack start <projectName>
-    //或者定位到项目下，执行 gupack start
     //编译项目可带命令参数，请查看[命令参数]
 ```
 
 publish【发布项目】
 ```javascript
     gupack publish <projectName>
-    //或者定位到项目下，执行 gupack publish
-
     //如果在gupack-config.js中配置了statics选项，则publish后，项目中的所有连接地址都会加上statics中对应配置地址
 ```
 
@@ -151,178 +145,7 @@ alias【为gupack命令创建别名】
 
 更多认证参数请参考 [ssh2](https://github.com/mscdex/ssh2)
 
-## gupack-config.js 文件配置实例
-```javascript
-
-    'use strict';
-
-    const
-        path         = require('path'),
-        babelify     = require('babelify'),
-        vueify       = require('vueify'),
-        extractCss   = require('vueify/plugins/extract-css'),
-        env          = require('./config/app-env');
-
-    const
-        //静态资源版本控制号
-        vQueryKey = '_rvc_',
-        hashSize = 10;
-
-    //导出模块
-    module.exports      =  {
-        env: env.name,
-        // 源文件路径, 默认为 src
-        sourceDir: env.source.path,
-        // 编译产出路径，可以是绝对或者相对路径，默认为 build
-        buildDir: env.dest.path,
-        // 默认启动地址
-        indexFile: 'views/index.html',
-        // 每次执行编译之前是否清理当前编译目录
-        startClean: true,
-        // 静态资源CDN配置
-        statics: {
-            _if: false,
-            // 需要匹配替换的文件后缀
-            // testExt: /^\.(html|tpl|jade|md|css|scss|less|styl|vue|jsx)[^\.]*$/i,
-            hostname: 'http://esales.cignacmb.com/',
-            nodes: [
-                { extname: /^\.(png|jpg|jpeg|gif|bmp|ico|webpng)[^\.]*$/i, pathname: 'pic', hostname: 'http://image.cdn.com' },
-                { extname: /^\.(otf|eot|svg|ttf|woff2?)[^\.]*$/i, pathname: 'fonts-api' },
-                { extname: /^\.(js?)[^\.]*$/i, pathname: 'scripts', hostname: 'http://js.cdn.com' }
-            ]
-        },
-        port: 3000,
-        // task任务列表
-        buildTasks: {
-            // ---说明：单个任务配置
-            'build.css': {
-                // 源文件
-                src: [
-                    'assets/css/reset.css',
-                    'assets/css/**/*'
-                ],
-                // 额外的插件样式，如果不是每个页面都用到，不建议合并到主样式文件中
-                // 可以单独在使用到的页面中引用
-                plugins: [],
-                dest: 'assets/css',
-                // 依赖task列表
-                rely: ['build.assets'],
-                // gulp插件
-                loader: cssLoaders('app.min.css'),
-                // 监听变化（文件改变执行该任务）
-                watch: ['assets/css/**/*']
-            },
-
-            'build.assets': {
-                src: 'assets/{fonts,images,js,libs}/**/*',
-                filters: [],
-                dest: 'assets',
-                loader: jsLoaders()
-            },
-
-            'build.views': {
-                src: ['views/**/*.html'],
-                filters: [],
-                rely: [
-                    'build.css',
-                    'build.modules.views'
-                ],
-                dest: 'views',
-                loader: htmlLoaders(),
-                watch: [
-                    'views/**/*',
-                    'components/**/*',
-                    'templates/**/*'
-                ]
-            },
-
-            'build.modules.views': {
-                src: 'modules/**/*View.js',
-                dest: 'modules',
-                //依赖task列表
-                rely: ['build.assets'],
-                loader: {
-                    'gulp-browserify-multi-entry': {
-
-                        debug: !env.isIf,
-                        external: ['vue', 'axios'],
-                        transform: [ vueify, babelify ],
-                        plugin: [
-                            [ extractCss, {
-                                out: path.join(env.dest.path, 'assets/css/components.min.css')
-                            }],
-                        ]
-                    },
-                    'gulp-jsminer': {
-                        _if: env.isProduction,
-                        preserveComments: '!'
-                    }
-                },
-                watch: [ 'assets/js/**/*', 'components/**/*', 'modules/**/*', 'config/**/*', 'services/**/*' ]
-            }
-
-        },
-        // 发布配置
-        deploy: [
-            {
-                isExecute: false,
-                host: '192.168.233.130',
-                user: 'root',
-                pass: 'root123',
-                port: 22,
-                timeout: 50000,
-                // localPath: path.join(__dirname, '../build/**/*'),
-                filters: [],
-                remotePath: '/var/www/app',
-                onUploadedComplete: function(){
-                    console.log('-----上传完成-----');
-                }
-            }
-        ]
-
-    };
-
-    function cssLoaders(fileName){
-        return {
-            'gulp-merge-css': { fileName: fileName },
-            'gulp-recache': recache(env.dest.path + '/assets'),
-            'gulp-autoprefixer': {
-                browsers: ['> 5%', 'IE > 8', 'last 2 versions']
-            },
-            'gulp-uglifycss': { _if: env.isProduction }
-
-        }
-    }
-
-    function jsLoaders(){
-        return {
-            'gulp-jsminer': {
-                _if: env.isProduction,
-                preserveComments: '!'
-            }
-        }
-    }
-
-    function htmlLoaders(){
-        return {
-            'gulp-tag-include': { compress: env.isProduction },
-            'gulp-recache': recache(env.dest.path)
-        }
-    }
-
-    function recache(path){
-        return {
-            _if: env.isIf,
-            queryKey: vQueryKey,
-            // hash值长度
-            hashSize: hashSize,
-            // 控制字节大小以内的图片转base64,
-            toBase64Limit: 1000,
-            basePath: path
-        }
-    }
-
-````
+## [gupack-config.js](https://github.com/RodeyManager/gupack/doc/gupack-config.js) 文件配置实例
 
 #License
 [MIT License](https://en.wikipedia.org/wiki/MIT_License)

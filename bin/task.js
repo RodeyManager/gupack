@@ -18,7 +18,7 @@ function checkConfig(){
 
     gupack = new Gupack(config);
     // 编译前是否清理相关目录
-    gupack.startClean = 'c' in T.argv || 'clean' in T.argv || gupack.startClean;
+    gupack.startClean = 'c' in T.argv || 'clear-dest' in T.argv || gupack.startClean;
 }
 
 // task as gulp task
@@ -77,8 +77,13 @@ function release(){
 }
 
 function clean(){
-    checkConfig();
-    gupack.cleanBuildDir();
+    if('c' in T.argv || 'clear-dest' in T.argv){
+        checkConfig();
+        gupack.cleanBuildDir();
+    }
+    else if('C' in T.argv || 'clear-templates' in T.argv){
+        require('./add').removeTemplate();
+    }
 }
 
 module.exports = {
