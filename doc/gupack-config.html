@@ -57,6 +57,11 @@ module.exports      =  {
     // 编译产出路径，可以是绝对或者相对路径，默认为 build
     buildDir: env.dest.path,
     hostname: 'http://esales.cignacmb.com/',
+    // 代理配置
+    proxy: {
+        context: '/api',
+        target: 'http://api.com/'
+    },
     // task任务列表
     buildTasks: {
         // ---说明：单个任务配置

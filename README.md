@@ -100,6 +100,7 @@ alias【为gupack命令创建别名】
 *   ```liveDelay```：number, 浏览器实时更新延迟时间
 *   ```buildTasks```：object, 项目编译任务列表
 *   ```statics```: object, 发布部署CDN相关配置
+*   ```proxy```: object | string, 代理, [Options](https://www.npmjs.com/package/http-proxy#options)
 *   ```deploy```: array, 发布部署服务器相关配置(支持多节点上传)
 *   ```startClean```: boolean, 编译项目前是否清空编译目录
 *   ```indexFile```: string, 启动内置Node静态服务器，默认打开的首页，相对于buildDir路径
