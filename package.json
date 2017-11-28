@@ -1,8 +1,8 @@
 {
   "name": "gupack",
-  "version": "2.0.29",
-  "description": "(基于gulp的前端构建工具, 支持browserify对入口文件编译)Based on the front-end build tools of gulp",
-  "keyword": "javascript, nodejs, gulp, babel, browserify",
+  "version": "2.1.0",
+  "description": "(基于gulp的前端构建工具, 支持browserify、webpack对入口文件编译)Based on the front-end build tools of gulp",
+  "keyword": "javascript, nodejs, gulp, babel, browserify, webpack",
   "keywords": [
     "javascript",
     "nodejs",
@@ -11,7 +11,8 @@
     "browserify",
     "vue",
     "react",
-    "angular2"
+    "angular2",
+    "webpack"
   ],
   "author": {
     "name": "Rodey Luo",
@@ -60,10 +61,6 @@
     "user-home": "^2.0.0",
     "vinyl-fs": "^2.4.4",
     "ws": "^3.1.0"
-  },
-  "engines": {
-    "nodejs": "4.4.2+",
-    "npm": "4.2.0+"
   },
   "_npmUser": {
     "name": "rodey",

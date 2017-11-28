@@ -7,16 +7,20 @@
         "url": "RodeyManager/vue_browserify",
         "vs": "^1.0.0"
     },
+    "vue_webpack": {
+        "url": "RodeyManager/vue_webpack",
+        "vs": "^1.0.0"
+    },
     "react_browserify": {
         "url": "RodeyManager/react_browserify",
         "vs": "^1.0.0"
     },
-    "angluar2_browserify": {
-        "url": "RodeyManager/angular_browserify",
-        "vs": "^1.0.0"
-    },
     "react_webpack": {
         "url": "RodeyManager/react_webpack",
+        "vs": "^1.0.0"
+    },
+    "angluar2_browserify": {
+        "url": "RodeyManager/angular_browserify",
         "vs": "^1.0.0"
     }
 }
