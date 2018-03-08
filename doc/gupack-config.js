@@ -1,7 +1,6 @@
 'use strict';
 
-const
-    env = require('./config/app-env'),
+const env = require('./config/app-env'),
     webpackConfig = require('./config/webpack.config')(env);
 
 //导出模块
@@ -22,10 +21,7 @@ module.exports = {
         // ---说明：单个任务配置
         'build.css': {
             // 源文件
-            src: [
-                'assets/css/app.scss',
-                'assets/css/components/**/*'
-            ],
+            src: ['assets/css/app.scss', 'assets/css/components/**/*'],
             // 输出路径
             dest: 'assets/css',
             // 依赖task列表
@@ -37,22 +33,19 @@ module.exports = {
         },
 
         'build.lib.js': {
-            src: [
-                '../node_modules/axios/dist/axios.min.js',
-                '../node_modules/react/umd/react.production.min.js',
-                '../node_modules/react-dom/umd/react-dom.production.min.js'
-            ],
+            src: ['../node_modules/axios/dist/axios.min.js', '../node_modules/react/umd/react.production.min.js', '../node_modules/react-dom/umd/react-dom.production.min.js'],
             dest: 'assets/js',
-            loader: Object.assign({
-                'gulp-concat': 'libs.js'
-            }, jsLoaders())
+            loader: Object.assign(
+                {
+                    'gulp-concat': 'libs.js'
+                },
+                jsLoaders()
+            )
         },
 
         'build.assets': {
             src: 'assets/{fonts,images,js,libs}/**/*',
-            filters: [
-                'assets/js/libs.js'
-            ],
+            filters: ['assets/js/libs.js'],
             dest: 'assets',
             loader: jsLoaders()
         },
@@ -60,7 +53,7 @@ module.exports = {
         'build.modules.views': {
             src: 'modules/**/*View.js',
             dest: 'modules',
-            rely: [ 'build.css' ],
+            rely: ['build.css'],
             loader: {
                 'gulp-webpack-multi-entry': webpackConfig
             }
@@ -69,18 +62,13 @@ module.exports = {
         'build.views': {
             src: ['views/**/*.html'],
             filters: [],
-            rely: [
-                'build.css',
-                'build.lib.js',
-                'build.modules.views'
-            ],
+            rely: ['build.css', 'build.lib.js', 'build.modules.views'],
             dest: 'views',
             loader: htmlLoaders(),
             watch: ['../src/**/*']
         }
-
     },
-    // 发布配置
+    // 发布配置, 支持多节点
     deploy: [
         {
             isExecute: false,
@@ -94,37 +82,37 @@ module.exports = {
             remotePath: '/var/www/moon'
         }
     ]
-
 };
 
-function cssLoaders(fileName){
+function cssLoaders(fileName) {
     return {
         'gulp-sass': null,
-        'gulp-merge-css': {fileName: fileName},
+        'gulp-merge-css': { fileName: fileName },
         'gulp-recache': recache(env.dest.path + '/assets'),
         'gulp-autoprefixer': {
             browsers: ['> 5%', 'IE > 8', 'last 2 versions']
         },
-        'gulp-uglifycss': {_if: env.isProduction}
-    }
+        'gulp-uglifycss': { _if: env.isProduction }
+    };
 }
 
-function jsLoaders(){
+function jsLoaders() {
     return {
         'gulp-jsminer': {
-            _if: false, preserveComments: '!'
+            _if: false,
+            preserveComments: '!'
         }
-    }
+    };
 }
 
-function htmlLoaders(){
+function htmlLoaders() {
     return {
-        'gulp-tag-include': {compress: env.isProduction},
+        'gulp-tag-include': { compress: env.isProduction },
         'gulp-recache': recache(env.dest.path)
-    }
+    };
 }
 
-function recache(path){
+function recache(path) {
     return {
         _if: env.isIf,
         queryKey: '_rvc_',
@@ -133,5 +121,5 @@ function recache(path){
         // 控制字节大小以内的图片转base64,
         toBase64Limit: 1000,
         basePath: path
-    }
+    };
 }
