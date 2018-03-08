@@ -11,6 +11,10 @@
         "url": "RodeyManager/vue_webpack",
         "vs": "^1.0.0"
     },
+    "vue_spa": {
+        "url": "RodeyManager/vue_spa",
+        "vs": "^1.0.0"
+    },
     "react_browserify": {
         "url": "RodeyManager/react_browserify",
         "vs": "^1.0.0"
