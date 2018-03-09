@@ -32,7 +32,14 @@ const gupack = program
      Exp1: gupack new tmall --template vue_spa
      Exp2: gupack new tmall --template vue_spa --host 127.0.0.1 --port 3000 --liveDelay 2000
      */
-    .option('new', repx('<projectName*> 创建项目; ' + exp('\n\t --auto-install: 新建项目后自动安装npm相关依赖模块' + '\n\t --skip-cache-template: 跳过缓存,下载模板' + '\n\t -T --template: 选择项目模板') + ''), function() {
+    .option(
+        'new',
+        repx('<projectName*> 创建项目; ' + exp('\n\t -T --template: 选择项目模板' + ' \n\t --auto-install: 新建项目后自动安装npm相关依赖模块' + '\n\t --skip-cache: 跳过缓存,下载模板') + ''),
+        function() {
+            require('./create')();
+        }
+    )
+    .option('create', repx('new alias '), function() {
         require('./create')();
     })
     .option('task', repx('<taskName>(可选) 编译指定任务; '), function() {
@@ -78,17 +85,20 @@ const gupack = program
     .option('test', repx('<testName[fileName]>用例测试; '), function() {
         require('./testor').test();
     })
-    .option('clean', repx(' 清空编译路径下的所有文件; ' + exp('\n\t -T, --template 清除所有模板' + '\n\t -d, --dest 清空编译目录')), function() {
+    .option('clean', repx(' 清空编译路径下的所有文件; ' + exp('\n\t -f, --gupackfile 指定项目配置文件路径')), function() {
         require('./task').clean();
     })
     // remove project in projects file
-    .option('remove', repx('<projectName*> 从本地磁盘中删除(谨慎执行(u_u)); '), function() {
+    .option('remove', repx('<projectName*> 从本地磁盘中删除(谨慎执行(u_u)); alias delete '), function() {
         require('./add').remove();
     })
-    .option('addTemplate', repx('<templateName*> <templateGitUrl(注：github/repo)*> 添加项目模板; ' + exp('\n\t --download-template 下载模板')), function() {
+    .option('delete', repx('alias remove '), function() {
+        require('./add').remove();
+    })
+    .option('addTemplate', repx('<templateName*> <templateGitUrl(注：github username/repo)*> 添加项目模板; ' + exp('\n\t -D, --download-template 下载模板')), function() {
         require('./add').addTemplate();
     })
-    .option('removeTemplate', repx('<templateName>删除指定项目模板; ' + exp('\n\t --clear-templates 清除所有模板')), function() {
+    .option('removeTemplate', repx('<templateName>删除指定项目模板, templateName为空,删除所有模板; gupack removeTemplate vue_wbpack'), function() {
         require('./add').removeTemplate();
     })
     .option('listTemplate', repx('模板列表; '), function() {

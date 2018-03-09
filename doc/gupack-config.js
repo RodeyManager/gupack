@@ -12,10 +12,12 @@ module.exports = {
     buildDir: env.dest.path,
     // 默认启动页面地址
     indexFile: 'views/index.html',
-    // 每次执行编译之前是否清理当前编译目录
-    startClean: true,
-    port: 3000,
-    sport: 10030,
+    // 每次执行编译之前是否清理当前编译目录, 默认true
+    // startClean: true,
+    // 开启开发静态调式服务器的端口, 默认3200
+    // port: 3100,
+    // 更热新websocket端口
+    // sport: 10030,
     // task任务列表
     buildTasks: {
         // ---说明：单个任务配置
