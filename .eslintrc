@@ -1,0 +1,38 @@
+{
+    "root": true,
+    "parserOptions": {
+        "ecmaVersion": 6,
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "jsx": true
+        }
+    },
+    "rules": {
+        "semi": 2,
+        "quotes": [1, "single"],
+        "indent": [4, 4],
+
+        "array-bracket-newline": [
+            "error",
+            {
+                "multiline": true,
+                "minItems": 2
+            }
+        ],
+        "array-element-newline": [
+            "error",
+            {
+                "multiline": true,
+                "minItems": 2
+            }
+        ],
+        "array-bracket-spacing": [
+            "error",
+            {
+                "singleValue": true,
+                "objectsInArrays": true,
+                "arraysInArrays": true
+            }
+        ]
+    }
+}

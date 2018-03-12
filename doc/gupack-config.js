@@ -81,7 +81,9 @@ module.exports = {
             timeout: 50000,
             // localPath: path.join(env.dest.path, '/**/*'),
             // filters: [],
-            remotePath: '/var/www/moon'
+            remotePath: '/var/www/moon',
+            // @String 部署方式 全量：full(默认)；增量：increment
+            type: 'increment'
         }
     ]
 };
