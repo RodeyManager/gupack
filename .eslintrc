@@ -10,7 +10,7 @@
     "rules": {
         "semi": 2,
         "quotes": [1, "single"],
-        "indent": [4, 4],
+        "indent": [2, 4],
 
         "array-bracket-newline": [
             "error",

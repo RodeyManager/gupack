@@ -34,7 +34,7 @@ const gupack = program
      */
     .option(
         'new',
-        repx('<projectName*> 创建项目; ' + exp('\n\t -T --template: 选择项目模板' + ' \n\t --auto-install: 新建项目后自动安装npm相关依赖模块' + '\n\t --skip-cache: 跳过缓存,下载模板') + ''),
+        repx('<projectName*> 创建项目; ' + exp('\n\t -T --template:   选择项目模板' + ' \n\t --auto-install:  新建项目后自动安装npm相关依赖模块' + '\n\t --skip-cache:    跳过缓存,下载模板') + ''),
         function() {
             require('./create')();
         }
@@ -48,14 +48,14 @@ const gupack = program
     .option(
         'build',
         repx(
-            '[<projectName>]  [<options>]编译项目; ' +
+            '编译项目; ' +
                 exp(
-                    '\n\t -e, --env <env> 指定编译环境,(local:本地; dev:开发; stg:测试; prd:生产) ' +
-                        '\n\t -d, --dest <destPath> 指定编译输出目录 ' +
-                        '\n\t -t, --task <taskName> 指定编译任务（gupack build -t js+css -e dev） ' +
-                        '\n\t -c, --clear-dest 编译前清空编译路径下的所有文件 ' +
-                        '\n\t -o, --open-browser 启动内置静态服务器是否打开默认浏览器 ' +
-                        '\n\t -s, --server 是否启动内置静态服务器（热更新）'
+                    '\n\t -e, --env <env>:       指定编译环境,(local:本地; dev:开发; stg:测试; prd:生产) ' +
+                        '\n\t -d, --dest <destPath>: 指定编译输出目录 ' +
+                        '\n\t -t, --task <taskName>: 指定编译任务（gupack build -t js+css -e dev） ' +
+                        '\n\t -c, --clear-dest:      编译前清空编译路径下的所有文件 ' +
+                        '\n\t -o, --open-browser:    启动内置静态服务器是否打开默认浏览器 ' +
+                        '\n\t -s, --server:          是否启动内置静态服务器（热更新）'
                 ) +
                 ''
         ),
@@ -64,48 +64,73 @@ const gupack = program
         }
     )
     // start dev server
-    .option('start', repx('启动内置Node静态服务器; ' + exp('\n\t -o, --open-browser 启动内置静态服务器是否打开默认浏览器')), function() {
+    .option('start', repx('启动内置Node静态服务器; ' + exp('\n\t -o, --open-browser:     启动内置静态服务器是否打开默认浏览器')), function() {
         require('./task').start();
     })
     .option('publish', repx('[<projectName>] [<options>] 发布部署项目; '), function() {
         require('./task').publish();
     })
-    .option('gc', repx('<type> <name>生成指定组件（类型：vue、react、angluar）; '), function() {
-        require('./generator').generateComponent();
-    })
-    .option('gs', repx('<type> <name>生成指定服务组件（类型：default、angluar）; '), function() {
-        require('./generator').generateService();
-    })
-    .option('gv', repx('<type> <name>生成指定视图模块（类型：default、angluar）; '), function() {
-        require('./generator').generateView();
-    })
+
+    .option(
+        'rollback',
+        repx(
+            '备份回滚(依赖config.deploy.backup); ' +
+                exp('\n\t --backup-date:    指定备份版本所在的日期(*项目根目录必须存在backup.json)' + '\n\t --backup-name:    直接指定备份名称(*项目根目录必须存在backup.json)')
+        ),
+        function() {
+            require('./task').rollback();
+        }
+    )
+    .option(
+        'backup',
+        repx(
+            '备份(依赖config.deploy); ' +
+                exp(
+                    '\n\t --out-path:       指定备份输出路径' +
+                        '\n\t --name:           直接指定备份名称(名称后自动添加当前日期：@name-yyyy-mm-dd HH:MM:ss)' +
+                        '\n\t --log:            指定打印方式(all | progress)' +
+                        '\n\t --mode:           指定备份模式(local:本地; remote:远程)'
+                )
+        ),
+        function() {
+            require('./task').backup();
+        }
+    )
+
+    // .option('gc', repx('<type> <name>生成指定组件（类型：vue、react、angluar）; '), function() {
+    //     require('./generator').generateComponent();
+    // })
+    // .option('gs', repx('<type> <name>生成指定服务组件（类型：default、angluar）; '), function() {
+    //     require('./generator').generateService();
+    // })
+    // .option('gv', repx('<type> <name>生成指定视图模块（类型：default、angluar）; '), function() {
+    //     require('./generator').generateView();
+    // })
+
     .option('gt', repx('<name*>生成测试用例; '), function() {
         require('./generator').generateSpec();
     })
     .option('test', repx('<testName[fileName]>用例测试; '), function() {
         require('./testor').test();
     })
-    .option('clean', repx(' 清空编译路径下的所有文件; ' + exp('\n\t -f, --gupackfile 指定项目配置文件路径')), function() {
+    .option('clean', repx(' 清空编译路径下的所有文件; ' + exp('\n\t -f, --gupackfile:  指定项目配置文件路径')), function() {
         require('./task').clean();
     })
     // remove project in projects file
-    .option('remove', repx('<projectName*> 从本地磁盘中删除(谨慎执行(u_u)); alias delete '), function() {
+    .option('remove', repx('<projectName*> 从本地磁盘中删除(谨慎执行(u_u)); '), function() {
         require('./add').remove();
     })
-    .option('delete', repx('alias remove '), function() {
-        require('./add').remove();
-    })
-    .option('addTemplate', repx('<templateName*> <templateGitUrl(注：github username/repo)*> 添加项目模板; ' + exp('\n\t -D, --download-template 下载模板')), function() {
+    // .option('delete', repx('alias remove '), function() {
+    //     require('./add').remove();
+    // })
+    .option('addTemplate', repx('<templateName*> <templateGitUrl(注：github username/repo)*> 添加项目模板; ' + exp('\n\t -D, --download-template: 下载模板')), function() {
         require('./add').addTemplate();
     })
-    .option('removeTemplate', repx('<templateName>删除指定项目模板, templateName为空,删除所有模板; gupack removeTemplate vue_wbpack'), function() {
+    .option('removeTemplate', repx('<templateName>删除指定项目模板, templateName为空,删除所有模板; gupack removeTemplate vue_webpack'), function() {
         require('./add').removeTemplate();
     })
     .option('listTemplate', repx('模板列表; '), function() {
         require('./add').listTemplate();
-    })
-    .option('alias', repx('<name*> 为gupack设置一个全局命令别名;'), function() {
-        require('./alias')();
     })
     .option('versions', repx('查看相关版本;'), function() {
         require('./version').displayDescVersion();

@@ -143,6 +143,7 @@ publish【发布项目】
 *   `onUploadedComplete`: Function, 发布完成事件回调
 *   `onUploadedFileSuccess`: Function, 文件发布成功事件回调
 *   `onUploadedFileError`: Function, 文件发布失败事件回调
+*   `backup`: String | Object | Array, 发布之前进行备份 [options](https://github.com/RodeyManager/gupack/blob/master/doc/gupack-config.html)
 
 更多认证参数请参考 [ssh2](https://github.com/mscdex/ssh2)
 

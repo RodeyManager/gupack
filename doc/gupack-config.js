@@ -83,7 +83,27 @@ module.exports = {
             // filters: [],
             remotePath: '/var/www/moon',
             // @String 部署方式 全量：full(默认)；增量：increment
-            type: 'increment'
+            type: 'increment',
+            // 发布之前进行备份 [String | Object<推荐> | Array]
+            // 如果为String，则代表备份文件输出路径 outPath
+            // 如果为Array, 则应遵循规则 [outPath, name, mode, log, isExecute]
+            backup: {
+                // 备份输出路径(输入路径为remotePath)
+                outPath: path.resolve(env.dest.path, '../backs'),
+                // 备份文件名称 (默认使用当前日期时间为尾，例：VUE_SPA-2018-03-16_201010)
+                // date format (yyyy-mm-dd_HH:MM:ss) https://www.npmjs.com/package/dateformat#mask-options
+                name: 'VUE_SPA-',
+                // 备份模式： String
+                // remote (远程备份，将备份文件存在远程服务器上，需要有server shell的执行权限 [ zip, unzip, cd ])
+                // local (默认，本地备份，将备份到本地，直接将服务器目录拉取到本地)
+                mode: 'local',
+                // 控制台打印方式 String
+                // all (默认，打印详细信息，列出所有备份文件列表)
+                // progress (简单进度)
+                log: 'all',
+                // 是否执行备份操作, 默认false
+                isExecute: false
+            }
         }
     ]
 };

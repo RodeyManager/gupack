@@ -44,7 +44,7 @@ function task(name) {
     }
 }
 
-//build project
+// build project
 function build() {
     checkConfig();
     if (T.hasArg(['t', 'task']) /* 't' in T.argv || 'task' in T.argv */) {
@@ -54,14 +54,14 @@ function build() {
     gupack.run();
 }
 
-//gupack start projectName
+// gupack start projectName
 function start() {
     checkConfig();
     gupack.runIndex = 1;
     gupack.run();
 }
 
-//编译并发布(部署)
+// 编译并发布(部署)
 function publish() {
     checkConfig();
     // gupack.isPublish = true;
@@ -69,7 +69,19 @@ function publish() {
     gupack.runDeploy();
 }
 
-//编译并发布版本
+// 备份
+function backup() {
+    checkConfig();
+    gupack.runBackup();
+}
+
+// 回滚
+function rollback() {
+    checkConfig();
+    gupack.runRollback();
+}
+
+// 编译并发布版本
 function release() {
     checkConfig();
     gupack.statics._if = true;
@@ -93,6 +105,8 @@ module.exports = {
     start,
     build,
     publish,
+    backup,
+    rollback,
     release,
     clean
 };
