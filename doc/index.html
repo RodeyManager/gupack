@@ -79,16 +79,6 @@
     gupack new mall
                 </code></pre>
             </div>
-            <div class="code" id="add">
-                <p>add【添加项目】将项目添加到gupack项目列表中
-                    <a href="#command" class="return">∧</a>
-                </p>
-                <pre><code>
-    gupack add mall D:\\Sites\\mall
-    //提示: 项目名称: (mall)
-    //提示：项目路径: D:\\Sites\\mall
-                </code></pre>
-            </div>
             <div class="code" id="build">
                 <p>build【编译项目】对项目进行编译
                     <a href="#command" class="return">∧</a>
@@ -113,83 +103,16 @@
                     <a href="#params">命令参数</a>
                 </p>
             </div>
-            <div class="code" id="publish">
-                <p>publish【发布项目】
-                    <a href="#command" class="return">∧</a>
-                </p>
-                <pre><code>
-    gupack publish mall
-    //或者定位到项目下，执行 gupack publish
-                </code></pre>
-                <p class="rexp">如果在gupack-config.js中配置了hostname选项，则publish后，项目中的所有连接地址都会加上hostname地址</p>
-            </div>
+
             <div class="code" id="remove">
-                <p>remove【移除项目】
+                <p>delete【删除项目】
                     <a href="#command" class="return">∧</a>
                 </p>
                 <pre><code>
     gupack remove mall
     //或者定位到项目下，执行 gupack remove
                 </code></pre>
-                <p class="rexp">从gupack项目列表中移除（不会删除硬盘文件）</p>
-            </div>
-            <div class="code" id="delete">
-                <p>delete【删除项目】
-                    <a href="#command" class="return">∧</a>
-                </p>
-                <pre><code>
-    gupack delete mall
-    //或者定位到项目下，执行 gupack delete
-                </code></pre>
                 <p class="rexp">从gupack项目列表中删除（同时删除硬盘文件）</p>
-            </div>
-            <div class="code" id="list">
-                <p>list【查看项目列表】
-                    <a href="#command" class="return">∧</a>
-                </p>
-                <pre><code>
-    gupack list
-                </code></pre>
-                <p class="rexp">列出gupack所有项目</p>
-            </div>
-            <div class="code" id="info">
-                <p>info【查看项目详情】
-                    <a href="#command" class="return">∧</a>
-                </p>
-                <pre><code>
-    gupack info mall
-                </code></pre>
-                <p class="rexp">列出gupack所有项目</p>
-            </div>
-            <div class="code" id="install">
-                <p>install【安装gulp插件】
-                    <a href="#command" class="return">∧</a>
-                </p>
-                <pre><code>
-    gupack install gulp-rename
-    //任何位置执行(废弃)
-                </code></pre>
-                <p class="rexp">安装gulp插件（由于gupack基于gulp插件运行）</p>
-            </div>
-            <div class="code" id="uninstall">
-                <p>uninstall【卸载gulp插件】
-                    <a href="#command" class="return">∧</a>
-                </p>
-                <pre><code>
-    gupack uninstall gulp-rename
-    //任何位置执行(废弃)
-                </code></pre>
-                <p class="rexp">卸载gulp插件（由于gupack基于gulp插件运行）</p>
-            </div>
-            <div class="code" id="update">
-                <p>update【更新gulp插件】
-                    <a href="#command" class="return">∧</a>
-                </p>
-                <pre><code>
-    gupack update gulp-rename
-    //任何位置执行(废弃)
-                </code></pre>
-                <p class="rexp">更新gulp插件（由于gupack基于gulp插件运行）</p>
             </div>
             <div class="code" id="alias">
                 <p>alias【为gupack命令创建别名】

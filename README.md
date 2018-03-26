@@ -39,10 +39,8 @@
          -c 编译前清空编译路径下的所有文件
          -s, --server 是否启动内置静态服务器（热更新）
     start               启动内置Node静态服务器; -o, --open-browser 启动内置静态服务器是否打开默认浏览器
-    publish             [<projectName>] 发布部署项目;
-    gc                  <type> <name>生成指定组件（类型：vue、react、angluar）;
-    gs                  <type> <name>生成指定服务组件（类型：default、angluar）;
-    gv                  <type> <name>生成指定视图模块（类型：default、angluar）;
+    backup              备份项目;
+    rollback            回滚项目（依赖于备份列表）;
     clean                清空编译路径下的所有文件;
     remove              <projectName> 从本地磁盘中删除(谨慎执行(u_u));
     alias               <name> 为gupack设置一个全局命令别名;
@@ -93,8 +91,8 @@ publish【发布项目】
 *   `env`：String, 当前编译环境(本地(默认):local; 开发:dev; 测试:stg; 生产:prd)
 *   `sourceDir`：String, 源文件路径, 默认为项目下的 src
 *   `buildDir`：String, 编译产出路径，可以是绝对或者相对路径，默认项目下的 dist
-*   `port`Number, 本地开发 Node 调式服务器端口
-*   `liveDelay`Number, 浏览器实时更新延迟时间
+*   `port`：Number, 本地开发 Node 调式服务器端口
+*   `liveDelay`：Number, 浏览器实时更新延迟时间
 *   `buildTasks`：Object, 项目编译任务列表 [请查看单个任务相关配置](task)
 *   `statics`: Object, 发布部署 CDN 相关配置
 *   `proxy`: Object | String, 代理, [Options](https://www.npmjs.com/package/http-proxy#options)
@@ -130,20 +128,29 @@ publish【发布项目】
 
 ## deploy 相关配置（Object | Array）
 
-*   `isExecute`：Boolean，是否执行部署
+*   `isExecute`：Boolean，是否执行部署，默认 false
 *   `host`：String, 服务器主机
-*   `port`Number, 服务器端口，默认：22
+*   `port`：Number, 服务器端口，默认：22
 *   `user`：String, 用户名
 *   `pass`：String, 密码
-*   `timeout`Number, 发布上传超市时间，默认：50000
+*   `timeout`：Number, 发布上传超市时间，默认：50000
 *   `localPath`: String, 上传的本地目录，默认：项目编译后的目录（支持 glob）
 *   `remotePath`: String, 远程服务器目录
 *   `filters`: Array, 发布上传中需要过滤的文件（支持 glob）
 *   `type`：String, 部署方式（"full"全量；"increment"增量），默认：full
+*   `isRollback`：Boolean, 执行 rollback 命令时，当前节点是否执行回滚（可设置某节点不回滚）默认保存回滚
 *   `onUploadedComplete`: Function, 发布完成事件回调
 *   `onUploadedFileSuccess`: Function, 文件发布成功事件回调
 *   `onUploadedFileError`: Function, 文件发布失败事件回调
 *   `backup`: String | Object | Array, 发布之前进行备份 [options](https://github.com/RodeyManager/gupack/blob/master/doc/gupack-config.html)
+
+## backup 相关配置（Object | Array）backup 的认证信息目前依赖与当前 deploy 节点配置
+
+*   `isExecute`：Boolean，是否执行部署，默认 true
+*   `outPath`：String, 备份输出路径
+*   `mode`：String, 备份模式，local: 备份到本地; remote: 备份到当前 deploy 节点服务器上，默认：local
+*   `log`：String, 打印方式，all: 打印详细信息; progress: 简单的进度条，默认：all
+*   `filters`: Array, 备份中需要过滤的文件或者目录
 
 更多认证参数请参考 [ssh2](https://github.com/mscdex/ssh2)
 
