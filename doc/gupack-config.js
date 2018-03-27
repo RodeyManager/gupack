@@ -84,11 +84,11 @@ module.exports = {
             remotePath: '/var/www/moon',
             // @String 部署方式 全量：full(默认)；增量：increment
             type: 'increment',
-            // 执行rollback命令时，当前节点是否执行回滚（可设置某节点不回滚）默认保存回滚
-            // isRollback: false,
+            // 执行rollback命令时，当前节点是否执行回滚（可设置某节点不回滚）默认true (保存回滚)
+            isRollback: false,
             // 发布之前进行备份 [String | Object<推荐> | Array]
             // 如果为String，则代表备份文件输出路径 outPath
-            // 如果为Array, 则应遵循规则 [outPath, name, mode, log, isExecute]
+            // 如果为Array, 则应遵循规则 [outPath, name, mode, log, isExecute, filters]
             backup: {
                 // 备份输出路径(输入路径为remotePath)
                 outPath: path.resolve(env.dest.path, '../backs'),
@@ -102,7 +102,9 @@ module.exports = {
                 // 控制台打印方式 String
                 // all (默认，打印详细信息，列出所有备份文件列表)
                 // progress (简单进度)
-                log: 'all'
+                log: 'all',
+                // @Array: 过滤不需要的列表
+                filters: []
             }
         }
     ]
