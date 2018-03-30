@@ -73,13 +73,14 @@ module.exports = {
     // 发布配置, 支持多节点
     deploy: [
         {
-            isExecute: false,
+            // ssh2 and sftp authorize listen to: https://github.com/mscdex/ssh2
             host: '192.168.1.1',
             user: 'root',
             pass: 'root123',
             port: 22,
-            timeout: 50000,
+            // 默认为项目的编译输出目录（== config.buildDir）
             // localPath: path.join(env.dest.path, '/**/*'),
+            // 过滤上传列表
             // filters: [],
             remotePath: '/var/www/moon',
             // @String 部署方式 全量：full(默认)；增量：increment

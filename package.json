@@ -1,9 +1,18 @@
 {
     "name": "gupack",
-    "version": "2.2.0",
+    "version": "2.2.1",
     "description": "(基于gulp的前端构建工具, 支持browserify、webpack对入口文件编译)Based on the front-end build tools of gulp",
     "keyword": "javascript, nodejs, gulp, babel, browserify, webpack",
-    "keywords": ["javascript", "nodejs", "gulp", "babel", "browserify", "vue", "react", "webpack"],
+    "keywords": [
+        "javascript",
+        "nodejs",
+        "gulp",
+        "babel",
+        "browserify",
+        "vue",
+        "react",
+        "webpack"
+    ],
     "author": {
         "name": "Rodey Luo",
         "email": "rodeyluo@gmail.com"
@@ -19,7 +28,14 @@
         "gp": "./bin/gupack.js"
     },
     "main": "index",
-    "files": ["index.js", "bin", "lib", "shell", "templates.json", "mocha.opts"],
+    "files": [
+        "index.js",
+        "bin",
+        "lib",
+        "shell",
+        "templates.json",
+        "mocha.opts"
+    ],
     "dependencies": {
         "chalk": "^1.1.3",
         "chokidar": "^1.7.0",
@@ -41,8 +57,10 @@
         "micromatch": "^3.1.4",
         "minimist": "^1.2.0",
         "mocha": "^3.5.0",
+        "ora": "^2.0.0",
         "pako": "^1.0.3",
         "parents": "^1.0.1",
+        "plugin-error": "^1.0.1",
         "pretty-hrtime": "^1.0.3",
         "prompt": "^1.0.0",
         "ssh2": "^0.5.5",
@@ -58,7 +76,8 @@
     "devDependencies": {
         "gulp-autoprefixer": "^3.1.0",
         "gulp-concat": "^2.6.0",
-        "gulp-displace": "^v1.0.2",
+        "gulp-copy": "^1.1.0",
+        "gulp-displace": "^1.0.4",
         "gulp-htmlmin": "^3.0.0",
         "gulp-jsminer": "^1.0.4",
         "gulp-merge-css": "^1.0.1",
