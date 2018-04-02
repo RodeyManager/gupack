@@ -5,41 +5,46 @@
 
 'use strict';
 
-const
-    T            = require('../lib/tools'),
-    Mocha        = require('mocha'),
+const T = require('../lib/tools'),
+    Mocha = require('mocha'),
     mochaOptions = require('mocha/bin/options'),
-    vsf          = require('vinyl-fs'),
-    mps          = require('map-stream'),
-    fsrr         = require('fs-readdir-recursive');
+    vsf = require('vinyl-fs'),
+    mps = require('map-stream'),
+    fsrr = require('fs-readdir-recursive');
 
 const cwd = process.cwd();
-const testFolder = T.Path.resolve(cwd, 'test');
+const packageConfig = require(T.Path.resolve(cwd, 'package.json'));
+const testFolder = (packageConfig['test'] && T.Path.resolve(cwd, packageConfig['test'])) || T.Path.resolve(cwd, 'test');
 const files = fsrr(testFolder, f => f);
+const argfiles = T.argv._.slice(1);
 
-class Testor{
-
-    constructor(files){
+class Testor {
+    constructor(files) {
         this.files = files || [];
+        this.mca = new Mocha(mochaOptions);
     }
 
-    test(){
-        let mca = new Mocha(mochaOptions);
-        if(Array.isArray(this.files) && this.files.length > 0){
+    test() {
+        if (argfiles && argfiles.length > 0) {
+            this.files = argfiles;
+        }
+        this.testAll();
+    }
+
+    testAll() {
+        if (Array.isArray(this.files) && this.files.length > 0) {
             this.files = this.files.filter(file => {
                 let info = T.Path.parse(file);
-                return info.ext === '.js'/* && /[\s\S]+?\.test$/i.test(info.name)*/;
+                return info.ext === '.js' /* && /[\s\S]+?\.test$/i.test(info.name)*/;
             });
             this.files.map(file => {
-                mca.addFile(T.Path.resolve(testFolder, file));
+                this.mca.addFile(T.Path.resolve(testFolder, file));
             });
-            mca.run();
-        }else{
-            T.log.red('× Not found test files');
-            process.exit(1);
+            this.mca.run();
+        } else {
+            T.log.error('× Not found test files');
         }
     }
-
 }
 
 module.exports = new Testor(files);

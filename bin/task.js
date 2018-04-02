@@ -5,6 +5,7 @@ const inquirer = require('inquirer'),
     Gupack = require('../lib/config/gupack');
 
 let config, gupack;
+const prompt = inquirer.createPromptModule();
 
 function checkConfig() {
     // 项目列表
@@ -29,18 +30,16 @@ function task(name) {
         gupack.runTask(taskName.split(/\+/i));
     } else {
         let tasks = config.buildTasks;
-        inquirer
-            .prompt([
-                {
-                    type: 'checkbox',
-                    name: 'tname',
-                    message: '请选择单独编译的任务: ',
-                    choices: Object.keys(tasks)
-                }
-            ])
-            .then(awn => {
-                gupack.runTask(awn.tname);
-            });
+        prompt([
+            {
+                type: 'checkbox',
+                name: 'tname',
+                message: '请选择单独编译的任务: ',
+                choices: Object.keys(tasks)
+            }
+        ]).then(awn => {
+            gupack.runTask(awn.tname);
+        });
     }
 }
 
