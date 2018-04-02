@@ -58,12 +58,10 @@
     },
     "devDependencies": {
         "gulp-autoprefixer": "^3.1.0",
-        "gulp-changed": "^3.2.0",
         "gulp-concat": "^2.6.0",
-        "gulp-copy": "^1.1.0",
         "gulp-displace": "^1.0.4",
         "gulp-htmlmin": "^3.0.0",
-        "gulp-jsminer": "^1.0.4",
+        "gulp-jsminer": "^1.0.5",
         "gulp-merge-css": "^1.0.1",
         "gulp-recache": "^1.0.5",
         "gulp-tag-include": "^1.1.6",

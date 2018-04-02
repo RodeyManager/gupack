@@ -105,7 +105,7 @@ publish【发布项目】
 *   `src`：String or Array, 当前任务编译源码(支持 glob)
 *   `dest`：String, 当前任务源码编译后目录
 *   `filter`：Array, 过滤列表(支持 glob)
-*   `watch`：Array, 监听列表(支持 glob)
+*   `watch`：Array, 监听列表(支持 glob) 默认监听 src 配置
 *   `nowatch`：Boolean, 是否监听文件按变化触发任务执行
 *   `rely`：Array, 当前任务所依赖的任务列表
 *   `loader`: Object, 任务流（gulp 插件）相关配置
