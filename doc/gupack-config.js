@@ -85,6 +85,8 @@ module.exports = {
             remotePath: '/var/www/moon',
             // @String 部署方式 全量：full(默认)；增量：increment
             type: 'increment',
+            // 提示方式  all: 显示详细信息; progress: 显示进度 + 详细信息(默认)
+            log: 'progress',
             // 执行rollback命令时，当前节点是否执行回滚（可设置某节点不回滚）默认true (保存回滚)
             isRollback: false,
             // 发布之前进行备份 [String | Object<推荐> | Array]
@@ -101,8 +103,9 @@ module.exports = {
                 // local (默认，本地备份，将备份到本地，直接将服务器目录拉取到本地)
                 mode: 'local',
                 // 控制台打印方式 String
-                // all (默认，打印详细信息，列出所有备份文件列表)
-                // progress (简单进度)
+                // all (打印详细信息，列出所有备份文件列表)
+                // progress (默认，简单进度)
+                // 不配置将沿用当前deploy.log，如deploy.log未配置，默认 progress
                 log: 'all',
                 // @Array: 过滤不需要的列表
                 filters: []

@@ -65,7 +65,8 @@ function start() {
 function deploy() {
     _logEnv('Deploy');
     checkConfig();
-    gupack.runDeploy();
+    const isSkipBackup = T.hasArg('skip-backup');
+    gupack.runDeploy(isSkipBackup);
 }
 
 // 编译并发布(部署)

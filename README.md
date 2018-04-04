@@ -123,10 +123,9 @@ start【启动项目】运行 gupack 自带的静态文件服务器，便于本�
 
 ## backup 相关配置（Object | Array）backup 的认证信息目前依赖与当前 deploy 节点配置 [](name="Backup")
 
-*   `isExecute`：Boolean，是否执行部署，默认 `true`
 *   `outPath`：String, 备份输出路径
 *   `mode`：String, 备份模式，`local`: 备份到本地; `remote`: 备份到当前 deploy 节点服务器上，默认：local
-*   `log`：String, 打印方式，`all`: 打印详细信息; `progress`: 简单的进度条，默认：`all`
+*   `log`：String, 打印方式，`all`: 打印详细信息; `progress`: 简单的进度条。不配置将沿用当前 deploy.log，如 deploy.log 未配置，默认 `progress`
 *   `filters`: Array, 备份中需要过滤的文件或者目录
 
 更多认证参数请参考 [ssh2](https://github.com/mscdex/ssh2)

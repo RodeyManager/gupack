@@ -21,6 +21,7 @@ const gupack = program
     .option('-D, --download-template', '下载项目模板')
     .option('-T, --template', '新建项目时指定模板\n\n备份与还原相关--------------------')
 
+    .option('--skip-backup', '部署时跳过备份')
     .option('--backup-date', '指定备份版本所在的日期(*项目根目录必须存在backup.json)')
     .option('--backup-name', '直接指定备份名称(*项目根目录必须存在backup.json)')
     .option('-r, --remove-backup', '指定清除备份')
@@ -37,8 +38,8 @@ const gupack = program
     })
     /*
      Create Project 在当前目录先创建项目
-     Exp1: gupack new tmall --template vue_spa
-     Exp2: gupack new tmall --template vue_spa --host 127.0.0.1 --port 3000 --liveDelay 2000
+     Exp1: gupack new myapp --template vue_spa
+     Exp2: gupack new myapp --template vue_spa --host 127.0.0.1 --port 3000 --liveDelay 2000
      */
     .option(
         'new',
@@ -79,7 +80,7 @@ const gupack = program
     .option('start', repx('启动内置Node静态服务器; ' + exp('\n\t -o, --open-browser:   启动内置静态服务器是否打开默认浏览器')), function() {
         require('./task').start();
     })
-    .option('deploy', repx('部署项目; ' + exp('\n\t -e, --env:            指定部署环境')), function() {
+    .option('deploy', repx('部署项目; ' + exp('\n\t -e, --env:            指定部署环境' + '\n\t --skip-backup:        部署时跳过备份')), function() {
         require('./task').deploy();
     })
     .option('publish', repx('生产发布(部署生产环境, 相当于gupack deploy -e prd); '), function() {
@@ -90,7 +91,11 @@ const gupack = program
         'rollback',
         repx(
             '备份回滚(依赖config.deploy.backup); ' +
-                exp('\n\t --backup-date:        指定备份版本所在的日期(*项目根目录必须存在backup.json)' + '\n\t --backup-name:        直接指定备份名称(*项目根目录必须存在backup.json)')
+                exp(
+                    '\n\t --backup-date:        指定备份版本所在的日期(*项目根目录必须存在backup.json)' +
+                        '\n\t --backup-name:        直接指定备份名称(*项目根目录必须存在backup.json)' +
+                        '\n\t -e, --env:             指定环境，如未指定，默认prd:生产'
+                )
         ),
         function() {
             require('./task').rollback();
@@ -105,8 +110,8 @@ const gupack = program
                         '\n\t --name:               直接指定备份名称(名称后自动添加当前日期：@name-yyyy-mm-dd HH:MM:ss)' +
                         '\n\t --log:                指定打印方式(all | progress)' +
                         '\n\t --mode:               指定备份模式(local:本地; remote:远程)' +
-                        '\n\t -r --remove-backup:   清除指定备份' +
-                        '\n\t -e --env:             指定环境，如未指定，默认prd:生产'
+                        '\n\t -r, --remove-backup:   清除指定备份' +
+                        '\n\t -e, --env:             指定环境，如未指定，默认prd:生产'
                 )
         ),
         function() {
@@ -133,17 +138,10 @@ const gupack = program
     .option('clean', repx(' 清空编译路径下的所有文件; ' + exp('\n\t -f, --gupackfile:       指定项目配置文件路径')), function() {
         require('./task').clean();
     })
-    // remove project in projects file
-    .option('remove', repx('<projectName*> 从本地磁盘中删除(谨慎执行(u_u)); '), function() {
-        require('./add').remove();
-    })
-    // .option('delete', repx('alias remove '), function() {
-    //     require('./add').remove();
-    // })
     .option('addTemplate', repx('<templateName*> <templateGitUrl(注：github username/repo)*> 添加项目模板; ' + exp('\n\t -D, --download-template: 下载模板')), function() {
         require('./add').addTemplate();
     })
-    .option('removeTemplate', repx('<templateName>删除指定项目模板, templateName为空,删除所有模板; gupack removeTemplate vue_webpack'), function() {
+    .option('removeTemplate', repx('<templateName>删除指定项目模板; gupack removeTemplate vue_webpack'), function() {
         require('./add').removeTemplate();
     })
     .option('listTemplate', repx('模板列表; '), function() {

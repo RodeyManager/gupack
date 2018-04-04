@@ -3,7 +3,11 @@
 const inquirer = require('inquirer'),
     userHome = require('user-home'),
     _ = require('lodash'),
-    T = require('../lib/tools');
+    T = require('../lib/tools'),
+    LoadingORA = require('../lib/loadProgress').LoadingORA,
+    templates = require('../templates');
+
+const prompt = inquirer.createPromptModule();
 
 if (T.isInSourcePath()) {
     T.setCWD(T.Path.resolve(process.cwd(), '../'));
@@ -20,36 +24,29 @@ function deleteProject() {
         return false;
     }
 
-    inquirer
-        .prompt([
-            {
-                type: 'confirm',
-                name: 'ok',
-                message: message
-            }
-        ])
-        .then(awn => {
-            if (awn.ok) {
-                _delete(path);
-            }
-        });
+    prompt([
+        {
+            type: 'confirm',
+            name: 'ok',
+            message: message
+        }
+    ]).then(awn => {
+        if (awn.ok) {
+            _delete(path);
+        }
+    });
 }
 
 function _delete(path) {
-    const LP = require('../lib/loadProgress'),
-        LoadProgress = LP.LoadProgress;
-    let removePrg = new LoadProgress('正在删除项目，请稍后......', '√ 项目删除成功！');
-    removePrg.type = 'triangle';
-    removePrg.start();
+    const removePrg = new LoadingORA();
+    removePrg.start('正在删除项目，请稍后......');
     T.fsa.remove(path, err => {
         if (err) T.log.red(`× ${err}`);
-        else removePrg.close();
-        process.exit(1);
+        else removePrg.stop('√ 项目删除成功！');
     });
 }
 
 function addTemplate() {
-    let templates = require('../templates');
     let [action, name, url, vs] = T.argv._;
     vs && (vs = '^' + String(vs).replace(/^\^/, ''));
     name = String(name);
@@ -63,29 +60,19 @@ function addTemplate() {
         vs
     };
 
-    T.fsa.writeJSONSync(T.Path.resolve(__dirname, '../templates.json'), templates, 'utf8');
-    T.log.green(`√ 模板添加成功! 你可以使用 gupack new myproject --template ${name} 来创建项目了!`);
-
-    if (T.hasArg(['D', 'download-template'])) {
-        let template = templates[name];
-        require('./download')(template)
-            .then(result => {
-                T.log.green(result.message + '  \n√ ' + result.tempPath);
-                process.exit(1);
-            })
-            .catch(err => {
-                T.log.red(err.message);
-                process.exit(1);
-            });
-    }
+    let template = templates[name];
+    require('./download')(template)
+        .then(result => {
+            T.log.end(T.msg.green(result.message + '  \n√ Path: ' + result.tempPath));
+            templateWT();
+        })
+        .catch(err => {
+            T.log.red(err.message);
+        });
 }
 
 function removeTemplate() {
-    let templates = require('../templates');
     let [action, name] = T.argv._;
-
-    const LoadProgress = require('../lib/loadProgress').LoadProgress;
-    const loadPrg = new LoadProgress('start remove ......', '√ 清空所有模板成功！');
 
     if (!name) {
         T.log.red(`× 必须指定需要删除模板名称<templateName>
@@ -97,19 +84,32 @@ function removeTemplate() {
         return false;
     }
 
-    loadPrg.start();
-    T.fsa.removeSync(T.Path.resolve(userHome, '.gupack-templates', templates[name]['url']));
-    delete templates[name];
-    T.fsa.writeJsonSync(T.Path.resolve(__dirname, '../templates.json'), templates);
-    T.log.green(`√ 模板删除成功! 你以后将不能使用 gupack new myproject --template ${name} 来创建项目了(╯﹏╰)!`);
-    loadPrg.close();
+    prompt([
+        {
+            type: 'confirm',
+            name: 'ok',
+            message: `您确定要删除该(${name})模板吗?`
+        }
+    ]).then(awn => {
+        if (!awn.ok) return;
+        _rem;
+    });
 
     return false;
 }
 
+function _removeTemplate(name) {
+    const loading = new LoadingORA();
+    loading.start(T.msg.yellow('start remove ......'));
+    T.fsa.removeSync(T.Path.resolve(userHome, '.gupack-templates', templates[name]['url']));
+    delete templates[name];
+    loading.stop();
+    templateWT();
+    loading.stop(T.msg.green(`√ 你也可以使用 gupack new myapp --template ${name} --skip-cache 来创建项目并下载最新的模板了(╯﹏╰)!`));
+}
+
 function listTemplate() {
     const chalk = require('chalk');
-    let templates = require('../templates');
     let tks = Object.keys(templates);
     let sl = tks.map(tk => {
         return tk.length;
@@ -127,6 +127,13 @@ function listTemplate() {
     } else {
         T.log.red(' 暂无模板，您可以添加模板, 如: gupack addTemplate GitHub_username/repo ');
     }
+}
+
+// wirite template and tips
+function templateWT() {
+    T.fsa.writeJSONSync(T.Path.resolve(__dirname, '../templates.json'), templates, 'utf8');
+    T.log.green(`√ 模板添加成功! 你可以使用 gupack new myapp --template ${name} 来创建项目了!`);
+    T.log.green(`! 你可以使用 gupack new myapp --template ${name} --skip-cache 来创建项目并下载最新的模板了(╯﹏╰)!`);
 }
 
 module.exports = {

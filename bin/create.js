@@ -6,7 +6,7 @@ const T = require('../lib/tools'),
     fsrr = require('fs-readdir-recursive'),
     inquirer = require('inquirer'),
     userHome = require('user-home'),
-    LoadProgress = require('../lib/loadProgress').LoadProgress,
+    LoadingORA = require('../lib/loadProgress').LoadingORA,
     cliSpinners = require('../lib/loadProgress').cliSpinners,
     downloadTemplateRepo = require('./download'),
     _templetes = require('../templates.json');
@@ -34,17 +34,15 @@ function create() {
             ])
             .then(awn => {
                 if (awn.ok) {
-                    let removePrg = new LoadProgress('正在删除已存在项目，请稍后......', '√ 删除成功！');
-                    removePrg.frames = cliSpinners.triangle.frames;
-                    removePrg.interval = cliSpinners.triangle.interval;
-                    removePrg.start();
+                    let removePrg = new LoadingORA();
+                    removePrg.start(T.msg.yellow('→ 正在删除已存在项目，请稍后......'));
                     T.fsa.remove(to, err => {
                         if (err) return T.log.red(`× ${err} `);
-                        removePrg.stop();
+                        removePrg.stop(T.msg.green('√ 删除成功！'));
                         _createProject(projectName);
                     });
                 } else {
-                    process.exit();
+                    T.log.end();
                 }
             });
     } else {
@@ -110,8 +108,6 @@ function _createProject() {
                 })
                 .catch(err => {
                     T.log.red(err.message);
-                    loadPrg.close();
-                    process.exit(1);
                 });
         } else {
             _copyDir();
@@ -151,8 +147,8 @@ function autoInstallPackages() {
         let packages = Object.keys(devDependencies).length + Object.keys(dependencies).length;
         // 安装对应插件
         let endText = 'Finished OK =^_^= (^_^) =^_^= \n\r';
-        endText += `${T.msg.green('√')} Installed ${packages} pachages \n\r`;
-        let startText = `installing npm pachages [${packages}] ......`;
+        endText += T.msg.green(`${T.msg.green('√')} Installed ${packages} pachages \n\r`);
+        let startText = T.msg.yellow(`→ installing npm pachages [${packages}] ......`);
 
         require('./install').runSwap(to, ['install'], startText, endText);
     });
