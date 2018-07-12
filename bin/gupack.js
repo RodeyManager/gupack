@@ -45,8 +45,11 @@ const gupack = program
         'new',
         repx(
             '<projectName*> 创建项目; ' +
-                exp('\n\t -T --template:         选择项目模板' + ' \n\t --auto-install:        新建项目后自动安装npm相关依赖模块' + '\n\t --skip-cache:          跳过缓存,下载模板') +
-                ''
+                exp(
+                    '\n\t -T --template:         选择项目模板' +
+                        ' \n\t --auto-install:        新建项目后自动安装npm相关依赖模块' +
+                        '\n\t --skip-cache:          跳过缓存,下载模板'
+                )
         ),
         function() {
             require('./create')();
@@ -68,9 +71,9 @@ const gupack = program
                         '\n\t -t, --task <taskName>: 指定编译任务（gupack build -t js+css -e dev） ' +
                         '\n\t -c, --clear-dest:      编译前清空编译路径下的所有文件 ' +
                         '\n\t -o, --open-browser:    启动内置静态服务器是否打开默认浏览器 ' +
-                        '\n\t -s, --server:          是否启动内置静态服务器（热更新）'
-                ) +
-                ''
+                        '\n\t -s, --server:          是否启动内置静态服务器（热更新）' +
+                        '\n\t --skip-deploy          跳过部署'
+                )
         ),
         function() {
             require('./task').build();
@@ -138,9 +141,13 @@ const gupack = program
     .option('clean', repx(' 清空编译路径下的所有文件; ' + exp('\n\t -f, --gupackfile:       指定项目配置文件路径')), function() {
         require('./task').clean();
     })
-    .option('addTemplate', repx('<templateName*> <templateGitUrl(注：github username/repo)*> 添加项目模板; ' + exp('\n\t -D, --download-template: 下载模板')), function() {
-        require('./add').addTemplate();
-    })
+    .option(
+        'addTemplate',
+        repx('<templateName*> <templateGitUrl(注：github username/repo)*> 添加项目模板; ' + exp('\n\t -D, --download-template: 下载模板')),
+        function() {
+            require('./add').addTemplate();
+        }
+    )
     .option('removeTemplate', repx('<templateName>删除指定项目模板; gupack removeTemplate vue_webpack'), function() {
         require('./add').removeTemplate();
     })
