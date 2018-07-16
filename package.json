@@ -1,6 +1,6 @@
 {
     "name": "gupack",
-    "version": "2.2.16",
+    "version": "2.2.18",
     "description": "(基于gulp的前端构建工具, 支持browserify、webpack对入口文件编译)Based on the front-end build tools of gulp",
     "keyword": "javascript, nodejs, gulp, babel, browserify, webpack",
     "keywords": [
@@ -24,8 +24,8 @@
     },
     "homepage": "https://github.com/RodeyManager/gupack.git#readme",
     "bin": {
-        "gupack": "./shell/gupack",
-        "gp": "./shell/gupack"
+        "gupack": "./bin/gupack.js",
+        "gp": "./bin/gupack.js"
     },
     "main": "index",
     "files": [
