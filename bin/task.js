@@ -30,14 +30,12 @@ function task(name) {
         gupack.runTask(taskName.split(/\+/i));
     } else {
         let tasks = config.buildTasks;
-        prompt([
-            {
-                type: 'checkbox',
-                name: 'tname',
-                message: '请选择单独编译的任务: ',
-                choices: Object.keys(tasks)
-            }
-        ]).then(awn => {
+        prompt([{
+            type: 'checkbox',
+            name: 'tname',
+            message: '请选择单独编译的任务: ',
+            choices: Object.keys(tasks)
+        }]).then(awn => {
             gupack.runTask(awn.tname);
         });
     }
@@ -114,6 +112,7 @@ function clean() {
 function _logEnv(commandName, env) {
     env = env || process.env.NODE_ENV || T.getArg(['e', 'env']);
     T.log.yellow(`→ [${T.getTime()}] ${commandName || ''} environment as '${env}'`);
+    process.env.NODE_ENV = env;
 }
 
 module.exports = {
