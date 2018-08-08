@@ -9,9 +9,7 @@ const inquirer = require('inquirer'),
 
 const prompt = inquirer.createPromptModule();
 
-if (T.isInSourcePath()) {
-    T.setCWD(T.Path.resolve(process.cwd(), '../'));
-}
+T.isInSourcePath() && T.setCWD(T.Path.resolve(process.cwd(), '../'));
 
 function deleteProject() {
     let message = T.msg.red('提醒：') + T.msg.yellow('此操作会将项目目录从本地磁盘中删除，您确定要删除吗{ 谨慎执行(u_u) } ');
@@ -24,17 +22,11 @@ function deleteProject() {
         return false;
     }
 
-    prompt([
-        {
-            type: 'confirm',
-            name: 'ok',
-            message: message
-        }
-    ]).then(awn => {
-        if (awn.ok) {
-            _delete(path);
-        }
-    });
+    prompt([{
+        type: 'confirm',
+        name: 'ok',
+        message: message
+    }]).then(awn => awn.ok && _delete(path));
 }
 
 function _delete(path) {
@@ -66,9 +58,7 @@ function addTemplate() {
             T.log.end(T.msg.green(result.message + '  \n√ Path: ' + result.tempPath));
             templateWT();
         })
-        .catch(err => {
-            T.log.red(err.message);
-        });
+        .catch(err => T.log.red(err.message));
 }
 
 function removeTemplate() {
@@ -84,16 +74,11 @@ function removeTemplate() {
         return false;
     }
 
-    prompt([
-        {
-            type: 'confirm',
-            name: 'ok',
-            message: `您确定要删除该(${name})模板吗?`
-        }
-    ]).then(awn => {
-        if (!awn.ok) return;
-        _rem;
-    });
+    prompt([{
+        type: 'confirm',
+        name: 'ok',
+        message: `您确定要删除该(${name})模板吗?`
+    }]).then(awn => awn.ok && _removeTemplate(name));
 
     return false;
 }
@@ -104,20 +89,15 @@ function _removeTemplate(name) {
     T.fsa.removeSync(T.Path.resolve(userHome, '.gupack-templates', templates[name]['url']));
     delete templates[name];
     loading.stop();
-    templateWT();
     loading.stop(T.msg.green(`√ 你也可以使用 gupack new myapp --template ${name} --skip-cache 来创建项目并下载最新的模板了(╯﹏╰)!`));
 }
 
 function listTemplate() {
-    const chalk = require('chalk');
     let tks = Object.keys(templates);
-    let sl = tks.map(tk => {
-        return tk.length;
-    });
+    let sl = tks.map(tk => tk.length);
     let maxLen = _.max(sl);
     if (tks.length > 0) {
         let s = '',
-            sl = [],
             template;
         tks.forEach((k, i) => {
             template = templates[k];

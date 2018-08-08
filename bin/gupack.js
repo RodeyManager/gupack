@@ -15,7 +15,8 @@ const gupack = program
     .option('-e, --env', '设置环境')
     .option('-o, --open-browser', '启动内置静态服务器是否打开默认浏览器')
     .option('-s, --server', '是否启动内置静态服务器')
-    .option('-t, --task', '指定编译任务\n\n模板相关--------------------')
+    .option('-t, --task', '指定编译任务')
+    .option('-w, --watch', '编译时监听文件变化\n\n模板相关--------------------')
 
     .option('-C, --clear-templates', '清除项目模板')
     .option('-D, --download-template', '下载项目模板')
@@ -25,6 +26,7 @@ const gupack = program
     .option('--backup-date', '指定备份版本所在的日期(*项目根目录必须存在backup.json)')
     .option('--backup-name', '直接指定备份名称(*项目根目录必须存在backup.json)')
     .option('-r, --remove-backup', '指定清除备份')
+    .option('-m, --message', '备注信息')
     .option('--out-path', '指定备份输出路径')
     .option('--mode', '指定备份模式(local:本地; remote:远程)')
     .option('--log', '指定备份打印方式(all | progress)\n\n其他--------------------')
@@ -42,12 +44,12 @@ const gupack = program
      Exp2: gupack new myapp --template vue_spa --host 127.0.0.1 --port 3000 --liveDelay 2000
      */
     .option(
-        'new',
+        'create',
         repx(
             '<projectName*> 创建项目; ' +
             exp(
                 '\n\t -T --template:         选择项目模板' +
-                '\n\t --auto-install:       新建项目后自动安装npm相关依赖模块' +
+                '\n\t --auto-install:        新建项目后自动安装npm相关依赖模块' +
                 '\n\t --skip-cache:          跳过缓存,下载模板'
             )
         ),
@@ -55,7 +57,7 @@ const gupack = program
             require('./create')();
         }
     )
-    .option('create', repx('new alias '), function () {
+    .option('new', repx('create alias '), function () {
         require('./create')();
     })
     .option('task', repx('<taskName>(可选) 编译指定任务; '), function () {
@@ -80,10 +82,10 @@ const gupack = program
         }
     )
     // start dev server
-    .option('start', repx('启动内置Node静态服务器; ' + exp('\n\t -o, --open-browser:   启动内置静态服务器是否打开默认浏览器')), function () {
+    .option('start', repx('启动内置Node静态服务器; ' + exp('\n\t -o, --open-browser:    启动内置静态服务器是否打开默认浏览器')), function () {
         require('./task').start();
     })
-    .option('deploy', repx('部署项目; ' + exp('\n\t -e, --env:            指定部署环境' + '\n\t --skip-backup:        部署时跳过备份')), function () {
+    .option('deploy', repx('部署项目; ' + exp('\n\t -e, --env:             指定部署环境' + '\n\t --skip-backup:         部署时跳过备份')), function () {
         require('./task').deploy();
     })
     .option('publish', repx('生产发布(部署生产环境, 相当于gupack deploy -e prd); '), function () {
@@ -95,9 +97,9 @@ const gupack = program
         repx(
             '备份回滚(依赖config.deploy.backup); ' +
             exp(
-                '\n\t --backup-date:        指定备份版本所在的日期(*项目根目录必须存在backup.json)' +
-                '\n\t --backup-name:        直接指定备份名称(*项目根目录必须存在backup.json)' +
-                '\n\t -e, --env:            指定环境，如未指定，默认prd:生产'
+                '\n\t --backup-date:         指定备份版本所在的日期(*项目根目录必须存在backup.json)' +
+                '\n\t --backup-name:         直接指定备份名称(*项目根目录必须存在backup.json)' +
+                '\n\t -e, --env:             指定环境，如未指定，默认prd:生产'
             )
         ),
         function () {
@@ -109,12 +111,13 @@ const gupack = program
         repx(
             '备份(依赖config.deploy); ' +
             exp(
-                '\n --out-path:           指定备份输出路径' +
+                '\n\t --out-path:           指定备份输出路径' +
                 '\n\t --name:               直接指定备份名称(名称后自动添加当前日期：@name-yyyy-mm-dd HH:MM:ss)' +
                 '\n\t --log:                指定打印方式(all | progress)' +
                 '\n\t --mode:               指定备份模式(local:本地; remote:远程)' +
                 '\n\t -r, --remove-backup:  清除指定备份' +
-                '\n\t -e, --env:            指定环境，如未指定，默认prd:生产'
+                '\n\t -e, --env:            指定环境，如未指定，默认prd:生产' +
+                '\n\t -m, --message:        备注信息'
             )
         ),
         function () {
