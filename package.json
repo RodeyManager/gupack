@@ -1,6 +1,6 @@
 {
     "name": "gupack",
-    "version": "2.2.20",
+    "version": "2.2.22",
     "description": "(基于gulp的前端构建工具, 支持browserify、webpack对入口文件编译)Based on the front-end build tools of gulp",
     "keyword": "javascript, nodejs, gulp, babel, browserify, webpack",
     "keywords": [
@@ -77,8 +77,8 @@
         "email": "rodeyluo@gmail.com"
     },
     "engines": {
-        "nodejs": "^7.0",
-        "npm": "^3.10.8"
+        "nodejs": ">=7.0",
+        "npm": ">=3.10.8"
     },
     "devDependencies": {
         "gulp-autoprefixer": "^3.1.0",

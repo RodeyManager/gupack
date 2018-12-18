@@ -25,13 +25,11 @@ let loadPrg;
 function create() {
     if (T.fs.existsSync(to)) {
         inquirer
-            .prompt([
-                {
-                    type: 'confirm',
-                    name: 'ok',
-                    message: '当前项目已经存在，是否需要覆盖 [Y/n]: '
-                }
-            ])
+            .prompt([{
+                type: 'confirm',
+                name: 'ok',
+                message: '当前项目已经存在，是否需要覆盖 [Y/n]: '
+            }])
             .then(awn => {
                 if (awn.ok) {
                     let removePrg = new LoadingORA();
@@ -67,7 +65,9 @@ function _createProject() {
             // selectTemplatePrompt();
             _next(template);
         } else if (/^[^\/]+\/[^/]+$/.test(templateNamed)) {
-            _next({ url: templateNamed });
+            _next({
+                url: templateNamed
+            });
         }
         // two: --template 不存在
     } else {
@@ -77,14 +77,12 @@ function _createProject() {
 
     function selectTemplatePrompt() {
         inquirer
-            .prompt([
-                {
-                    type: 'list',
-                    name: 'template',
-                    message: '选择一款适合自己项目的模板: ',
-                    choices: tkeys
-                }
-            ])
+            .prompt([{
+                type: 'list',
+                name: 'template',
+                message: '选择一款适合自己项目的模板: ',
+                choices: tkeys
+            }])
             .then(awn => {
                 selectedTemplate = templates[awn.template];
                 _next(selectedTemplate);
@@ -120,7 +118,7 @@ function _createProject() {
         T.fsa.mkdirSync(to);
         T.fsa.copySync(rawCopy, to);
         // 更新项目名称
-        _updateName(rawCopy);
+        _updateName(to);
 
         let files = fsrr(rawCopy, f => f);
         Array.isArray(files) &&
@@ -131,8 +129,8 @@ function _createProject() {
         autoInstallPackages();
     }
 
-    function _updateName(rawCopy) {
-        let packageJSONPath = rawCopy + '/package.json';
+    function _updateName(to) {
+        let packageJSONPath = to + '/package.json';
         let packageObject = require(packageJSONPath);
         packageObject.name = projectName;
         T.fs.writeFileSync(packageJSONPath, JSON.stringify(packageObject, null, 2), 'utf8');
