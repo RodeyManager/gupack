@@ -1,6 +1,6 @@
 {
     "name": "gupack",
-    "version": "2.2.23",
+    "version": "2.2.3",
     "description": "(基于gulp的前端构建工具, 支持browserify、webpack对入口文件编译)Based on the front-end build tools of gulp",
     "keyword": "javascript, nodejs, gulp, babel, browserify, webpack",
     "keywords": [
@@ -85,11 +85,10 @@
         "gulp-concat": "^2.6.0",
         "gulp-displace": "^1.0.4",
         "gulp-htmlmin": "^3.0.0",
-        "gulp-jsminer": "^1.0.5",
+        "gulp-jsminer": "^2.0.3",
         "gulp-merge-css": "^1.0.1",
         "gulp-recache": "^1.0.5",
         "gulp-tag-include": "^1.1.6",
-        "gulp-uglifycss": "^1.0.4",
-        "uglify-js": "^2.8.21"
+        "gulp-uglifycss": "^1.0.4"
     }
 }
