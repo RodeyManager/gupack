@@ -1,6 +1,6 @@
 {
     "name": "gupack",
-    "version": "2.2.53",
+    "version": "2.2.54",
     "description": "(基于gulp的前端构建工具, 支持browserify、webpack对入口文件编译)Based on the front-end build tools of gulp",
     "keyword": "javascript, nodejs, gulp, babel, browserify, webpack",
     "keywords": [
@@ -92,8 +92,8 @@
         "gulp-tag-include": "^1.1.6",
         "gulp-uglifycss": "^1.0.4"
     },
-    "preinstall": "npx npm-force-resolutions",
     "resolutions": {
-        "graceful-fs": "^4.2.6"
+        "graceful-fs": "^4.2.6",
+        "gulp/graceful-fs": "^4.2.6"
     }
 }

@@ -28,6 +28,8 @@ temp.js
 .idea
 .vscode
 sample
+yarn.lock
+package-lock.json
 
 .git
 .svn
