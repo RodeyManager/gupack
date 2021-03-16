@@ -2,14 +2,14 @@
 
 'use strict';
 
-const program = require('commander'),
-  T = require('../lib/tools');
+const program = require('commander');
+const T = require('../lib/tools');
 
 // --helper
 const gupack = program
   .usage(
     '[options] \n\r\t 欢迎使用前端自动化构建工具 Gupack; \n\r\t ' +
-      '将帮助您简化前端开发流程和提升开发效率。'
+      '将帮助您简化前端开发流程和提升开发效率。\n'
   )
 
   .option('-c, --clear-dest', '清空编译目录')
@@ -19,14 +19,12 @@ const gupack = program
   .option('-s, --server', '是否启动内置静态服务器')
   .option('-t, --task', '指定编译任务')
   .option('-w, --watch', '编译时监听文件变化\n\n模板相关--------------------')
-
   .option('-C, --clear-templates', '清除项目模板')
   .option('-D, --download-template', '下载项目模板')
   .option(
     '-T, --template',
     '新建项目时指定模板\n\n备份与还原相关--------------------'
   )
-
   .option('--skip-backup', '部署时跳过备份')
   .option(
     '--backup-date',
@@ -41,7 +39,6 @@ const gupack = program
     '--log',
     '指定备份打印方式(all | progress)\n\n其他--------------------'
   )
-
   .option('-f, --gupackfile', '指定配置文件')
   .option('--host', '服务器主机')
   .option('--port', '服务器端口')
@@ -163,16 +160,6 @@ const gupack = program
       require('./task').backup();
     }
   )
-
-  // .option('gc', repx('<type> <name>生成指定组件（类型：vue、react、angluar）; '), function() {
-  //     require('./generator').generateComponent();
-  // })
-  // .option('gs', repx('<type> <name>生成指定服务组件（类型：default、angluar）; '), function() {
-  //     require('./generator').generateService();
-  // })
-  // .option('gv', repx('<type> <name>生成指定视图模块（类型：default、angluar）; '), function() {
-  //     require('./generator').generateView();
-  // })
 
   .option('gt', repx('<name*>生成测试用例; '), function () {
     require('./generator').generateSpec();

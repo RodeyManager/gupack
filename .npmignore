@@ -7,12 +7,14 @@ ehthumbs.db
 
 node_modules
 npm-debug.log
+___package.json
 
 example
 baks
 temp.js
 temp.html
 .idea
+*.bak
 
 .git
 .svn
